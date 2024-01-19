@@ -21,6 +21,18 @@ public:
 	CBoss(int nPriority = 3);
 	~CBoss();
 
+	//プレイヤーの状態
+	typedef enum
+	{
+		STATE_NORMAL = 0,
+		STATE_ATTACK,
+		STATE_WARP,
+		STATE_DAMAGE,
+		STATE_DEATH,
+		STATE_MAX,
+
+	}STATE;
+
 	static CBoss* Create(char* pModelName);
 
 	HRESULT Init(char* pModelName);
@@ -34,11 +46,15 @@ public:
 	void HitDamage(float Damage);
 
 private:
+	void StateManager(void);		//状態管理
+
 	int m_nIdxXModel;				//Xモデルの番号
 	D3DXVECTOR3 m_CollisionPos;		//当たり判定用の座標
 	bool m_bCollision;				//当たり判定用の座標
 	int m_nIdxTexture;				//テクスチャの番号
 	float m_MoveCount;				//待機中の浮遊用変数
+	STATE m_State;					//状態
+	int m_nStateCount;				//状態管理用変数
 
 	D3DXVECTOR3 m_move;				//移動量	
 	D3DXVECTOR3 m_rot;				//向き	

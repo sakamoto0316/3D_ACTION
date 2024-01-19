@@ -435,10 +435,12 @@ void CPlayer::Dodge2D(void)
 	//キーボードの取得
 	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
+	CInputMouse* pInputMouse = CManager::GetInstance()->GetInputMouse();
 
 	if (
 		(pInputKeyboard->GetTrigger(DIK_N) == true ||
-			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_R, 0) == true) &&
+			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_R, 0) == true ||
+			pInputMouse->GetTrigger(CInputMouse::PUSH_RIGHT) == true) &&
 		m_nDodgeCoolTime <= 0
 		)
 	{

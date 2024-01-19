@@ -31,6 +31,8 @@ CBoss::CBoss(int nPriority) : CObjectX(nPriority)
 	m_MoveCount = 0.0f;
 	m_fLife = BOSS_LIFE;
 	m_fLifeMax = m_fLife;
+	m_State = STATE_NORMAL;
+	m_nStateCount = 0;
 }
 
 //====================================================================
@@ -106,6 +108,9 @@ void CBoss::Update(void)
 
 	SetPos(pos);
 
+	//状態管理
+	StateManager();
+
 	//頂点情報の更新
 	CObjectX::Update();
 }
@@ -119,12 +124,65 @@ void CBoss::Draw(void)
 }
 
 //====================================================================
+//状態管理
+//====================================================================
+void CBoss::StateManager(void)
+{
+	switch (m_State)
+	{
+	case STATE_NORMAL:
+		break;
+
+	case STATE_ATTACK:
+		if (m_nStateCount <= 0)
+		{
+			m_State = STATE_NORMAL;
+			m_nStateCount = 60;
+			SetDefColor();
+		}
+		break;
+
+	case STATE_WARP:
+		if (m_nStateCount <= 0)
+		{
+			m_State = STATE_NORMAL;
+			m_nStateCount = 60;
+		}
+		break;
+
+	case STATE_DAMAGE:
+		if (m_nStateCount <= 0)
+		{
+			m_State = STATE_NORMAL;
+			m_nStateCount = 0;
+		}
+		break;
+
+	case STATE_DEATH:
+		if (m_nStateCount <= 0)
+		{
+			m_State = STATE_NORMAL;
+			m_nStateCount = 0;
+		}
+		break;
+	}
+
+	if (m_nStateCount > 0)
+	{
+		m_nStateCount--;
+	}
+}
+
+//====================================================================
 //ダメージ処理
 //====================================================================
 void CBoss::HitDamage(float Damage)
 {
 	m_fLife -= Damage;
 	m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
+	m_State = STATE_ATTACK;
+	m_nStateCount = 5;
+	SetMatColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 //====================================================================
