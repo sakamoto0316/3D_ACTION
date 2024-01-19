@@ -17,7 +17,8 @@
 #include "objmeshWall.h"
 #include "objmeshCylinder.h"
 #include "objmeshDome.h"
-#include "objmeshCube.h"
+#include "CubeBlock.h"
+#include "CubeDamage.h"
 #include "player.h"
 #include "boss.h"
 #include "Pause.h"
@@ -43,7 +44,7 @@ CObjmeshField* CGame::m_pMeshFieldSample = NULL;
 CObjmeshWall* CGame::m_pMeshWallSample = NULL;
 CObjmeshCylinder* CGame::m_pMeshCylinderSample = NULL;
 CObjmeshDome* CGame::m_pMeshDomeSample = NULL;
-CObjmeshCube* CGame::m_pMeshCubeSample = NULL;
+CCubeBlock* CGame::m_pCubeBlock = NULL;
 CPlayer* CGame::m_pPlayer = NULL;
 CBoss*CGame::m_pBoss = NULL;
 bool CGame::m_bGameEnd = false;
@@ -100,20 +101,20 @@ HRESULT CGame::Init(void)
 
 	//m_pMeshDomeSample = CObjmeshDome::Create();
 
-	m_pMeshCubeSample = CObjmeshCube::Create();
-	m_pMeshCubeSample->SetPos(D3DXVECTOR3(0.0f, 100.0f, 0.0f));
-	m_pMeshCubeSample->SetSize(D3DXVECTOR3(400.0f, 10.0f, 400.0f));
-	m_pMeshCubeSample->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	m_pCubeBlock = CCubeBlock::Create();
+	m_pCubeBlock->SetPos(D3DXVECTOR3(0.0f, 100.0f, 0.0f));
+	m_pCubeBlock->SetSize(D3DXVECTOR3(400.0f, 10.0f, 400.0f));
+	m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
-	m_pMeshCubeSample = CObjmeshCube::Create();
-	m_pMeshCubeSample->SetPos(D3DXVECTOR3(150.0f, 250.0f, -150.0f));
-	m_pMeshCubeSample->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
-	m_pMeshCubeSample->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	m_pCubeBlock = CCubeBlock::Create();
+	m_pCubeBlock->SetPos(D3DXVECTOR3(150.0f, 250.0f, -150.0f));
+	m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
+	m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
-	m_pMeshCubeSample = CObjmeshCube::Create();
-	m_pMeshCubeSample->SetPos(D3DXVECTOR3(-150.0f, 250.0f, 150.0f));
-	m_pMeshCubeSample->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
-	m_pMeshCubeSample->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	m_pCubeBlock = CCubeBlock::Create();
+	m_pCubeBlock->SetPos(D3DXVECTOR3(-150.0f, 250.0f, 150.0f));
+	m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
+	m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	m_pPlayer = CPlayer::Create();
 	m_pPlayer->SetPos(D3DXVECTOR3(0.0f, 150.0f, 0.0f));
@@ -175,17 +176,35 @@ void CGame::Update(void)
 	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 	if (pInputKeyboard->GetTrigger(DIK_1) == true)
 	{
-		m_pMeshCubeSample = CObjmeshCube::Create();
-		m_pMeshCubeSample->SetPos(D3DXVECTOR3(-100.0f, -60.0f, 0.0f));
-		m_pMeshCubeSample->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
-		m_pMeshCubeSample->SetMove(D3DXVECTOR3(0.0f, 5.0f, 0.0f));
+		m_pCubeBlock = CCubeBlock::Create();
+		m_pCubeBlock->SetPos(D3DXVECTOR3(-100.0f, -60.0f, 0.0f));
+		m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
+		m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 5.0f, 0.0f));
 	}
 	if (pInputKeyboard->GetTrigger(DIK_2) == true)
 	{
-		m_pMeshCubeSample = CObjmeshCube::Create();
-		m_pMeshCubeSample->SetPos(D3DXVECTOR3(100.0f, 500.0f, 0.0f));
-		m_pMeshCubeSample->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
-		m_pMeshCubeSample->SetMove(D3DXVECTOR3(0.0f, -5.0f, 0.0f));
+		m_pCubeBlock = CCubeBlock::Create();
+		m_pCubeBlock->SetPos(D3DXVECTOR3(100.0f, 500.0f, 0.0f));
+		m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
+		m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, -5.0f, 0.0f));
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_3) == true)
+	{
+		CCubeDamage *pCubeDamage = CCubeDamage::Create();
+		pCubeDamage->SetPos(D3DXVECTOR3(-300.0f, 150.0f, 0.0f));
+		pCubeDamage->SetSize(D3DXVECTOR3(50.0f, 50.0f, 50.0f));
+		pCubeDamage->SetMove(D3DXVECTOR3(20.0f, 0.0f, 0.0f));
+		pCubeDamage->SetBreak(false);
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_4) == true)
+	{
+		CCubeDamage* pCubeDamage = CCubeDamage::Create();
+		pCubeDamage->SetPos(D3DXVECTOR3(-300.0f, 150.0f, 0.0f));
+		pCubeDamage->SetSize(D3DXVECTOR3(50.0f, 50.0f, 50.0f));
+		pCubeDamage->SetMove(D3DXVECTOR3(20.0f, 0.0f, 0.0f));
+		pCubeDamage->SetBreak(true);
 	}
 
 #endif

@@ -31,7 +31,6 @@ public:
 	void SetColor(D3DXCOLOR col);															//頂点カラーの設定
 	void SetColorA(float A) { m_Color.a = A; SetColor(m_Color); }							//頂点不透明度の設定
 	void SetTexture(const char* name);
-	bool CollisionBlock(D3DXVECTOR3* pPos, D3DXVECTOR3 pPosOld, D3DXVECTOR3* pMove, D3DXVECTOR3* pObjMove, D3DXVECTOR3 Size, bool* bJump, COLLISION XYZ);
 
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; m_posOld = pos; }
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
@@ -60,6 +59,5 @@ private:
 	D3DXVECTOR3 m_Size;						//大きさ
 	D3DXVECTOR3 m_move;						//移動量
 	D3DXCOLOR m_Color;						//色
-	float m_TestCount;						//テスト用変数
 };
 #endif

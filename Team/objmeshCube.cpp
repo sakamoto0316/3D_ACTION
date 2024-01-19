@@ -30,7 +30,6 @@ CObjmeshCube::CObjmeshCube(int nPriority) :CObject(nPriority)
 	m_Color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Size = INITVECTOR3;
 	m_move = INITVECTOR3;
-	m_TestCount = 0.0f;
 }
 
 //====================================================================
@@ -304,10 +303,6 @@ void CObjmeshCube::Update(void)
 {
 	m_posOld = m_pos;
 
-	//m_TestCount += 0.1f;
-
-	//m_move.z = sinf(m_TestCount) * 10.0f;
-
 	m_pos += m_move;
 }
 
@@ -511,11 +506,11 @@ void CObjmeshCube::SetColor(D3DXCOLOR col)
 					//頂点バッファをロックし、両店情報へのポインタを所得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	//頂点カラーの設定
-	pVtx[0].col = m_Color;
-	pVtx[1].col = m_Color;
-	pVtx[2].col = m_Color;
-	pVtx[3].col = m_Color;
+	for (int nCnt = 0; nCnt < 24; nCnt++)
+	{
+		//頂点カラーの設定
+		pVtx[nCnt].col = m_Color;
+	}
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();
@@ -528,166 +523,4 @@ void CObjmeshCube::SetTexture(const char* name)
 {
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();
 	m_nIdxTexture = pTexture->Regist(name);
-}
-
-//====================================================================
-//ブロックの当たり判定
-//====================================================================
-bool CObjmeshCube::CollisionBlock(D3DXVECTOR3* pPos, D3DXVECTOR3 pPosOld, D3DXVECTOR3* pMove, D3DXVECTOR3* pObjMove, D3DXVECTOR3 Size, bool* bJump, COLLISION XYZ)
-{
-	switch (XYZ)	
-	{
-	case CObject::COLLISION_X:	// X軸
-
-		//＋から－の面
-		if (m_pos.x + m_Size.x > pPos->x - Size.x &&
-			(m_posOld.x + m_Size.x <= pPos->x - Size.x ||
-			m_pos.x + m_Size.x <= pPosOld.x - Size.x ||
-			(m_pos.x + m_Size.x >= pPosOld.x - Size.x &&
-			m_posOld.x + m_Size.x <= pPosOld.x - Size.x &&
-			m_posOld.x + m_Size.x >= pPos->x - Size.x)) &&
-			m_pos.z + m_Size.z > pPos->z - Size.z &&
-			m_pos.z - m_Size.z < pPos->z + Size.z &&
-			m_pos.y + m_Size.y > pPos->y &&
-			m_pos.y - m_Size.y < pPos->y + Size.y
-			)
-		{
-			if (m_move.x >= 0.0f)
-			{
-				pPos->x = pPosOld.x - Size.x + Size.x + m_move.x;
-			}
-			else
-			{
-				pPos->x = m_pos.x + m_Size.x + Size.x + m_move.x;
-			}
-			pMove->x = 0.0f;
-		}
-
-		//－から＋の面
-		if (m_pos.x - m_Size.x < pPos->x + Size.x &&
-			(m_posOld.x - m_Size.x >= pPos->x + Size.x ||
-			m_pos.x - m_Size.x >= pPosOld.x + Size.x ||
-			(m_pos.x - m_Size.x <= pPosOld.x + Size.x &&
-			m_posOld.x - m_Size.x >= pPosOld.x + Size.x &&
-			m_posOld.x - m_Size.x <= pPos->x + Size.x)) &&
-			m_pos.z + m_Size.z > pPos->z - Size.z &&
-			m_pos.z - m_Size.z < pPos->z + Size.z &&
-			m_pos.y + m_Size.y > pPos->y &&
-			m_pos.y - m_Size.y < pPos->y + Size.y
-			)
-		{
-			if (m_move.x <= 0.0f)
-			{
-				pPos->x = pPosOld.x + Size.x - Size.x + m_move.x;
-			}
-			else
-			{
-				pPos->x = m_pos.x - m_Size.x - Size.x + m_move.x;
-			}
-			pMove->x = 0.0f;
-		}
-
-		break;
-	case CObject::COLLISION_Y:
-
-		//＋から－の面
-		if (m_pos.y + m_Size.y > pPos->y &&
-			(m_posOld.y + m_Size.y <= pPos->y ||
-			m_pos.y + m_Size.y <= pPosOld.y ||
-			(m_pos.y + m_Size.y >= pPosOld.y &&
-			m_posOld.y + m_Size.y <= pPosOld.y &&
-			m_posOld.y + m_Size.y >= pPos->y)) &&
-			m_pos.z + m_Size.z > pPos->z - Size.z &&
-			m_pos.z - m_Size.z < pPos->z + Size.z &&
-			m_pos.x + m_Size.x > pPos->x - Size.x &&
-			m_pos.x - m_Size.x < pPos->x + Size.x
-			)
-		{
-			if (m_move.y >= 0.0f)
-			{
-				pPos->y = pPosOld.y + m_move.y;
-			}
-			else
-			{
-				pPos->y = m_pos.y + m_Size.y + m_move.y;
-			}
-			pMove->y = 0.0f;
-			*bJump = false;
-			pObjMove->x = m_move.x;
-			pObjMove->y = m_move.y;
-			pObjMove->z = m_move.z;
-		}
-
-		//－から＋の面
-		if (m_pos.y - m_Size.y < pPos->y + Size.y &&
-			(m_posOld.y - m_Size.y >= pPos->y + Size.y ||
-			m_pos.y - m_Size.y >= pPosOld.y + Size.y ||
-			(m_pos.y - m_Size.y <= pPosOld.y + Size.y &&
-			m_posOld.y - m_Size.y >= pPosOld.y + Size.y &&
-			m_posOld.y - m_Size.y <= pPos->y + Size.y)) &&
-			m_pos.z + m_Size.z > pPos->z - Size.z &&
-			m_pos.z - m_Size.z < pPos->z + Size.z &&
-			m_pos.x + m_Size.x > pPos->x - Size.x &&
-			m_pos.x - m_Size.x < pPos->x + Size.x
-			)
-		{
-			pPos->y = m_pos.y - m_Size.y - Size.y + m_move.y;
-			pMove->y = m_move.y;
-		}
-
-		break;
-	case CObject::COLLISION_Z:
-
-		//＋から－の面
-		if (m_pos.z + m_Size.z > pPos->z - Size.z &&
-			(m_posOld.z + m_Size.z <= pPos->z - Size.z ||
-			m_pos.z + m_Size.z <= pPosOld.z - Size.z ||
-			(m_pos.z + m_Size.z >= pPosOld.z - Size.z &&
-			m_posOld.z + m_Size.z <= pPosOld.z - Size.z &&
-			m_posOld.z + m_Size.z >= pPos->z - Size.z)) &&
-			m_pos.x + m_Size.x > pPos->x - Size.x &&
-			m_pos.x - m_Size.x < pPos->x + Size.x &&
-			m_pos.y + m_Size.y > pPos->y &&
-			m_pos.y - m_Size.y < pPos->y + Size.y
-			)
-		{
-			if (m_move.z >= 0.0f)
-			{
-				pPos->z = pPosOld.z - Size.z + Size.z + m_move.z;
-			}
-			else
-			{
-				pPos->z = m_pos.z + m_Size.z + Size.z + m_move.z;
-			}
-			pMove->z = 0.0f;
-		}
-
-		//－から＋の面
-		if (m_pos.z - m_Size.z < pPos->z + Size.z &&
-			(m_posOld.z - m_Size.z >= pPos->z + Size.z ||
-			m_pos.z - m_Size.z >= pPosOld.z + Size.z ||
-			(m_pos.z - m_Size.z <= pPosOld.z + Size.z &&
-			m_posOld.z - m_Size.z >= pPosOld.z + Size.z &&
-			m_posOld.z - m_Size.z <= pPos->z + Size.z)) &&
-			m_pos.x + m_Size.x > pPos->x - Size.x &&
-			m_pos.x - m_Size.x < pPos->x + Size.x &&
-			m_pos.y + m_Size.y > pPos->y &&
-			m_pos.y - m_Size.y < pPos->y + Size.y
-			)
-		{
-			if (m_move.z <= 0.0f)
-			{
-				pPos->z = pPosOld.z + Size.z - Size.z + m_move.z;
-			}
-			else
-			{
-				pPos->z = m_pos.z - m_Size.z - Size.z + m_move.z;
-			}
-			pMove->z = 0.0f;
-		}
-
-		break;
-	}
-
-	return false;
 }

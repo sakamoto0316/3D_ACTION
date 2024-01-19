@@ -51,7 +51,6 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 	m_nAttackChainFrame = 0;
 	m_nDodgeCount = 0;
 	m_nDodgeCoolTime = 0;
-	m_bRight = true;
 	m_State = STATE_NORMAL;
 	m_nStateCount = 0;
 	m_ReSpownPos = INITVECTOR3;
@@ -61,6 +60,7 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 	m_fLifeMax = m_fLife;
 	m_pMeshCubeSample = nullptr;
 	m_AtkPos = INITVECTOR3;
+	m_bRight = true;
 }
 
 //====================================================================
@@ -176,11 +176,29 @@ void CPlayer::Update(void)
 				m_bJump = true;
 			}
 		}
-		//移動処理
-		Move();
 
-		//移動方向処理
-		Rot();
+		if (CManager::GetInstance()->GetCamera()->GetCameraMode() == CCamera::CAMERAMODE_2D)
+		{
+			//移動処理
+			Move2D();
+
+			//移動方向処理
+			Rot2D();
+
+			//回避処理
+			Dodge2D();
+		}
+		else
+		{
+			//移動処理
+			Move();
+
+			//移動方向処理
+			Rot();
+
+			//回避処理
+			Dodge();
+		}
 
 		//攻撃処理
 		Attack();
@@ -192,9 +210,6 @@ void CPlayer::Update(void)
 
 		//ジャンプ処理
 		Jump();
-
-		//回避処理
-		Dodge();
 
 		//行動不能時間のカウント
 		m_nActionNotCount--;
@@ -245,6 +260,8 @@ void CPlayer::Update(void)
 
 		CollisionBlock(&m_pos, COLLISION::COLLISION_Z);
 
+		CollisionDamageCube(m_pos);
+
 		//画面外判定
 		if (m_pos.y < 0.0f)
 		{
@@ -254,8 +271,6 @@ void CPlayer::Update(void)
 			m_bJump = false;
 		}
 	}
-
-	D3DXMATRIX mtxTrans;	//計算用マトリックス
 
 	//モーションの管理
 	ActionState();
@@ -297,6 +312,168 @@ void CPlayer::StateManager(void)
 	if (m_nStateCount > 0)
 	{
 		m_nStateCount--;
+	}
+}
+
+//====================================================================
+//移動処理
+//====================================================================
+void CPlayer::Move2D(void)
+{
+	//キーボードの取得
+	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
+	D3DXVECTOR3 CameraRot = CManager::GetInstance()->GetCamera()->GetRot();
+
+	D3DXVECTOR3 NormarizeMove = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	//キーボードの移動処理
+	if (pInputKeyboard->GetPress(DIK_A) == true)
+	{
+		NormarizeMove.x += -1.0f * cosf(CameraRot.y) * PLAYER_SPEED;
+
+	}
+	if (pInputKeyboard->GetPress(DIK_D) == true)
+	{
+		NormarizeMove.x += 1.0f * cosf(CameraRot.y) * PLAYER_SPEED;
+	}
+
+	if (pInputKeyboard->GetPress(DIK_A) == false && pInputKeyboard->GetPress(DIK_D) == false)
+	{
+		//左スティックによる左右移動
+		m_move.x += pInputJoypad->Get_Stick_Left(0).x * cosf(CameraRot.y) * PLAYER_SPEED;
+	}
+
+	if (pInputKeyboard->GetPress(DIK_A) == true || pInputKeyboard->GetPress(DIK_D) == true)
+	{
+		float JunpPawer = NormarizeMove.y;
+		NormarizeMove.y = 0.0f;
+
+		D3DXVec3Normalize(&NormarizeMove, &NormarizeMove);
+
+		NormarizeMove.x *= PLAYER_SPEED;
+		NormarizeMove.y = JunpPawer;
+		NormarizeMove.z *= PLAYER_SPEED;
+	}
+
+	m_move += NormarizeMove;
+
+}
+
+//====================================================================
+//移動方向処理
+//====================================================================
+void CPlayer::Rot2D(void)
+{
+	//キーボードの取得
+	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
+	D3DXVECTOR3 CameraRot = CManager::GetInstance()->GetCamera()->GetRot();
+
+	//移動方向に向きを合わせる処理
+	float fRotMove, fRotDest, fRotDiff;
+
+	fRotMove = m_rot.y;
+	fRotDest = CManager::GetInstance()->GetCamera()->GetRot().y;
+
+	if (pInputKeyboard->GetPress(DIK_D) == true || pInputJoypad->Get_Stick_Left(0).x > 0.1f)
+	{
+		fRotMove = atan2f(sinf(m_rot.y), cosf(m_rot.y));
+		fRotDest = atan2f(sinf(CameraRot.y), cosf(CameraRot.y)) + D3DX_PI * -0.5f;
+	}
+	else if (pInputKeyboard->GetPress(DIK_A) == true || pInputJoypad->Get_Stick_Left(0).x < -0.1f)
+	{
+		fRotMove = atan2f(sinf(m_rot.y), cosf(m_rot.y));
+		fRotDest = atan2f(sinf(CameraRot.y), cosf(CameraRot.y)) + D3DX_PI * 0.5f;
+	}
+
+	fRotDiff = fRotDest - fRotMove;
+
+	if (fRotDiff > D3DX_PI * 1.0f)
+	{
+		fRotDiff -= D3DX_PI * 2.0f;
+	}
+	else if (fRotDiff < -D3DX_PI * 1.0f)
+	{
+		fRotDiff += D3DX_PI * 2.0f;
+	}
+
+	fRotMove += fRotDiff * PLAYER_ROT_SPEED;
+
+	if (fRotMove > D3DX_PI * 1.0f)
+	{
+		fRotMove -= D3DX_PI * 2.0f;
+	}
+	else if (fRotMove < -D3DX_PI * 1.0f)
+	{
+		fRotMove += D3DX_PI * 2.0f;
+	}
+
+	if (m_nAttackChainFrame <= 0 && m_nAttackCount <= 0)
+	{
+		if (pInputKeyboard->GetPress(DIK_A) == true || pInputKeyboard->GetPress(DIK_D) == true || pInputJoypad->Get_Stick_Left(0).x != 0.0f)
+		{
+			m_rot.y = fRotMove;
+		}
+	}
+
+	if (m_move.x > 0.1f)
+	{
+		m_bRight = true;
+	}
+	else if (m_move.x < -0.1f)
+	{
+		m_bRight = false;
+	}
+}
+
+//====================================================================
+//回避処理
+//====================================================================
+void CPlayer::Dodge2D(void)
+{
+	//キーボードの取得
+	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
+
+	if (
+		(pInputKeyboard->GetTrigger(DIK_N) == true ||
+			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_R, 0) == true) &&
+		m_nDodgeCoolTime <= 0
+		)
+	{
+		m_nDodgeCount = 8;
+		m_nDodgeCoolTime = 10;
+	}
+
+	if (m_nDodgeCount > 0)
+	{
+		if (m_nDodgeCount % 2 == 0)
+		{
+			CPlayerEffect* pPlayerEffect = CPlayerEffect::Create();
+			pPlayerEffect->SetPos(m_pos);
+			pPlayerEffect->SetRot(m_rot);
+			pPlayerEffect->SetAllPose(m_pMotion->GetType(), m_pMotion->GetKey(), m_pMotion->GetCounter());
+		}
+
+		if (m_bRight == true)
+		{
+			m_move.x = 60.0f;
+		}
+		else
+		{
+			m_move.x = -60.0f;
+		}
+		m_move.y = 0.0f;
+
+		m_nDodgeCount--;
+	}
+	else
+	{
+		if (m_nDodgeCoolTime > 0)
+		{
+			m_nDodgeCoolTime--;
+		}
 	}
 }
 
@@ -516,6 +693,52 @@ void CPlayer::Rot(void)
 }
 
 //====================================================================
+//回避処理
+//====================================================================
+void CPlayer::Dodge(void)
+{
+	//キーボードの取得
+	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
+	CInputMouse* pInputMouse = CManager::GetInstance()->GetInputMouse();
+
+	if (
+		(pInputKeyboard->GetTrigger(DIK_N) == true ||
+			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_R, 0) == true || 
+			pInputMouse->GetTrigger(CInputMouse::PUSH_RIGHT) == true) &&
+		m_nDodgeCoolTime <= 0
+		)
+	{
+		m_nDodgeCount = 8;
+		m_nDodgeCoolTime = 10;
+	}
+
+	if (m_nDodgeCount > 0)
+	{
+		if (m_nDodgeCount % 2 == 0)
+		{
+			CPlayerEffect* pPlayerEffect = CPlayerEffect::Create();
+			pPlayerEffect->SetPos(m_pos);
+			pPlayerEffect->SetRot(m_rot);
+			pPlayerEffect->SetAllPose(m_pMotion->GetType(), m_pMotion->GetKey(), m_pMotion->GetCounter());
+		}
+
+		m_move.x = sinf(m_rot.y + D3DX_PI) * 60.0f;
+		m_move.z = cosf(m_rot.y + D3DX_PI) * 60.0f;
+		m_move.y = 0.0f;
+
+		m_nDodgeCount--;
+	}
+	else
+	{
+		if (m_nDodgeCoolTime > 0)
+		{
+			m_nDodgeCoolTime--;
+		}
+	}
+}
+
+//====================================================================
 //ジャンプ処理
 //====================================================================
 void CPlayer::Jump(void)
@@ -549,10 +772,12 @@ void CPlayer::Attack(void)
 	//キーボードの取得
 	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
+	CInputMouse* pInputMouse = CManager::GetInstance()->GetInputMouse();
 
 	if (
 		(pInputKeyboard->GetTrigger(DIK_RETURN) == true ||
-			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_B, 0) == true) &&
+			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_B, 0) == true ||
+			pInputMouse->GetTrigger(CInputMouse::PUSH_LEFT) == true) &&
 		m_nAttackCount <= 0
 		)
 	{//攻撃中じゃない時にジャンプボタンを押したとき
@@ -748,53 +973,9 @@ bool CPlayer::CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusO
 }
 
 //====================================================================
-//回避処理
-//====================================================================
-void CPlayer::Dodge(void)
-{
-	//キーボードの取得
-	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
-
-	if (
-		(pInputKeyboard->GetTrigger(DIK_N) == true ||
-			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_R, 0) == true) &&
-		m_nDodgeCoolTime <= 0
-		)
-	{
-		m_nDodgeCount = 8;
-		m_nDodgeCoolTime = 10;
-	}
-
-	if (m_nDodgeCount > 0)
-	{
-		if (m_nDodgeCount % 2 == 0)
-		{
-			CPlayerEffect* pPlayerEffect = CPlayerEffect::Create();
-			pPlayerEffect->SetPos(m_pos);
-			pPlayerEffect->SetRot(m_rot);
-			pPlayerEffect->SetAllPose(m_pMotion->GetType(), m_pMotion->GetKey(), m_pMotion->GetCounter());
-		}
-
-		m_move.x = sinf(m_rot.y + D3DX_PI) * 60.0f;
-		m_move.z = cosf(m_rot.y + D3DX_PI) * 60.0f;
-		m_move.y = 0.0f;
-
-		m_nDodgeCount--;
-	}
-	else
-	{
-		if (m_nDodgeCoolTime > 0)
-		{
-			m_nDodgeCoolTime--;
-		}
-	}
-}
-
-//====================================================================
 //攻撃を受けた時の処理
 //====================================================================
-void CPlayer::HitDamage(void)
+void CPlayer::HitDamage(float Damage)
 {
 	if (m_State == STATE_NORMAL)
 	{
@@ -888,7 +1069,7 @@ bool CPlayer::CollisionBlock(D3DXVECTOR3* pos, COLLISION XYZ)
 
 			if (m_State != STATE_WAIT)
 			{
-				if (type == TYPE_BLOCK)
+				if (type == TYPE_CUBEBLOCK)
 				{//種類がブロックの時
 
 					if (pObj->CollisionBlock(pos, m_posOld, &m_move, &m_Objmove, COLLISION_SIZE * 0.5f, &m_bJump, XYZ) == true)
@@ -902,6 +1083,45 @@ bool CPlayer::CollisionBlock(D3DXVECTOR3* pos, COLLISION XYZ)
 
 					if (m_bHit == true)
 					{
+						return true;
+					}
+				}
+			}
+
+			pObj = pObjNext;
+		}
+	}
+
+	return false;
+}
+
+//====================================================================
+//オブジェクトとの当たり判定処理
+//====================================================================
+bool CPlayer::CollisionDamageCube(D3DXVECTOR3 pos)
+{
+	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	{
+		//オブジェクトを取得
+		CObject* pObj = CObject::GetTop(nCntPriority);
+
+		while (pObj != NULL)
+		{
+			CObject* pObjNext = pObj->GetNext();
+
+			CObject::TYPE type = pObj->GetType();			//種類を取得
+
+			if (m_State != STATE_WAIT)
+			{
+				if (type == TYPE_CUBEDAMEGE)
+				{//種類がブロックの時
+
+					float fDamage = 0.0f;
+
+					if (pObj->CollisionDamageBlock(pos, COLLISION_SIZE, &fDamage) == true)
+					{
+						HitDamage(fDamage);
+
 						return true;
 					}
 				}

@@ -127,4 +127,41 @@ private:
 	XINPUT_VIBRATION m_vibration[MAX_PLAYER];
 };
 
+//マウスのクラス宣言
+class CInputMouse :public CInput
+{
+public:
+
+	//列挙型定義
+	typedef enum
+	{
+		PUSH_LEFT = 0,
+		PUSH_RIGHT,
+		PUSH_WHEEL,
+		PUSH_SIDE_1,
+		PUSH_SIDE_2,
+		PUSH_MAX,
+	}MOUSE_PUSH;
+
+	CInputMouse();
+	~CInputMouse();
+
+	HRESULT Init(HINSTANCE hInstance, HWND hWnd);
+	void Uninit(void);
+	void Update(void);
+	bool GetPress(MOUSE_PUSH nKey);
+	bool GetTrigger(MOUSE_PUSH nKey);
+	bool GetRerease(MOUSE_PUSH nKey);
+	D3DXVECTOR3 GetMouseMove(void);
+
+private:
+	LPDIRECTINPUTDEVICE8 m_pDevMouse = NULL;	//入力デバイスへのポインタ
+	DIMOUSESTATE2 m_MouseState;				//全入力情報の保管
+	DIMOUSESTATE2 m_MouseStateTrigger;		//トリガー情報
+	DIMOUSESTATE2 m_MouseStateRerease;		//リリース情報
+	DIMOUSESTATE2 m_MouseStateRepeat;			//リピート情報
+	BYTE m_aOldState[8];						//前回の入力情報を保存
+
+};
+
 #endif

@@ -155,6 +155,8 @@
   <ItemGroup>
     <ClCompile Include="boss.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="CubeBlock.cpp" />
+    <ClCompile Include="CubeDamage.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="fade.cpp" />
@@ -197,6 +199,8 @@
   <ItemGroup>
     <ClInclude Include="boss.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="CubeBlock.h" />
+    <ClInclude Include="CubeDamage.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="fade.h" />

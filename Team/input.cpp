@@ -10,6 +10,7 @@
 #define GAMEPAD_TRIGGER_DEADZONE (100)	//トリガーのデッドゾーン
 #define TRIGGER_MAX (255)	//トリガーのマックス
 #define NUM_KEY_MAX (256)	//キーの最大数
+#define MOUSE_SENS (0.1f) //マウス感度の補正
 
 //静的メンバ変数宣言
 LPDIRECTINPUT8 CInput::m_pInput = NULL;
@@ -427,4 +428,148 @@ bool CInputJoypad::Get_LStick_Trigger(JOYPAD_LSTICK Type, int nPlayer)
 	}
 
 	return Output;
+}
+
+//マウス---------------------------------------------------------------------------------------
+//====================================================================
+//コンストラクタ
+//====================================================================
+CInputMouse::CInputMouse()
+{
+
+}
+
+//====================================================================
+//デストラクタ
+//====================================================================
+CInputMouse::~CInputMouse()
+{
+
+}
+
+//====================================================================
+//初期化処理
+//====================================================================
+HRESULT CInputMouse::Init(HINSTANCE hInstance, HWND hWnd)
+{
+	CInput::Init(hInstance, hWnd);
+
+	//入力デバイスの設定
+	if (FAILED(m_pInput->CreateDevice(GUID_SysMouse, &m_pDevMouse, NULL)))
+	{
+		return E_FAIL;
+	}
+
+	//データフォーマットを設定
+	if (FAILED(m_pDevMouse->SetDataFormat(&c_dfDIMouse2)))
+	{
+		return E_FAIL;
+	}
+
+	//協調モードを設定
+	if (FAILED(m_pDevMouse->SetCooperativeLevel
+	(
+		hWnd,
+		(DISCL_FOREGROUND | DISCL_NONEXCLUSIVE)
+	)))
+	{
+		return E_FAIL;
+	}
+
+	// デバイスの設定
+	DIPROPDWORD diprop;
+	diprop.diph.dwSize = sizeof(diprop);
+	diprop.diph.dwHeaderSize = sizeof(diprop.diph);
+	diprop.diph.dwObj = 0;
+	diprop.diph.dwHow = DIPH_DEVICE;
+	diprop.dwData = DIPROPAXISMODE_REL; //相対値モードで設定（絶対値はDIPROPAXISMODE_ABS）
+
+	if (FAILED(m_pDevMouse->SetProperty(DIPROP_AXISMODE, &diprop.diph)))
+	{
+		// デバイスの設定に失敗
+		return E_FAIL;
+	}
+
+	//マウスへのアクセス権を取得
+	m_pDevMouse->Acquire();
+
+	//マウスカーソルの消去
+	ShowCursor(false);
+
+	return S_OK;
+
+	return S_OK;
+}
+
+//====================================================================
+//終了処理
+//====================================================================
+void CInputMouse::Uninit(void)
+{
+	//入力デバイス(マウス)の破棄
+	if (m_pDevMouse != NULL)
+	{
+		m_pDevMouse->Unacquire();
+		m_pDevMouse->Release();
+		m_pDevMouse = NULL;
+	}
+
+	CInput::Uninit();
+}
+
+//====================================================================
+//更新処理
+//====================================================================
+void CInputMouse::Update(void)
+{
+	DIMOUSESTATE2 mouse; //マウスの入力情報
+
+	//入力デバイスからデータを取得
+	if (SUCCEEDED(m_pDevMouse->GetDeviceState(sizeof(mouse), &mouse)))
+	{
+		for (int nCnt = 0; nCnt < 8; nCnt++)
+		{
+			m_MouseStateRerease.rgbButtons[nCnt] = ~mouse.rgbButtons[nCnt] & ((m_MouseState.rgbButtons[nCnt] ^ mouse.rgbButtons[nCnt]) & m_MouseState.rgbButtons[nCnt]); //キーボードのリリース情報を保存
+			m_MouseStateTrigger.rgbButtons[nCnt] = (m_MouseState.rgbButtons[nCnt] ^ mouse.rgbButtons[nCnt]) & mouse.rgbButtons[nCnt];
+		}
+
+		//入力情報の保存
+		m_MouseState = mouse;
+	}
+	else
+	{
+		m_pDevMouse->Acquire(); //マウスへのアクセス権
+	}
+}
+
+//====================================================================
+//キーボードのプレス情報を所得
+//====================================================================
+bool CInputMouse::GetPress(MOUSE_PUSH nKey)
+{
+	return (m_MouseState.rgbButtons[nKey] & 0x80) ? true : false;
+}
+
+//====================================================================
+//キーボードのトリガー情報を所得
+//====================================================================
+bool CInputMouse::GetTrigger(MOUSE_PUSH nKey)
+{
+	return (m_MouseStateTrigger.rgbButtons[nKey] & 0x80) ? true : false;
+}
+
+//====================================================================
+//キーボードのリリース情報を所得
+//====================================================================
+bool CInputMouse::GetRerease(MOUSE_PUSH nKey)
+{
+	return (m_MouseStateRerease.rgbButtons[nKey] & 0x80) ? true : false;
+}
+
+//==========================================
+//  マウスの移動量
+//==========================================
+D3DXVECTOR3 CInputMouse::GetMouseMove(void)
+{
+	return D3DXVECTOR3(((float)m_MouseState.lX) * MOUSE_SENS, ((float)m_MouseState.lY) * MOUSE_SENS, 0.0f);
 }

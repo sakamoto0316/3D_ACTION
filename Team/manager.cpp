@@ -47,6 +47,7 @@ CManager::CManager()
 	m_pDebugProc = NULL;
 	m_pInputKeyboard = NULL;
 	m_pInputJoyPad = NULL;
+	m_pInputMouse = NULL;
 	m_pCamera = NULL;
 	m_pLight = NULL;
 	m_pTexture = NULL;
@@ -122,15 +123,30 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		//キーボードの生成
 		m_pInputKeyboard = new CInputKeyboard;
 	}
+	//キーボードの初期化処理
+	if (FAILED(m_pInputKeyboard->Init(hInstance, hWnd)))
+	{//初期化処理が失敗した場合
+		return E_FAIL;
+	}
 
 	if (m_pInputJoyPad == NULL)
 	{
 		//ジョイパッドの生成
 		m_pInputJoyPad = new CInputJoypad;
 	}
+	//ジョイパッドの初期化処理
+	if (FAILED(m_pInputJoyPad->Init(hInstance, hWnd)))
+	{//初期化処理が失敗した場合
+		return E_FAIL;
+	}
 
+	if (m_pInputMouse == NULL)
+	{
+		//マウスの生成
+		m_pInputMouse = new CInputMouse;
+	}
 	//キーボードの初期化処理
-	if (FAILED(m_pInputKeyboard->Init(hInstance, hWnd)))
+	if (FAILED(m_pInputMouse->Init(hInstance, hWnd)))
 	{//初期化処理が失敗した場合
 		return E_FAIL;
 	}
@@ -269,6 +285,15 @@ void CManager::Uninit(void)
 		m_pCamera = NULL;
 	}
 
+	if (m_pInputMouse != NULL)
+	{
+		//ジョイパッドの終了処理
+		m_pInputMouse->Uninit();
+
+		delete m_pInputMouse;
+		m_pInputMouse = NULL;
+	}
+
 	if (m_pInputJoyPad != NULL)
 	{
 		//ジョイパッドの終了処理
@@ -331,6 +356,9 @@ void CManager::Update(void)
 
 	//ジョイパッドの更新処理
 	m_pInputJoyPad->Update();
+
+	//マウスの更新処理
+	m_pInputMouse->Update();
 
 	//デバッグ表示の更新処理
 	m_pDebugProc->Update();

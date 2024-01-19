@@ -74,6 +74,9 @@ void CCamera::Update(void)
 {
 	//キーボードの取得
 	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	//マウスの取得
+	CInputMouse* pInputMouse = CManager::GetInstance()->GetInputMouse();
+
 	//プレイヤーの取得
 	CPlayer* pPlayer = CGame::GetPlayer();
 
@@ -240,6 +243,10 @@ void CCamera::Update(void)
 			{
 				m_rot.x -= CAMERA_VR_SPEED;
 			}
+
+			//右スティックの上下視点移動入力
+			m_rot.x -= pInputMouse->GetMouseMove().y * CAMERA_VR_SPEED;
+
 		}
 
 		if (fabsf(m_rot.x) > fabsf(D3DX_PI * 0.4f))
@@ -257,6 +264,10 @@ void CCamera::Update(void)
 		{
 			m_rot.y += CAMERA_VR_SPEED;
 		}
+
+		//右スティックの左右視点移動入力
+		m_rot.y += pInputMouse->GetMouseMove().x * CAMERA_VR_SPEED;
+
 
 		//一周した時の向きの補正
 		if (m_rot.y > D3DX_PI * 1.0f)

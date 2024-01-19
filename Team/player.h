@@ -67,18 +67,22 @@ public:
 	D3DXVECTOR3 GetReSpownPos(void) { return m_ReSpownPos; }
 	STATE GetState(void) { return m_State; }
 	bool GetJump(void) { return m_bJump; }
-	void HitDamage(void);								//攻撃を受けた時の処理
+	void HitDamage(float Damage);								//攻撃を受けた時の処理
 
 private:
 	void StateManager(void);							//状態管理
+	void Move2D(void);									//移動処理
+	void Rot2D(void);									//移動方向処理
+	void Dodge2D(void);									//回避処理
 	void Move(void);									//移動処理
 	void Rot(void);										//移動方向処理
 	void Jump(void);									//ジャンプ処理
+	void Dodge(void);									//回避処理
 	void Attack(void);									//攻撃処理
 	void AttackCollision(void);							//攻撃判定処理
-	void Dodge(void);									//回避処理
 	void ActionState(void);								//モーションと状態の管理
-	bool CollisionBlock(D3DXVECTOR3 *pos, COLLISION XYZ);	//オブジェクトとの当たり判定
+	bool CollisionBlock(D3DXVECTOR3* pos, COLLISION XYZ);	//オブジェクトとの当たり判定
+	bool CollisionDamageCube(D3DXVECTOR3 pos);				//オブジェクトとの当たり判定
 	void CollisionBoss(void);							//ボスとの当たり判定
 	void DeleteMap(void);								//マップの削除
 	bool CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut);	//円の当たり判定
@@ -94,7 +98,6 @@ private:
 	D3DXVECTOR3 m_AtkPos;		//攻撃位置
 	D3DXMATRIX m_mtxWorld;		//ワールドマトリックス
 	bool m_bWallJump;			//壁生成ジャンプ
-	bool m_bRight;				//右向きか
 	bool m_bAirAttack;			//空中で攻撃をしたかどうか
 	bool m_bJump;				//ジャンプをしたかどうか
 	int m_nActionCount;			//状態のカウント
@@ -113,6 +116,7 @@ private:
 	int m_nStateCount;			//状態管理用カウント
 	bool m_bHit;				//攻撃をくらったかどうか
 	bool m_GameEnd;				//ゲームが終わったかどうか
+	bool m_bRight;				//2D画面の際に最後に入力した方向が右かどうか
 	float m_fLife;				//プレイヤーのライフ
 	float m_fLifeMax;			//プレイヤーのライフの最大値
 	CObjGauge2D *m_pLifeGauge;	//ライフゲージのポインタ

@@ -57,6 +57,8 @@ public:
 		TYPE_MAPCHECKPOINT,
 		TYPE_PLAYEREFFECT,
 		TYPE_BOSS,
+		TYPE_CUBEBLOCK,
+		TYPE_CUBEDAMEGE,
 		TYPE_MAX,
 	}TYPE;
 
@@ -104,6 +106,7 @@ public:
 	virtual bool CollisionPlayer(D3DXVECTOR3* pPos, D3DXVECTOR3 pPosOld, D3DXVECTOR3* pMove, float fHeight, float fWidth, bool* bJumpMove, bool* bHit, bool b_Jamp) { return false; }
 	virtual bool CollisionBlock(D3DXVECTOR3* pPos, D3DXVECTOR3 pPosOld, D3DXVECTOR3* pMove, D3DXVECTOR3* pObjMove, D3DXVECTOR3 Size, bool* bJump, COLLISION XYZ) { return false; }
 	virtual bool Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 pPosOld, D3DXVECTOR3 *pMove, float fHeight, float fWidth, bool *bJumpMove, bool *bHit, bool b_Jamp) { return false; }
+	virtual bool CollisionDamageBlock(D3DXVECTOR3 pPos, D3DXVECTOR3 Size, float* Damage) { return false; }
 	virtual void SetNULL(void) {}
 
 protected:

@@ -24,7 +24,7 @@ class CObjmeshField;
 class CObjmeshWall;
 class CObjmeshCylinder;
 class CObjmeshDome;
-class CObjmeshCube;
+class CCubeBlock;
 class CPause;
 class CScore;
 class CTime;
@@ -66,7 +66,7 @@ private:
 	static CObjmeshWall* m_pMeshWallSample;//メッシュウォールのサンプル
 	static CObjmeshCylinder* m_pMeshCylinderSample;//メッシュシリンダーのサンプル
 	static CObjmeshDome* m_pMeshDomeSample;//メッシュドームのサンプル
-	static CObjmeshCube* m_pMeshCubeSample;//メッシュキューブのサンプル
+	static CCubeBlock* m_pCubeBlock;		//キューブブロック
 	static CBoss* m_pBoss;					//ボス
 };
 #endif

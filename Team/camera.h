@@ -38,6 +38,7 @@ public:
 	void SetBib(bool Set) { m_bBib = Set; }
 	float GetPosY(void) { return m_posR.y; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
+	CAMERAMODE GetCameraMode(void) { return CameraMode; }
 
 private:
 	D3DXMATRIX m_mtxView;		//ビューマトリックス
