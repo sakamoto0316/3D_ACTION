@@ -26,6 +26,7 @@ public:
 	D3DMATRIX GetMtxWorld(void) { return m_mtxWorld; }
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
+	D3DXVECTOR3 GetWorldPos(void) { return m_WorldPos; }
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	void SetStartPos(D3DXVECTOR3 pos) { m_Startpos = pos; }
@@ -51,6 +52,7 @@ private:
 	D3DXVECTOR3 m_pos;				//位置
 	D3DXVECTOR3 m_rot;				//向き
 	D3DXMATRIX m_mtxWorld;			//ワールドマトリックス
+	D3DXVECTOR3 m_WorldPos;			//ワールド座標
 	CModel *m_pParent;				//親モデルへのポインタ
 	D3DCOLORVALUE m_Color;			//色
 	bool m_bColorChange;			//色を変更するかどうか

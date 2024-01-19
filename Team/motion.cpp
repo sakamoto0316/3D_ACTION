@@ -151,6 +151,7 @@ void CMotion::Update(void)
 				m_ppModel[nCntModel]->GetStartRot().z + m_aInfo[m_nType].aKeyInfo[m_nKey].aKey[nCntModel].fRotZ + ROTZ * ((float)m_Counter / (float)m_aInfo[m_nType].aKeyInfo[m_nKey].nFrame)
 			));
 		}
+
 		m_Counter++;
 		if (m_Counter >= m_aInfo[m_nType].aKeyInfo[m_nKey].nFrame)
 		{

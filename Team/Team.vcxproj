@@ -172,6 +172,7 @@
     <ClCompile Include="objectBillboard.cpp" />
     <ClCompile Include="objectX.cpp" />
     <ClCompile Include="objectXtex.cpp" />
+    <ClCompile Include="objGauge2D.cpp" />
     <ClCompile Include="objmeshCube.cpp" />
     <ClCompile Include="objmeshCylinder.cpp" />
     <ClCompile Include="objmeshDome.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="objectBillboard.h" />
     <ClInclude Include="objectX.h" />
     <ClInclude Include="objectXtex.h" />
+    <ClInclude Include="objGauge2D.h" />
     <ClInclude Include="objmeshCube.h" />
     <ClInclude Include="objmeshCylinder.h" />
     <ClInclude Include="objmeshDome.h" />

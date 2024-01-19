@@ -12,6 +12,8 @@
 //前方宣言
 class CModel;
 class CMotion;
+class CObjGauge2D;
+class CObjmeshCube;
 
 //オブジェクトプレイヤークラス
 class CPlayer : public CObject
@@ -73,11 +75,13 @@ private:
 	void Rot(void);										//移動方向処理
 	void Jump(void);									//ジャンプ処理
 	void Attack(void);									//攻撃処理
+	void AttackCollision(void);							//攻撃判定処理
 	void Dodge(void);									//回避処理
 	void ActionState(void);								//モーションと状態の管理
 	bool CollisionBlock(D3DXVECTOR3 *pos, COLLISION XYZ);	//オブジェクトとの当たり判定
 	void CollisionBoss(void);							//ボスとの当たり判定
 	void DeleteMap(void);								//マップの削除
+	bool CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut);	//円の当たり判定
 	
 	ACTION_TYPE m_Action;
 	ACTION_TYPE m_AtkAction;	//攻撃状態記録用変数
@@ -87,13 +91,17 @@ private:
 	D3DXVECTOR3 m_move;			//移動量
 	D3DXVECTOR3 m_Objmove;		//オブジェクトから影響される移動量
 	D3DXVECTOR3 m_rot;			//向き
+	D3DXVECTOR3 m_AtkPos;		//攻撃位置
 	D3DXMATRIX m_mtxWorld;		//ワールドマトリックス
 	bool m_bWallJump;			//壁生成ジャンプ
 	bool m_bRight;				//右向きか
 	bool m_bAirAttack;			//空中で攻撃をしたかどうか
 	bool m_bJump;				//ジャンプをしたかどうか
 	int m_nActionCount;			//状態のカウント
+	bool m_nAttackHit;			//攻撃が当たったかどうか
+	float m_nAttackDamage;		//攻撃力
 	int m_nAttackCount;			//攻撃のカウント
+	int m_nAttackCountMax;		//攻撃のカウント最大
 	int m_nDodgeCount;			//回避のカウント
 	int m_nDodgeCoolTime;		//回避のクールタイム
 	int m_nAttackChainFrame;	//連続攻撃の猶予フレーム
@@ -105,6 +113,10 @@ private:
 	int m_nStateCount;			//状態管理用カウント
 	bool m_bHit;				//攻撃をくらったかどうか
 	bool m_GameEnd;				//ゲームが終わったかどうか
+	float m_fLife;				//プレイヤーのライフ
+	float m_fLifeMax;			//プレイヤーのライフの最大値
+	CObjGauge2D *m_pLifeGauge;	//ライフゲージのポインタ
+	CObjmeshCube* m_pMeshCubeSample;//メッシュキューブのサンプル
 
 	CModel *m_apModel[64];
 	CMotion *m_pMotion;

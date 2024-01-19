@@ -93,7 +93,7 @@ public:
 	TYPE GetType(void) { return m_type; }
 	virtual D3DXVECTOR3 GetPos(void) { return D3DXVECTOR3(0.0f, 0.0f, 0.0f); }
 	virtual D3DXVECTOR3 GetPosOld(void) { return D3DXVECTOR3(0.0f, 0.0f, 0.0f); }
-	virtual void HitDamage(void) {}
+	virtual void HitDamage(float Damage) {}
 	virtual void Hit(D3DXVECTOR3 pos, int Damage) {}
 	virtual int GetLife(void) { return 0; }
 	virtual float GetWight(void) { return 0.0f; }

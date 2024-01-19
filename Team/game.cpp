@@ -102,20 +102,21 @@ HRESULT CGame::Init(void)
 
 	m_pMeshCubeSample = CObjmeshCube::Create();
 	m_pMeshCubeSample->SetPos(D3DXVECTOR3(0.0f, 100.0f, 0.0f));
+	m_pMeshCubeSample->SetSize(D3DXVECTOR3(400.0f, 10.0f, 400.0f));
+	m_pMeshCubeSample->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+
+	m_pMeshCubeSample = CObjmeshCube::Create();
+	m_pMeshCubeSample->SetPos(D3DXVECTOR3(150.0f, 250.0f, -150.0f));
 	m_pMeshCubeSample->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
 	m_pMeshCubeSample->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	m_pMeshCubeSample = CObjmeshCube::Create();
-	m_pMeshCubeSample->SetPos(D3DXVECTOR3(100.0f, 200.0f, 0.0f));
-	m_pMeshCubeSample->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
-	m_pMeshCubeSample->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-
-	m_pMeshCubeSample = CObjmeshCube::Create();
-	m_pMeshCubeSample->SetPos(D3DXVECTOR3(0.0f, 300.0f, 100.0f));
+	m_pMeshCubeSample->SetPos(D3DXVECTOR3(-150.0f, 250.0f, 150.0f));
 	m_pMeshCubeSample->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
 	m_pMeshCubeSample->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	m_pPlayer = CPlayer::Create();
+	m_pPlayer->SetPos(D3DXVECTOR3(0.0f, 150.0f, 0.0f));
 
 	m_pBoss = CBoss::Create("data\\MODEL\\boss.x");
 	m_pBoss->SetPos(D3DXVECTOR3(100.0f, 300.0f, 100.0f));

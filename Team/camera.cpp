@@ -21,8 +21,8 @@
 #define POS_HOMING (0.9f)		//位置への追従スピード
 #define DOWNVIEW_POSV (D3DXVECTOR3(0.0f, 1000.0f, -5.0f))	//見下ろしの視点
 #define DOWNVIEW_POSR (D3DXVECTOR3(0.0f, 0.0f, 0.0f))		//見下ろしの注視点
-#define SIDEVIEW_POSV (D3DXVECTOR3(0.0f, 100.0f, -1000.0f))	//見下ろしの視点
-#define SIDEVIEW_POSR (D3DXVECTOR3(0.0f, 0.0f, 0.0f))		//見下ろしの注視点
+#define SIDEVIEW_POSV (D3DXVECTOR3(0.0f, 200.0f, -1000.0f))	//2Dの視点
+#define SIDEVIEW_POSR (D3DXVECTOR3(0.0f, 200.0f, 0.0f))		//2Dの注視点
 
 //====================================================================
 //コンストラクタ

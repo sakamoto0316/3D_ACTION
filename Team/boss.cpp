@@ -12,11 +12,13 @@
 #include "XModel.h"
 #include "player.h"
 #include "Particle.h"
+#include "objGauge2D.h"
 
 //マクロ定義
 #define BLOCK_WIGHT (300.0f)		//横幅
 #define BLOCK_HEIGHT (300.0f)		//縦幅
 #define WALL_UPEND (20.0f)			//上昇位置
+#define BOSS_LIFE (300.0f)			//上昇位置
 
 //====================================================================
 //コンストラクタ
@@ -27,6 +29,8 @@ CBoss::CBoss(int nPriority) : CObjectX(nPriority)
 	m_CollisionPos = INITVECTOR3;
 	m_bCollision = false;
 	m_MoveCount = 0.0f;
+	m_fLife = BOSS_LIFE;
+	m_fLifeMax = m_fLife;
 }
 
 //====================================================================
@@ -68,6 +72,13 @@ HRESULT CBoss::Init(char* pModelName)
 
 	CObjectX::Init(pModelName);
 
+	m_pLifeGauge = CObjGauge2D::Create();
+	m_pLifeGauge->SetPos(D3DXVECTOR3(20.0f, 60.0f, 0.0f));
+	m_pLifeGauge->SetWight(800.0f);
+	m_pLifeGauge->SetHeight(50.0f);
+	m_pLifeGauge->SetColor(D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f));
+	m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
+
 	return S_OK;
 }
 
@@ -105,6 +116,15 @@ void CBoss::Update(void)
 void CBoss::Draw(void)
 {
 	CObjectX::Draw();
+}
+
+//====================================================================
+//ダメージ処理
+//====================================================================
+void CBoss::HitDamage(float Damage)
+{
+	m_fLife -= Damage;
+	m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
 }
 
 //====================================================================

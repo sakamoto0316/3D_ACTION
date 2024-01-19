@@ -69,7 +69,7 @@ private:
 	int m_nBlendType;			//モーションブレンド用の種類
 	int m_nBlendKey;			//モーションブレンド用のキーNo.
 	int m_nBlendCounter;		//モーションブレンド用のカウンター
-	int m_nBlendTime;		//モーションブレンドの時間
+	int m_nBlendTime;			//モーションブレンドの時間
 	int m_nBlendTimeMax;		//モーションブレンドの時間
 	bool m_bFinish;				//終了したかどうか
 

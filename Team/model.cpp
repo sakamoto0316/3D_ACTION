@@ -177,6 +177,8 @@ void CModel::Draw(void)
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
+	m_WorldPos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
+
 	//現在のマテリアルを所得
 	pDevice->GetMaterial(&matDef);
 

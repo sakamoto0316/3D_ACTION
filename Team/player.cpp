@@ -17,7 +17,10 @@
 #include "game.h"
 #include "time.h"
 #include "camera.h"
+#include "objGauge2D.h"
+#include "objmeshCube.h"
 
+#define PLAYER_LIFE (100.0f)		//プレイヤーの初期ライフ
 #define PLAYER_ROT_SPEED (0.2f)		//プレイヤーの回転スピード
 #define PLAYER_SPEED (10.0f)		//プレイヤーの速さ
 #define PLAYER_JAMPPOWER (15.0f)	//プレイヤーのジャンプ力
@@ -41,7 +44,10 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 	m_nActionCount = 0;
 	m_Action = ACTION_WAIT;
 	m_AtkAction = ACTION_WAIT;
+	m_nAttackHit = false;
+	m_nAttackDamage = 0.0f;
 	m_nAttackCount = 0;
+	m_nAttackCountMax = 0;
 	m_nAttackChainFrame = 0;
 	m_nDodgeCount = 0;
 	m_nDodgeCoolTime = 0;
@@ -50,6 +56,11 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 	m_nStateCount = 0;
 	m_ReSpownPos = INITVECTOR3;
 	m_GameEnd = false;
+	m_pLifeGauge = nullptr;
+	m_fLife = PLAYER_LIFE;
+	m_fLifeMax = m_fLife;
+	m_pMeshCubeSample = nullptr;
+	m_AtkPos = INITVECTOR3;
 }
 
 //====================================================================
@@ -101,6 +112,16 @@ HRESULT CPlayer::Init(void)
 	m_pMotion->LoadData("data\\TXT\\motion_player.txt");
 
 	SetType(CObject::TYPE_PLAYER3D);
+
+	m_pLifeGauge = CObjGauge2D::Create();
+	m_pLifeGauge->SetPos(D3DXVECTOR3(730.0f, 650.0f, 0.0f));
+	m_pLifeGauge->SetWight(500.0f);
+	m_pLifeGauge->SetHeight(50.0f);
+	m_pLifeGauge->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+	m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
+
+	m_pMeshCubeSample = CObjmeshCube::Create();
+	m_pMeshCubeSample->SetSize(D3DXVECTOR3(20.0f, 20.0f, 20.0f));
 
 	return S_OK;
 }
@@ -163,6 +184,11 @@ void CPlayer::Update(void)
 
 		//攻撃処理
 		Attack();
+
+		if (m_nAttackCount > 0)
+		{
+			AttackCollision();
+		}
 
 		//ジャンプ処理
 		Jump();
@@ -228,6 +254,8 @@ void CPlayer::Update(void)
 			m_bJump = false;
 		}
 	}
+
+	D3DXMATRIX mtxTrans;	//計算用マトリックス
 
 	//モーションの管理
 	ActionState();
@@ -300,6 +328,26 @@ void CPlayer::Move(void)
 		pPlayerEffect->SetPos(m_pos);
 		pPlayerEffect->SetRot(m_rot);
 		pPlayerEffect->SetPose(m_pMotion->GetType(), m_pMotion->GetKey(), m_pMotion->GetCounter(), 2);
+	}
+
+	if (pInputKeyboard->GetPress(DIK_8) == true)
+	{
+		m_fLife -= 1.0f;
+
+		if (m_pLifeGauge != nullptr)
+		{
+			m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
+		}
+	}
+
+	if (pInputKeyboard->GetPress(DIK_9) == true)
+	{
+		m_fLife += 1.0f;
+
+		if (m_pLifeGauge != nullptr)
+		{
+			m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
+		}
 	}
 
 	//キーボードの移動処理
@@ -523,6 +571,8 @@ void CPlayer::Attack(void)
 					m_bAirAttack = true;
 
 					m_nAttackCount = 20;
+					m_nAttackDamage = 30.0f;
+					m_nAttackCountMax = m_nAttackCount;
 					m_nAttackChainFrame = 1;
 
 					if (m_move.y <= 10.0f)
@@ -538,7 +588,6 @@ void CPlayer::Attack(void)
 			switch (m_AtkAction)
 			{
 			default:
-
 				//攻撃モーション
 				if (m_Action != ACTION_ATTACK1)
 				{
@@ -546,7 +595,9 @@ void CPlayer::Attack(void)
 					m_pMotion->Set(ACTION_ATTACK1, 3);
 					m_AtkAction = ACTION_ATTACK1;
 
+					m_nAttackDamage = 20.0f;
 					m_nAttackCount = 20;
+					m_nAttackCountMax = m_nAttackCount;
 					m_nAttackChainFrame = 30;
 				}
 
@@ -561,7 +612,9 @@ void CPlayer::Attack(void)
 					m_pMotion->Set(ACTION_ATTACK2, 3);
 					m_AtkAction = ACTION_ATTACK2;
 
+					m_nAttackDamage = 15.0f;
 					m_nAttackCount = 20;
+					m_nAttackCountMax = m_nAttackCount;
 					m_nAttackChainFrame = 30;
 				}
 
@@ -576,7 +629,9 @@ void CPlayer::Attack(void)
 					m_pMotion->Set(ACTION_ATTACK3, 3);
 					m_AtkAction = ACTION_WAIT;
 
+					m_nAttackDamage = 60.0f;
 					m_nAttackCount = 40;
+					m_nAttackCountMax = m_nAttackCount;
 					m_nAttackChainFrame = 0;
 				}
 
@@ -590,6 +645,8 @@ void CPlayer::Attack(void)
 
 		//ジャンプ直後は攻撃などのアクションを行えない
 		m_nActionNotCount = JAMP_ACTIONNOT;
+
+		m_nAttackHit = false;
 	}
 
 	if (m_bJump == false)
@@ -613,6 +670,9 @@ void CPlayer::Attack(void)
 		}
 	}
 
+	//攻撃位置の設定
+	m_AtkPos = m_apModel[3]->GetWorldPos();
+
 	if (m_nAttackCount > 0)
 	{
 		CPlayerEffect* pPlayerEffect = CPlayerEffect::Create();
@@ -631,6 +691,60 @@ void CPlayer::Attack(void)
 		pPlayerEffect->SetDel(0.4f);
 		pPlayerEffect->SetPose(m_pMotion->GetType(), m_pMotion->GetKey(), m_pMotion->GetCounter(), 2);
 	}
+}
+
+//====================================================================
+//攻撃判定処理
+//====================================================================
+void CPlayer::AttackCollision(void)
+{
+	if (m_nAttackHit == false)
+	{
+		for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+		{
+			//オブジェクトを取得
+			CObject* pObj = CObject::GetTop(nCntPriority);
+
+			while (pObj != NULL)
+			{
+				CObject* pObjNext = pObj->GetNext();
+
+				CObject::TYPE type = pObj->GetType();			//種類を取得
+
+				if (type == TYPE_BOSS)
+				{//種類がボスの時
+
+					if (CollisionCircle(m_AtkPos, pObj->GetPos(), 100.0f) == true)
+					{
+						pObj->HitDamage(m_nAttackDamage);
+						m_nAttackHit = true;
+					}
+				}
+
+				pObj = pObjNext;
+			}
+		}
+	}
+}
+
+//====================================================================
+//円の当たり判定
+//====================================================================
+bool CPlayer::CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut)
+{
+	bool nHit = false;
+
+	if (sqrtf((pos1.x - pos2.x) * (pos1.x - pos2.x)
+		+ (pos1.y - pos2.y) * (pos1.y - pos2.y)) <= nRadiusOut)
+	{//円の判定が当たった
+		if (sqrtf((pos1.x - pos2.x) * (pos1.x - pos2.x)
+			+ (pos1.z - pos2.z) * (pos1.z - pos2.z)) <= nRadiusOut)
+		{//円の判定が当たった
+			nHit = true;
+		}
+	}
+
+	return nHit;
 }
 
 //====================================================================
@@ -717,8 +831,17 @@ void CPlayer::ActionState(void)
 
 	if (m_nAttackCount <= 0)
 	{
+		//回避モーション
+		if (m_nDodgeCount > 0)
+		{
+			if (m_Action != ACTION_EVASION)
+			{
+				m_Action = ACTION_EVASION;
+				m_pMotion->Set(ACTION_EVASION, 1);
+			}
+		}
 		//ジャンプモーション
-		if (m_bJump == true)
+		else if (m_bJump == true)
 		{
 			if (m_Action != ACTION_JAMP)
 			{
