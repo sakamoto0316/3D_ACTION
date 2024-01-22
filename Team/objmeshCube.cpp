@@ -28,7 +28,7 @@ CObjmeshCube::CObjmeshCube(int nPriority) :CObject(nPriority)
 	m_pos = INITVECTOR3;
 	m_rot = INITVECTOR3;
 	m_Color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Size = INITVECTOR3;
+	m_Size = D3DXVECTOR3(25.0f, 25.0f, 25.0f);
 	m_move = INITVECTOR3;
 }
 

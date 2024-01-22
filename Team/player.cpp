@@ -27,6 +27,10 @@
 #define PLAYER_JAMPWALL (4.0f)		//ジャンプまでの力の振り幅
 #define JAMP_ACTIONNOT (4)			//ジャンプから行動出来るまで
 #define COLLISION_SIZE (D3DXVECTOR3(40.0f,80.0f,40.0f))		//横の当たり判定
+#define ATTACK1_DAMAGE (200.0f)		//地上攻撃１の攻撃力
+#define ATTACK2_DAMAGE (150.0f)		//地上攻撃２の攻撃力
+#define ATTACK3_DAMAGE (600.0f)		//地上攻撃３の攻撃力
+#define SKY_ATTACK_DAMAGE (300.0f)	//空中攻撃の攻撃力
 
 //====================================================================
 //コンストラクタ
@@ -35,6 +39,7 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 {
 	SetWight(COLLISION_SIZE.x);
 	SetHeight(COLLISION_SIZE.y);
+	m_CameraPos = INITVECTOR3;
 	m_pos = INITVECTOR3;
 	m_move = INITVECTOR3;
 	m_Objmove = INITVECTOR3;
@@ -53,7 +58,7 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 	m_nDodgeCoolTime = 0;
 	m_State = STATE_NORMAL;
 	m_nStateCount = 0;
-	m_ReSpownPos = INITVECTOR3;
+	m_ReSpownPos = D3DXVECTOR3(0.0f, 250.0f, 0.0f);
 	m_GameEnd = false;
 	m_pLifeGauge = nullptr;
 	m_fLife = PLAYER_LIFE;
@@ -61,6 +66,8 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 	m_pMeshCubeSample = nullptr;
 	m_AtkPos = INITVECTOR3;
 	m_bRight = true;
+	CameraDiffMove = false;
+	CameraDiffTime = 0;
 }
 
 //====================================================================
@@ -262,13 +269,27 @@ void CPlayer::Update(void)
 
 		CollisionDamageCube(m_pos);
 
+		//カメラ位置の更新
+		m_CameraPos.x = m_pos.x;
+		m_CameraPos.z = m_pos.z;
+		if (m_bJump == false)
+		{
+			if (m_CameraPos.y > m_pos.y + 50.0f ||
+				m_CameraPos.y < m_pos.y - 50.0f)
+			{
+				CameraDiffMove = true;
+				CameraDiffTime = 30;
+			}
+			m_CameraPos.y = m_pos.y;
+		}
+
+		//カメラの補正設定
+		CameraDiff();
+
 		//画面外判定
 		if (m_pos.y < 0.0f)
 		{
-			m_pos.y = 0.0f;
-			m_move.y = 0.0f;
-			m_Objmove = INITVECTOR3;
-			m_bJump = false;
+			HitDamage(200.0f);
 		}
 	}
 
@@ -798,7 +819,7 @@ void CPlayer::Attack(void)
 					m_bAirAttack = true;
 
 					m_nAttackCount = 20;
-					m_nAttackDamage = 30.0f;
+					m_nAttackDamage = SKY_ATTACK_DAMAGE;
 					m_nAttackCountMax = m_nAttackCount;
 					m_nAttackChainFrame = 1;
 
@@ -822,7 +843,7 @@ void CPlayer::Attack(void)
 					m_pMotion->Set(ACTION_ATTACK1, 3);
 					m_AtkAction = ACTION_ATTACK1;
 
-					m_nAttackDamage = 20.0f;
+					m_nAttackDamage = ATTACK1_DAMAGE;
 					m_nAttackCount = 20;
 					m_nAttackCountMax = m_nAttackCount;
 					m_nAttackChainFrame = 30;
@@ -839,7 +860,7 @@ void CPlayer::Attack(void)
 					m_pMotion->Set(ACTION_ATTACK2, 3);
 					m_AtkAction = ACTION_ATTACK2;
 
-					m_nAttackDamage = 15.0f;
+					m_nAttackDamage = ATTACK2_DAMAGE;
 					m_nAttackCount = 20;
 					m_nAttackCountMax = m_nAttackCount;
 					m_nAttackChainFrame = 30;
@@ -856,7 +877,7 @@ void CPlayer::Attack(void)
 					m_pMotion->Set(ACTION_ATTACK3, 3);
 					m_AtkAction = ACTION_WAIT;
 
-					m_nAttackDamage = 60.0f;
+					m_nAttackDamage = ATTACK3_DAMAGE;
 					m_nAttackCount = 40;
 					m_nAttackCountMax = m_nAttackCount;
 					m_nAttackChainFrame = 0;
@@ -985,8 +1006,8 @@ void CPlayer::HitDamage(float Damage)
 		pEffect->SetPos(m_pos);
 		pEffect->SetRadius(500.0f);
 		pEffect->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-		m_State = STATE_DEATH;
-		m_nStateCount = 1;
+		m_State = STATE_WAIT;
+		m_nStateCount = 20;
 		m_pos = D3DXVECTOR3(m_ReSpownPos.x, m_ReSpownPos.y + -100.0f, m_ReSpownPos.z);
 		m_move = INITVECTOR3;
 		m_Action = ACTION_WAIT;
@@ -1056,6 +1077,24 @@ void CPlayer::ActionState(void)
 //====================================================================
 //オブジェクトとの当たり判定処理
 //====================================================================
+void CPlayer::CameraDiff(void)
+{
+	if (CameraDiffMove == true)
+	{
+		if (CameraDiffTime > 0)
+		{
+			CameraDiffTime--;
+		}
+		else
+		{
+			CameraDiffMove = false;
+		}
+	}
+}
+
+//====================================================================
+//オブジェクトとの当たり判定処理
+//====================================================================
 bool CPlayer::CollisionBlock(D3DXVECTOR3* pos, COLLISION XYZ)
 {
 	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
@@ -1069,7 +1108,7 @@ bool CPlayer::CollisionBlock(D3DXVECTOR3* pos, COLLISION XYZ)
 
 			CObject::TYPE type = pObj->GetType();			//種類を取得
 
-			if (m_State != STATE_WAIT)
+			if (m_State != STATE_DEATH)
 			{
 				if (type == TYPE_CUBEBLOCK)
 				{//種類がブロックの時
@@ -1102,34 +1141,37 @@ bool CPlayer::CollisionBlock(D3DXVECTOR3* pos, COLLISION XYZ)
 //====================================================================
 bool CPlayer::CollisionDamageCube(D3DXVECTOR3 pos)
 {
-	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	if (m_nDodgeCount < 0)
 	{
-		//オブジェクトを取得
-		CObject* pObj = CObject::GetTop(nCntPriority);
-
-		while (pObj != NULL)
+		for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
 		{
-			CObject* pObjNext = pObj->GetNext();
+			//オブジェクトを取得
+			CObject* pObj = CObject::GetTop(nCntPriority);
 
-			CObject::TYPE type = pObj->GetType();			//種類を取得
-
-			if (m_State != STATE_WAIT)
+			while (pObj != NULL)
 			{
-				if (type == TYPE_CUBEDAMEGE)
-				{//種類がブロックの時
+				CObject* pObjNext = pObj->GetNext();
 
-					float fDamage = 0.0f;
+				CObject::TYPE type = pObj->GetType();			//種類を取得
 
-					if (pObj->CollisionDamageBlock(pos, COLLISION_SIZE, &fDamage) == true)
-					{
-						HitDamage(fDamage);
+				if (m_State != STATE_WAIT)
+				{
+					if (type == TYPE_CUBEDAMEGE)
+					{//種類がブロックの時
 
-						return true;
+						float fDamage = 0.0f;
+
+						if (pObj->CollisionDamageBlock(pos, COLLISION_SIZE, &fDamage) == true)
+						{
+							HitDamage(fDamage);
+
+							return true;
+						}
 					}
 				}
-			}
 
-			pObj = pObjNext;
+				pObj = pObjNext;
+			}
 		}
 	}
 

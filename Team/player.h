@@ -54,6 +54,8 @@ public:
 	void Update(void);
 	void Draw(void);
 	void LoadLevelData(const char *pFilename);
+	void SetCameraPos(D3DXVECTOR3 pos) { m_CameraPos = pos; }
+	D3DXVECTOR3 GetCameraPos(void) { return m_CameraPos; }
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	void SetMove(D3DXVECTOR3 move) { m_move = move; }
@@ -67,6 +69,7 @@ public:
 	D3DXVECTOR3 GetReSpownPos(void) { return m_ReSpownPos; }
 	STATE GetState(void) { return m_State; }
 	bool GetJump(void) { return m_bJump; }
+	bool GetCameraDiff(void) { return CameraDiffMove; }
 	void HitDamage(float Damage);								//攻撃を受けた時の処理
 
 private:
@@ -85,10 +88,12 @@ private:
 	bool CollisionDamageCube(D3DXVECTOR3 pos);				//オブジェクトとの当たり判定
 	void CollisionBoss(void);							//ボスとの当たり判定
 	void DeleteMap(void);								//マップの削除
+	void CameraDiff(void);								//カメラの補正設定
 	bool CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut);	//円の当たり判定
 	
 	ACTION_TYPE m_Action;
 	ACTION_TYPE m_AtkAction;	//攻撃状態記録用変数
+	D3DXVECTOR3 m_CameraPos;	//カメラ位置
 	D3DXVECTOR3 m_pos;			//位置
 	D3DXVECTOR3 m_posOld;		//過去の位置
 	D3DXVECTOR3 m_ReSpownPos;	//復活地点
@@ -121,6 +126,8 @@ private:
 	float m_fLifeMax;			//プレイヤーのライフの最大値
 	CObjGauge2D *m_pLifeGauge;	//ライフゲージのポインタ
 	CObjmeshCube* m_pMeshCubeSample;//メッシュキューブのサンプル
+	bool CameraDiffMove;		//カメラの上下差分移動が緩やかか否か
+	int CameraDiffTime;			//カメラの上下差分移動が緩やかな時間
 
 	CModel *m_apModel[64];
 	CMotion *m_pMotion;

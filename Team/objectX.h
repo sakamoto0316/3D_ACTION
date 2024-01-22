@@ -24,6 +24,7 @@ public:
 	virtual void Uninit(void);
 	virtual void Update(void);
 	virtual void Draw(void);
+	virtual void Draw(float fAlpha);
 	void BindFile(LPD3DXMESH pMesh, LPD3DXBUFFER pBuffMat, DWORD pdwNumMat);
 
 	void SetVerTex(void);							//í∏ì_ç¿ïWÇÃê›íË
@@ -41,6 +42,7 @@ public:
 	void SetHeight(float Height) { m_Height = Height; }
 	float GetHeight(void) { return m_Height; }
 	void SetMatColor(D3DXCOLOR SetColor) { m_MatColor = SetColor; m_bUseColor = true; }
+	void SetMatAlpha(float SetAlpha) { m_StateMat.MatD3D.Diffuse.a = SetAlpha; }
 	void SetDefColor(void) { m_bUseColor = false; }
 
 	void SetXModelIdx(int Idx);

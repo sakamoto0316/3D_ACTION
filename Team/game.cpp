@@ -103,7 +103,7 @@ HRESULT CGame::Init(void)
 
 	m_pCubeBlock = CCubeBlock::Create();
 	m_pCubeBlock->SetPos(D3DXVECTOR3(0.0f, 100.0f, 0.0f));
-	m_pCubeBlock->SetSize(D3DXVECTOR3(400.0f, 10.0f, 400.0f));
+	m_pCubeBlock->SetSize(D3DXVECTOR3(500.0f, 10.0f, 500.0f));
 	m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	m_pCubeBlock = CCubeBlock::Create();

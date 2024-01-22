@@ -39,6 +39,7 @@ public:
 	float GetPosY(void) { return m_posR.y; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	CAMERAMODE GetCameraMode(void) { return CameraMode; }
+	void SetFollowTime(int Time) { m_FollowTime = Time; }
 
 private:
 	D3DXMATRIX m_mtxView;		//ビューマトリックス
@@ -60,6 +61,7 @@ private:
 	bool m_bBib;				//カメラが振動するかどうか
 	float m_fBibPowor;			//カメラ振動の強さ
 	int m_FollowTime;			//回り込み時間
+	int m_FollowDistance;		//追従時のカメラ距離
 };
 
 #endif

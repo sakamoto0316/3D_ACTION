@@ -31,7 +31,7 @@ CCubeDamage::CCubeDamage(int nPriority) :CObjmeshCube(nPriority)
 //====================================================================
 CCubeDamage::~CCubeDamage()
 {
-
+	
 }
 
 //====================================================================

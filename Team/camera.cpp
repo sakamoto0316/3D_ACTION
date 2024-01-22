@@ -11,9 +11,10 @@
 #include "input.h"
 #include "debugproc.h"
 #include "player.h"
+#include "boss.h"
 
 //マクロ定義
-#define CAMERA_DISTANCE (500.0f)//視点と注視点の距離
+#define CAMERA_DISTANCE (550.0f)//視点と注視点の距離
 #define MODEL_DISTANCE (10.0f)	//モデルと注視点の距離
 #define CAMERA_SPEED (3.0f)		//カメラの移動スピード
 #define CAMERA_VR_SPEED (0.03f)	//カメラの視点スピード
@@ -72,13 +73,17 @@ void CCamera::Uninit(void)
 //====================================================================
 void CCamera::Update(void)
 {
-	//キーボードの取得
+	//デバイスの取得
 	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-	//マウスの取得
+	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
 	CInputMouse* pInputMouse = CManager::GetInstance()->GetInputMouse();
 
 	//プレイヤーの取得
 	CPlayer* pPlayer = CGame::GetPlayer();
+	//ボスの取得
+	CBoss* pBoss = CGame::GetBoss();
+
+	D3DXVECTOR3 FollowPos = INITVECTOR3;
 
 #ifdef _DEBUG
 
@@ -230,26 +235,28 @@ void CCamera::Update(void)
 		break;
 	case CAMERAMODE_FOLLOW:
 
-		if (m_rot.x <= D3DX_PI * 0.5f && m_rot.x >= -(D3DX_PI * 0.5f))
-		{//入力
-			m_rotOld.x = m_rot.x;
+		if (pPlayer->GetJump() == false)
+		{
+			if (m_rot.x <= D3DX_PI * 0.5f && m_rot.x >= -(D3DX_PI * 0.5f))
+			{//入力
+				m_rotOld.x = m_rot.x;
 
-			//キーボード
-			if (pInputKeyboard->GetPress(DIK_I) == true)
-			{
-				m_rot.x += CAMERA_VR_SPEED;
+				//キーボード
+				if (pInputKeyboard->GetPress(DIK_I) == true)
+				{
+					m_rot.x += CAMERA_VR_SPEED;
+				}
+				if (pInputKeyboard->GetPress(DIK_K) == true)
+				{
+					m_rot.x -= CAMERA_VR_SPEED;
+				}
+
+				//右スティックの上下視点移動入力
+				m_rot.x -= pInputMouse->GetMouseMove().y * CAMERA_VR_SPEED;
 			}
-			if (pInputKeyboard->GetPress(DIK_K) == true)
-			{
-				m_rot.x -= CAMERA_VR_SPEED;
-			}
-
-			//右スティックの上下視点移動入力
-			m_rot.x -= pInputMouse->GetMouseMove().y * CAMERA_VR_SPEED;
-
 		}
 
-		if (fabsf(m_rot.x) > fabsf(D3DX_PI * 0.4f))
+		if (m_rot.x > D3DX_PI * 0.05f || m_rot.x < -(D3DX_PI * 0.45f))
 		{//上限に達した時１フレーム前のrotにもどる
 			m_rot.x = m_rotOld.x;
 		}
@@ -279,14 +286,13 @@ void CCamera::Update(void)
 			m_rot.y += D3DX_PI * 2.0f;
 		}
 
-		//モデル追従処理
 		m_posRDest.x = m_posV.x + sinf(m_rot.y) * cosf(m_rot.x) * CAMERA_DISTANCE;
 		m_posRDest.z = m_posV.z + cosf(m_rot.y) * cosf(m_rot.x) * CAMERA_DISTANCE;
 		m_posRDest.y = m_posV.y + sinf(m_rot.x) * CAMERA_DISTANCE;
 
-		m_posVDest.x = pPlayer->GetPos().x + sinf(-pPlayer->GetRot().y) * MODEL_DISTANCE + sinf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE;
-		m_posVDest.z = pPlayer->GetPos().z + cosf(-pPlayer->GetRot().y) * MODEL_DISTANCE + cosf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE;
-		m_posVDest.y = pPlayer->GetPos().y + 100.0f + sinf(-m_rot.x) * CAMERA_DISTANCE;
+		m_posVDest.x = pPlayer->GetCameraPos().x + sinf(-pPlayer->GetRot().y) * MODEL_DISTANCE + sinf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE;
+		m_posVDest.z = pPlayer->GetCameraPos().z + cosf(-pPlayer->GetRot().y) * MODEL_DISTANCE + cosf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE;
+		m_posVDest.y = pPlayer->GetCameraPos().y + 100.0f + sinf(-m_rot.x) * CAMERA_DISTANCE;
 
 		m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING;
 		m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
@@ -295,21 +301,24 @@ void CCamera::Update(void)
 
 		if (pPlayer->GetJump() == false)
 		{
-			m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING;
-			m_posV.y += (m_posVDest.y - m_posV.y);
-		}
-		else
-		{
-			if (m_posR.y > (pPlayer->GetPos().y + 100.0f))
+			if (pPlayer->GetCameraDiff() == true)
 			{
-				m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING;
-				m_posV.y += (m_posVDest.y - m_posV.y);
+				m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 0.5f;
+				m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 0.5f;
 			}
 			else
 			{
-				m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 0.05f;
-				m_posV.y += (m_posVDest.y - m_posV.y);
+				m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING;
+				m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING;
 			}
+		}
+
+
+		//キーボード
+		if (pInputKeyboard->GetPress(DIK_LSHIFT) == true ||
+			pInputJoypad->GetPress(CInputJoypad::BUTTON_L,0) == true)
+		{
+			m_FollowTime = 10;
 		}
 
 		//モデルが止まった時に正面を向く処理
@@ -320,7 +329,8 @@ void CCamera::Update(void)
 			m_FollowTime--;
 
 			fRotMove = atan2f(sinf(m_rot.y), cosf(m_rot.y));	//現在の向き
-			fRotDest = atan2f(sinf(pPlayer->GetRot().y + D3DX_PI), cosf(pPlayer->GetRot().y + D3DX_PI));	//目的の向き
+			fRotDest = atan2f(pBoss->GetPos().x - pPlayer->GetPos().x, pBoss->GetPos().z - pPlayer->GetPos().z);	//目的の向き
+			//fRotDest = atan2f(sinf(pPlayer->GetRot().y + D3DX_PI), cosf(pPlayer->GetRot().y + D3DX_PI));	//目的の向き
 			fRotDiff = fRotDest - fRotMove;									 //差分
 
 			if (fRotDiff > D3DX_PI * 1.0f)

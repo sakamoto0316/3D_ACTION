@@ -43,7 +43,8 @@ public:
 	virtual void Draw(void);
 
 	void ReSetGame(void);
-	static CPlayer *GetPlayer(void) { return m_pPlayer; }
+	static CPlayer* GetPlayer(void) { return m_pPlayer; }
+	static CBoss*GetBoss(void) { return m_pBoss; }
 	static CPause *GetPause(void) { return m_pPause; }
 	static CScore *GetScore(void) { return m_pScore; }
 	static CEdit *GetEdit(void) { return m_pEdit; }

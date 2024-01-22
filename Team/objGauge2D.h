@@ -4,8 +4,8 @@
 //	Author:sakamoto kai
 //
 //============================================
-#ifndef _OBJECT2D_H_
-#define _OBJECT2D_H_
+#ifndef _OBJGAUGE2D_H_
+#define _OBJGAUGE2D_H_
 
 #include "main.h"
 #include "object.h"

@@ -12,6 +12,7 @@
 
 //前方宣言
 class CObjGauge2D;
+class CNumber;
 
 //オブジェクトプレイヤークラス
 class CBoss : public CObjectX
@@ -21,17 +22,32 @@ public:
 	CBoss(int nPriority = 3);
 	~CBoss();
 
-	//プレイヤーの状態
+	//ボスの状態
 	typedef enum
 	{
 		STATE_NORMAL = 0,
-		STATE_ATTACK,
-		STATE_WARP,
 		STATE_DAMAGE,
 		STATE_DEATH,
 		STATE_MAX,
-
 	}STATE;
+
+	//ボスの行動
+	typedef enum
+	{
+		ACTION_NORMAL = 0,
+		ACTION_ATTACK,
+		ACTION_WARP,
+		ACTION_MAX,
+	}ACTION;
+
+	//ボスの攻撃
+	typedef enum
+	{
+		ATTACK_NOT = 0,
+		ATTACK_BULLET,
+		ATTACK_MAX,
+
+	}ATTACK;
 
 	static CBoss* Create(char* pModelName);
 
@@ -44,22 +60,33 @@ public:
 	int GetIdxXModel(void) { return -1; }
 	bool Collision(D3DXVECTOR3* pPos, D3DXVECTOR3 pPosOld, D3DXVECTOR3* pMove, float fHeight, float fWidth, bool* bJumpMove, bool* bHit, bool bX);
 	void HitDamage(float Damage);
+	void SetLifeUI(void);
 
 private:
 	void StateManager(void);		//状態管理
+	void WarpUpdate(D3DXVECTOR3* pos);	//ワープ処理
+	void Warp(ATTACK Pattern);	//攻撃前ワープ処理
+	void AttackBullet(D3DXVECTOR3* pos);	//ワープ処理
 
 	int m_nIdxXModel;				//Xモデルの番号
 	D3DXVECTOR3 m_CollisionPos;		//当たり判定用の座標
+	D3DXVECTOR3 m_WarpPos;				//ワープ先の位置
 	bool m_bCollision;				//当たり判定用の座標
 	int m_nIdxTexture;				//テクスチャの番号
 	float m_MoveCount;				//待機中の浮遊用変数
 	STATE m_State;					//状態
+	ACTION m_Action;				//行動
 	int m_nStateCount;				//状態管理用変数
+	bool m_nWarpOK;					//ワープ前かワープ後か
+	float m_ColorA;					//不透明度
+	ATTACK m_AttackPattern;			//攻撃パターン
+	int m_BulletCount;				//射撃間隔
 
 	D3DXVECTOR3 m_move;				//移動量	
 	D3DXVECTOR3 m_rot;				//向き	
 	float m_fLife;					//ボスのライフ
 	float m_fLifeMax;				//ボスのライフの最大値
 	CObjGauge2D* m_pLifeGauge;		//ライフゲージのポインタ
+	CNumber* m_pLifeNumber[5];		//ライフ用UI
 };
 #endif
