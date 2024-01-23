@@ -34,6 +34,8 @@ public:
 
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; m_posOld = pos; }
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
+	void SetUninitPos(D3DXVECTOR3 pos) { UninitPos = pos; }
+	D3DXVECTOR3 GetUninitPos(void) { return UninitPos; }
 	void SetPosOld(D3DXVECTOR3 pos) { m_posOld = pos; }
 	D3DXVECTOR3 GetPosOld(void) { return m_posOld; }
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
@@ -44,6 +46,12 @@ public:
 	D3DXVECTOR3 GetMove(void) { return m_move; }
 	LPDIRECT3DVERTEXBUFFER9 GetVtxBuff(void) { return m_pVtxBuff; }
 	virtual int GetIdx(void) { return m_nIdxTexture; }
+	void SetPlusMove(bool Set) { m_PlusMove = Set; }
+	bool GetPlusMove(void) { return m_PlusMove; }
+	void SetBoolLife(bool Set) { m_bLife = Set; }
+	bool GetBoolLife(void) { return m_bLife; }
+	void SetLife(int Life) { m_nLife = Life; }
+	int GetLife(void) { return m_nLife; }
 
 protected:
 	LPDIRECT3DTEXTURE9 m_pTexture;			//テクスチャへのポインタ
@@ -59,5 +67,9 @@ private:
 	D3DXVECTOR3 m_Size;						//大きさ
 	D3DXVECTOR3 m_move;						//移動量
 	D3DXCOLOR m_Color;						//色
+	bool m_PlusMove;						//正の方向へ移動しているかどうか
+	bool m_bLife;							//消えるキューブか否か
+	D3DXVECTOR3 UninitPos;					//キューブの削除位置
+	int m_nLife;							//キューブの寿命
 };
 #endif

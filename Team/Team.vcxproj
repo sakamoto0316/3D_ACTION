@@ -168,6 +168,8 @@
     <ClCompile Include="model.cpp" />
     <ClCompile Include="motion.cpp" />
     <ClCompile Include="number.cpp" />
+    <ClCompile Include="numberBillboard.cpp" />
+    <ClCompile Include="numberFall.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="object2D.cpp" />
     <ClCompile Include="object3D.cpp" />
@@ -212,6 +214,8 @@
     <ClInclude Include="model.h" />
     <ClInclude Include="motion.h" />
     <ClInclude Include="number.h" />
+    <ClInclude Include="numberBillboard.h" />
+    <ClInclude Include="numberFall.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="object2D.h" />
     <ClInclude Include="object3D.h" />

@@ -230,7 +230,6 @@ void CObject::ResetObjectMap(void)
 
 			if (
 				pObject->m_type == TYPE_PLAYER3D ||
-				pObject->m_type == TYPE_BOSSLEVEL ||
 				pObject->m_type == TYPE_BREAKBLOCK3D ||
 				pObject->m_type == TYPE_ENEMY3D
 				)

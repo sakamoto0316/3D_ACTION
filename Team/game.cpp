@@ -29,6 +29,8 @@
 #include "debugproc.h"
 #include "Xmodel.h"
 #include "texture.h"
+#include "numberBillboard.h"
+#include "numberFall.h"
 
 //Ã“Iƒƒ“ƒo•Ï”éŒ¾
 CTutorialUI *CGame::m_pTutorialUI = NULL;
@@ -106,15 +108,15 @@ HRESULT CGame::Init(void)
 	m_pCubeBlock->SetSize(D3DXVECTOR3(500.0f, 10.0f, 500.0f));
 	m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
-	m_pCubeBlock = CCubeBlock::Create();
-	m_pCubeBlock->SetPos(D3DXVECTOR3(150.0f, 250.0f, -150.0f));
-	m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
-	m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//m_pCubeBlock = CCubeBlock::Create();
+	//m_pCubeBlock->SetPos(D3DXVECTOR3(150.0f, 250.0f, -150.0f));
+	//m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
+	//m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
-	m_pCubeBlock = CCubeBlock::Create();
-	m_pCubeBlock->SetPos(D3DXVECTOR3(-150.0f, 250.0f, 150.0f));
-	m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
-	m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//m_pCubeBlock = CCubeBlock::Create();
+	//m_pCubeBlock->SetPos(D3DXVECTOR3(-150.0f, 250.0f, 150.0f));
+	//m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
+	//m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	m_pPlayer = CPlayer::Create();
 	m_pPlayer->SetPos(D3DXVECTOR3(0.0f, 150.0f, 0.0f));
@@ -205,6 +207,12 @@ void CGame::Update(void)
 		pCubeDamage->SetSize(D3DXVECTOR3(50.0f, 50.0f, 50.0f));
 		pCubeDamage->SetMove(D3DXVECTOR3(20.0f, 0.0f, 0.0f));
 		pCubeDamage->SetBreak(true);
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_5) == true)
+	{
+		CNumberFall* pNumber = CNumberFall::Create();
+		pNumber->SetPos(D3DXVECTOR3(0.0f, 300.0f, 0.0f));
 	}
 
 #endif

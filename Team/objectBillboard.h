@@ -44,6 +44,7 @@ public:
 	float GetHeight(void) { return m_Height; }
 	LPDIRECT3DVERTEXBUFFER9 GetVtxBuff(void) { return m_pVtxBuff; }
 	virtual int GetIdx(void) { return m_nIdxTexture; }
+	void SetDigit(int Digit) { m_Digit = Digit; }
 
 protected:
 	LPDIRECT3DTEXTURE9 m_pTexture;			//テクスチャへのポインタ
@@ -58,6 +59,7 @@ private:
 	D3DXVECTOR3 m_posOld;					//過去の位置
 	D3DXVECTOR3 m_rot;						//向き
 	D3DXCOLOR m_Color;						//色
+	int m_Digit;							//表示する数字の桁数
 
 };
 #endif

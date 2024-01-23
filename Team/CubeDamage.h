@@ -14,7 +14,7 @@
 class CCubeDamage : public CObjmeshCube
 {
 public:
-	CCubeDamage(int nPriority = 4);
+	CCubeDamage(int nPriority = 5);
 	~CCubeDamage();
 
 	static CCubeDamage* Create(void);
@@ -26,6 +26,7 @@ public:
 
 	bool CollisionDamageBlock(D3DXVECTOR3 pPos, D3DXVECTOR3 Size, float *Damage);
 	void SetBreak(bool Set);
+	void SetDamage(float Damage) { m_fDamage = Damage; }
 
 protected:
 

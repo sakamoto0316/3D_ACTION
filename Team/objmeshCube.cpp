@@ -30,6 +30,10 @@ CObjmeshCube::CObjmeshCube(int nPriority) :CObject(nPriority)
 	m_Color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Size = D3DXVECTOR3(25.0f, 25.0f, 25.0f);
 	m_move = INITVECTOR3;
+	m_PlusMove = false;
+	m_bLife = false;
+	UninitPos = INITVECTOR3;
+	m_nLife = -1;
 }
 
 //====================================================================
@@ -304,6 +308,37 @@ void CObjmeshCube::Update(void)
 	m_posOld = m_pos;
 
 	m_pos += m_move;
+
+	if (m_nLife != -1 && m_nLife > 0)
+	{
+		m_nLife--;
+	}
+	else if(m_nLife == 0)
+	{
+		Uninit();
+	}
+
+	if (m_bLife == true)
+	{
+		if (m_PlusMove == true)
+		{
+			if (m_pos.x > UninitPos.x ||
+				m_pos.y > UninitPos.y || 
+				m_pos.z > UninitPos.z)
+			{
+				Uninit();
+			}
+		}
+		else
+		{
+			if (m_pos.x < UninitPos.x ||
+				m_pos.y < UninitPos.y ||
+				m_pos.z < UninitPos.z)
+			{
+				Uninit();
+			}
+		}
+	}
 }
 
 //====================================================================

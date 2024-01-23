@@ -30,8 +30,6 @@
 #define FVF_VERTEX_3D (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1)		//頂点フォーマット
 #define INITVECTOR3 (D3DXVECTOR3(0.0f,0.0f,0.0f))		//座標のデフォルト
 
-class CManager;
-
 //頂点構造体[2D]の構造体を定義
 typedef struct
 {

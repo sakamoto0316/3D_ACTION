@@ -19,8 +19,12 @@
 #include "camera.h"
 #include "objGauge2D.h"
 #include "objmeshCube.h"
+#include "boss.h"
+#include "number.h"
+#include "numberFall.h"
+#include "camera.h"
 
-#define PLAYER_LIFE (100.0f)		//プレイヤーの初期ライフ
+#define PLAYER_LIFE (2000.0f)		//プレイヤーの初期ライフ
 #define PLAYER_ROT_SPEED (0.2f)		//プレイヤーの回転スピード
 #define PLAYER_SPEED (10.0f)		//プレイヤーの速さ
 #define PLAYER_JAMPPOWER (15.0f)	//プレイヤーのジャンプ力
@@ -31,6 +35,14 @@
 #define ATTACK2_DAMAGE (150.0f)		//地上攻撃２の攻撃力
 #define ATTACK3_DAMAGE (600.0f)		//地上攻撃３の攻撃力
 #define SKY_ATTACK_DAMAGE (300.0f)	//空中攻撃の攻撃力
+#define DODGE_FRAME (10)			//回避フレーム
+#define DODGE_COOL (10)				//回避のクールタイム
+#define DODGE_EFFECTINTERVAL (3)	//回避の残像間隔
+#define DODGE_SPEED (55.0f)			//回避の移動速度
+#define BOSS_DAMAGE (60.0f)			//ボスに被弾した際のダメージ
+#define FALL_DAMAGE (100.0f)		//落下した際のダメージ
+#define WAIT_TIME (60)				//無敵時間
+#define DAMAGE_TIME (10)			//ダメージのリアクション時間
 
 //====================================================================
 //コンストラクタ
@@ -58,7 +70,7 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 	m_nDodgeCoolTime = 0;
 	m_State = STATE_NORMAL;
 	m_nStateCount = 0;
-	m_ReSpownPos = D3DXVECTOR3(0.0f, 250.0f, 0.0f);
+	m_ReSpownPos = D3DXVECTOR3(0.0f, 350.0f, 0.0f);
 	m_GameEnd = false;
 	m_pLifeGauge = nullptr;
 	m_fLife = PLAYER_LIFE;
@@ -68,6 +80,11 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 	m_bRight = true;
 	CameraDiffMove = false;
 	CameraDiffTime = 0;
+
+	for (int nCnt = 0; nCnt < 4; nCnt++)
+	{
+		m_pLifeNumber[nCnt] = nullptr;
+	}
 }
 
 //====================================================================
@@ -121,14 +138,23 @@ HRESULT CPlayer::Init(void)
 	SetType(CObject::TYPE_PLAYER3D);
 
 	m_pLifeGauge = CObjGauge2D::Create();
-	m_pLifeGauge->SetPos(D3DXVECTOR3(730.0f, 650.0f, 0.0f));
-	m_pLifeGauge->SetWight(500.0f);
-	m_pLifeGauge->SetHeight(50.0f);
+	m_pLifeGauge->SetPos(D3DXVECTOR3(1000.0f, 600.0f, 0.0f));
+	m_pLifeGauge->SetWight(250.0f);
+	m_pLifeGauge->SetHeight(10.0f);
 	m_pLifeGauge->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 	m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
 
 	m_pMeshCubeSample = CObjmeshCube::Create();
 	m_pMeshCubeSample->SetSize(D3DXVECTOR3(20.0f, 20.0f, 20.0f));
+
+	for (int nCnt = 0; nCnt < 4; nCnt++)
+	{
+		m_pLifeNumber[nCnt] = CNumber::Create();
+		m_pLifeNumber[nCnt]->SetPos(D3DXVECTOR3(1200.0f + nCnt * 15.0f, 630.0f, 0.0f));
+		m_pLifeNumber[nCnt]->SetWight(20.0f);
+		m_pLifeNumber[nCnt]->SetHeight(20.0f);
+	}
+	SetLifeUI();
 
 	return S_OK;
 }
@@ -161,7 +187,7 @@ void CPlayer::Uninit(void)
 //====================================================================
 void CPlayer::Update(void)
 {
-	if (m_State == STATE_NORMAL || m_State == STATE_WAIT)
+	if (m_State != STATE_DEATH)
 	{
 		//キーボードの取得
 		CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
@@ -267,7 +293,14 @@ void CPlayer::Update(void)
 
 		CollisionBlock(&m_pos, COLLISION::COLLISION_Z);
 
-		CollisionDamageCube(m_pos);
+		if (m_State == STATE_NORMAL)
+		{
+			if (m_nDodgeCount <= 0)
+			{
+				CollisionDamageCube(m_pos);
+				CollisionBoss();
+			}
+		}
 
 		//カメラ位置の更新
 		m_CameraPos.x = m_pos.x;
@@ -289,7 +322,7 @@ void CPlayer::Update(void)
 		//画面外判定
 		if (m_pos.y < 0.0f)
 		{
-			HitDamage(200.0f);
+			FallDamage();
 		}
 	}
 
@@ -301,6 +334,32 @@ void CPlayer::Update(void)
 
 	//モーションの更新
 	m_pMotion->Update();
+
+	//D3DXVECTOR3 NumberPos;
+
+	//NumberPos.x = (atan2f(CManager::GetInstance()->GetCamera()->GetPosV().x, CGame::GetBoss()->GetPos().x));
+	//NumberPos.y = 0.0f;
+	//NumberPos.z = (atan2f(CManager::GetInstance()->GetCamera()->GetPosV().z, CGame::GetBoss()->GetPos().z));
+
+	//D3DXVec3Normalize(&NumberPos, &NumberPos);
+
+	//CNumberFall* pNumber = CNumberFall::Create();
+	//pNumber->SetPos(D3DXVECTOR3(
+	//	CGame::GetBoss()->GetPos().x + sinf(NumberPos.x) * 500.0f,
+	//	CGame::GetBoss()->GetPos().y,
+	//	CGame::GetBoss()->GetPos().z + cosf(NumberPos.z) * 500.0f));
+	//pNumber->SetNumber(0);
+}
+
+//====================================================================
+//ライフUIの更新
+//====================================================================
+void CPlayer::SetLifeUI(void)
+{
+	m_pLifeNumber[0]->SetNumber((int)m_fLife % 10000 / 1000);
+	m_pLifeNumber[1]->SetNumber((int)m_fLife % 1000 / 100);
+	m_pLifeNumber[2]->SetNumber((int)m_fLife % 100 / 10);
+	m_pLifeNumber[3]->SetNumber((int)m_fLife % 10 / 1);
 }
 
 //====================================================================
@@ -314,11 +373,6 @@ void CPlayer::StateManager(void)
 		break;
 
 	case STATE_DEATH:
-		if (m_nStateCount <= 0)
-		{
-			m_State = STATE_WAIT;
-			m_nStateCount = 60;
-		}
 		break;
 
 	case STATE_WAIT:
@@ -326,6 +380,25 @@ void CPlayer::StateManager(void)
 		{
 			m_State = STATE_NORMAL;
 			m_nStateCount = 0;
+
+			for (int nCnt = 0; nCnt < m_nNumModel; nCnt++)
+			{
+				m_apModel[nCnt]->SetColorChange(false);
+			}
+		}
+		break;
+
+	case STATE_DAMAGE:
+		if (m_nStateCount <= 0)
+		{
+			m_State = STATE_WAIT;
+			m_nStateCount = WAIT_TIME;
+
+			for (int nCnt = 0; nCnt < m_nNumModel; nCnt++)
+			{
+				m_apModel[nCnt]->SetColorChange(true);
+				m_apModel[nCnt]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+			}
 		}
 		break;
 	}
@@ -465,13 +538,13 @@ void CPlayer::Dodge2D(void)
 		m_nDodgeCoolTime <= 0
 		)
 	{
-		m_nDodgeCount = 8;
-		m_nDodgeCoolTime = 10;
+		m_nDodgeCount = DODGE_FRAME;
+		m_nDodgeCoolTime = DODGE_COOL;
 	}
 
 	if (m_nDodgeCount > 0)
 	{
-		if (m_nDodgeCount % 2 == 0)
+		if (m_nDodgeCount % DODGE_EFFECTINTERVAL == 0)
 		{
 			CPlayerEffect* pPlayerEffect = CPlayerEffect::Create();
 			pPlayerEffect->SetPos(m_pos);
@@ -481,11 +554,11 @@ void CPlayer::Dodge2D(void)
 
 		if (m_bRight == true)
 		{
-			m_move.x = 60.0f;
+			m_move.x = DODGE_SPEED;
 		}
 		else
 		{
-			m_move.x = -60.0f;
+			m_move.x = -DODGE_SPEED;
 		}
 		m_move.y = 0.0f;
 
@@ -732,13 +805,13 @@ void CPlayer::Dodge(void)
 		m_nDodgeCoolTime <= 0
 		)
 	{
-		m_nDodgeCount = 8;
-		m_nDodgeCoolTime = 10;
+		m_nDodgeCount = DODGE_FRAME;
+		m_nDodgeCoolTime = DODGE_COOL;
 	}
 
 	if (m_nDodgeCount > 0)
 	{
-		if (m_nDodgeCount % 2 == 0)
+		if (m_nDodgeCount % DODGE_EFFECTINTERVAL == 0)
 		{
 			CPlayerEffect* pPlayerEffect = CPlayerEffect::Create();
 			pPlayerEffect->SetPos(m_pos);
@@ -746,8 +819,8 @@ void CPlayer::Dodge(void)
 			pPlayerEffect->SetAllPose(m_pMotion->GetType(), m_pMotion->GetKey(), m_pMotion->GetCounter());
 		}
 
-		m_move.x = sinf(m_rot.y + D3DX_PI) * 60.0f;
-		m_move.z = cosf(m_rot.y + D3DX_PI) * 60.0f;
+		m_move.x = sinf(m_rot.y + D3DX_PI) * DODGE_SPEED;
+		m_move.z = cosf(m_rot.y + D3DX_PI) * DODGE_SPEED;
 		m_move.y = 0.0f;
 
 		m_nDodgeCount--;
@@ -819,7 +892,7 @@ void CPlayer::Attack(void)
 					m_bAirAttack = true;
 
 					m_nAttackCount = 20;
-					m_nAttackDamage = SKY_ATTACK_DAMAGE;
+					m_nAttackDamage = SKY_ATTACK_DAMAGE + (rand() % (int)SKY_ATTACK_DAMAGE) * 0.1f;
 					m_nAttackCountMax = m_nAttackCount;
 					m_nAttackChainFrame = 1;
 
@@ -843,7 +916,7 @@ void CPlayer::Attack(void)
 					m_pMotion->Set(ACTION_ATTACK1, 3);
 					m_AtkAction = ACTION_ATTACK1;
 
-					m_nAttackDamage = ATTACK1_DAMAGE;
+					m_nAttackDamage = ATTACK1_DAMAGE + (rand() % (int)ATTACK1_DAMAGE) * 0.1f;
 					m_nAttackCount = 20;
 					m_nAttackCountMax = m_nAttackCount;
 					m_nAttackChainFrame = 30;
@@ -860,7 +933,7 @@ void CPlayer::Attack(void)
 					m_pMotion->Set(ACTION_ATTACK2, 3);
 					m_AtkAction = ACTION_ATTACK2;
 
-					m_nAttackDamage = ATTACK2_DAMAGE;
+					m_nAttackDamage = ATTACK2_DAMAGE + (rand() % (int)ATTACK2_DAMAGE) * 0.1f;
 					m_nAttackCount = 20;
 					m_nAttackCountMax = m_nAttackCount;
 					m_nAttackChainFrame = 30;
@@ -877,7 +950,7 @@ void CPlayer::Attack(void)
 					m_pMotion->Set(ACTION_ATTACK3, 3);
 					m_AtkAction = ACTION_WAIT;
 
-					m_nAttackDamage = ATTACK3_DAMAGE;
+					m_nAttackDamage = ATTACK3_DAMAGE + (rand() % (int)ATTACK3_DAMAGE) * 0.1f;
 					m_nAttackCount = 40;
 					m_nAttackCountMax = m_nAttackCount;
 					m_nAttackChainFrame = 0;
@@ -966,6 +1039,31 @@ void CPlayer::AttackCollision(void)
 					{
 						pObj->HitDamage(m_nAttackDamage);
 						m_nAttackHit = true;
+
+						for (int nCnt = 0; nCnt < 3; nCnt++)
+						{
+							float x = atan2f(pObj->GetPos().x, CManager::GetInstance()->GetCamera()->GetPosV().x);
+							float z = atan2f(pObj->GetPos().z, CManager::GetInstance()->GetCamera()->GetPosV().z);
+
+							CNumberFall* pNumber = CNumberFall::Create();
+							pNumber->SetDigit(nCnt);
+							pNumber->SetPos(D3DXVECTOR3(
+								pObj->GetPos().x,
+								pObj->GetPos().y,
+								pObj->GetPos().z));
+							switch (nCnt)
+							{
+							case 0:
+								pNumber->SetNumber((int)m_nAttackDamage % 1000 / 100);
+								break;
+							case 1:
+								pNumber->SetNumber((int)m_nAttackDamage % 100 / 10);
+								break;
+							case 2:
+								pNumber->SetNumber((int)m_nAttackDamage % 10 / 1);
+								break;
+							}
+						}
 					}
 				}
 
@@ -998,21 +1096,42 @@ bool CPlayer::CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusO
 //====================================================================
 //攻撃を受けた時の処理
 //====================================================================
+void CPlayer::FallDamage(void)
+{
+	HitDamage(FALL_DAMAGE);
+	CEffect* pEffect = CEffect::Create();
+	pEffect->SetPos(m_pos);
+	pEffect->SetRadius(500.0f);
+	pEffect->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+	m_pos = D3DXVECTOR3(m_ReSpownPos.x, m_ReSpownPos.y + -100.0f, m_ReSpownPos.z);
+}
+
+//====================================================================
+//攻撃を受けた時の処理
+//====================================================================
 void CPlayer::HitDamage(float Damage)
 {
 	if (m_State == STATE_NORMAL)
 	{
-		CEffect* pEffect = CEffect::Create();
-		pEffect->SetPos(m_pos);
-		pEffect->SetRadius(500.0f);
-		pEffect->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-		m_State = STATE_WAIT;
-		m_nStateCount = 20;
-		m_pos = D3DXVECTOR3(m_ReSpownPos.x, m_ReSpownPos.y + -100.0f, m_ReSpownPos.z);
+		m_State = STATE_DAMAGE;
+		m_nStateCount = DAMAGE_TIME;
 		m_move = INITVECTOR3;
 		m_Action = ACTION_WAIT;
 		m_nAttackCount = 0;
 		m_pMotion->Set(ACTION_WAIT, 5);
+		m_fLife -= Damage;
+		SetLifeUI();
+
+		for (int nCnt = 0; nCnt < m_nNumModel; nCnt++)
+		{
+			m_apModel[nCnt]->SetColorChange(true);
+			m_apModel[nCnt]->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+		}
+
+		if (m_pLifeGauge != nullptr)
+		{
+			m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
+		}
 	}
 }
 
@@ -1141,37 +1260,31 @@ bool CPlayer::CollisionBlock(D3DXVECTOR3* pos, COLLISION XYZ)
 //====================================================================
 bool CPlayer::CollisionDamageCube(D3DXVECTOR3 pos)
 {
-	if (m_nDodgeCount < 0)
+	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
 	{
-		for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+		//オブジェクトを取得
+		CObject* pObj = CObject::GetTop(nCntPriority);
+
+		while (pObj != NULL)
 		{
-			//オブジェクトを取得
-			CObject* pObj = CObject::GetTop(nCntPriority);
+			CObject* pObjNext = pObj->GetNext();
 
-			while (pObj != NULL)
-			{
-				CObject* pObjNext = pObj->GetNext();
+			CObject::TYPE type = pObj->GetType();			//種類を取得
 
-				CObject::TYPE type = pObj->GetType();			//種類を取得
+			if (type == TYPE_CUBEDAMEGE)
+			{//種類がブロックの時
 
-				if (m_State != STATE_WAIT)
+				float fDamage = 0.0f;
+
+				if (pObj->CollisionDamageBlock(pos, COLLISION_SIZE, &fDamage) == true)
 				{
-					if (type == TYPE_CUBEDAMEGE)
-					{//種類がブロックの時
+					HitDamage(fDamage);
 
-						float fDamage = 0.0f;
-
-						if (pObj->CollisionDamageBlock(pos, COLLISION_SIZE, &fDamage) == true)
-						{
-							HitDamage(fDamage);
-
-							return true;
-						}
-					}
+					return true;
 				}
-
-				pObj = pObjNext;
 			}
+
+			pObj = pObjNext;
 		}
 	}
 
@@ -1211,47 +1324,41 @@ void CPlayer::DeleteMap(void)
 }
 
 //====================================================================
-//ブロックとの当たり判定処理
+//ボスとの当たり判定処理
 //====================================================================
 void CPlayer::CollisionBoss(void)
 {
-	//for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
-	//{
-	//	//オブジェクトを取得
-	//	CObject* pObj = CObject::GetTop(nCntPriority);
+	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	{
+		//オブジェクトを取得
+		CObject* pObj = CObject::GetTop(nCntPriority);
 
-	//	while (pObj != NULL)
-	//	{
-	//		CObject* pObjNext = pObj->GetNext();
+		while (pObj != NULL)
+		{
+			CObject* pObjNext = pObj->GetNext();
 
-	//		CObject::TYPE type = pObj->GetType();			//種類を取得
+			CObject::TYPE type = pObj->GetType();			//種類を取得
 
-	//		if (type == TYPE_BOSSLEVEL)
-	//		{//種類がブロックの時
+			if (type == TYPE_BOSS)
+			{//種類がブロックの時
 
-	//			CBossLevel* pBoss = (CBossLevel*)pObj;
+				CBoss* pBoss = (CBoss*)pObj;
 
-	//			D3DXVECTOR3 ObjPos = pBoss->GetPos();
-	//			float fSize = pBoss->GetWight();
-	//			float myWight = GetWight();
-	//			float myHeight = GetWight();
+				D3DXVECTOR3 ObjPos = pBoss->GetPos();
+				float ObjWight = pBoss->GetWight();
 
-	//			if (pBoss->GetState() != CBossLevel::STATE_SPAWN)
-	//			{
-	//				if (m_pos.x + myWight > ObjPos.x - fSize * 0.5f &&
-	//					m_pos.x - myWight < ObjPos.x + fSize * 0.5f &&
-	//					m_pos.y + myHeight > ObjPos.y - fSize &&
-	//					m_pos.y < ObjPos.y + fSize * 2
-	//					)
-	//				{
-	//					HitDamage();
-	//				}
-	//			}
-	//		}
+				if (pBoss->GetAction() == CBoss::ACTION_ATTACK)
+				{
+					if (CollisionCircle(m_pos, ObjPos, COLLISION_SIZE.x + ObjWight) == true)
+					{
+						HitDamage(BOSS_DAMAGE);
+					}
+				}
+			}
 
-	//		pObj = pObjNext;
-	//	}
-	//}
+			pObj = pObjNext;
+		}
+	}
 }
 
 //====================================================================
@@ -1259,7 +1366,7 @@ void CPlayer::CollisionBoss(void)
 //====================================================================
 void CPlayer::Draw(void)
 {
-	if (m_State == STATE_NORMAL || m_State == STATE_WAIT)
+	if (m_State != STATE_DEATH)
 	{
 		//デバイスの取得
 		LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();

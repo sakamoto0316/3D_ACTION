@@ -40,6 +40,8 @@ public:
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	CAMERAMODE GetCameraMode(void) { return CameraMode; }
 	void SetFollowTime(int Time) { m_FollowTime = Time; }
+	D3DXVECTOR3 GetPosV(void) { return m_posV; }
+	D3DXVECTOR3 GetPosR(void) { return m_posR; }
 
 private:
 	D3DXMATRIX m_mtxView;		//ビューマトリックス

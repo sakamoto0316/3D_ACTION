@@ -25,6 +25,7 @@ CObjectBillboard::CObjectBillboard(int nPriority) :CObject(nPriority)
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Digit = 0;
 }
 
 //====================================================================
@@ -248,10 +249,10 @@ void CObjectBillboard::SetVerTex(void)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標の設定 
-	pVtx[0].pos = D3DXVECTOR3(-m_Wight * 0.5f, +m_Height * 0.5f, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(+m_Wight * 0.5f, +m_Height * 0.5f, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(-m_Wight * 0.5f, -m_Height * 0.5f, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(+m_Wight * 0.5f, -m_Height * 0.5f, 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(-m_Wight * 0.5f + (m_Digit * m_Wight), +m_Height * 0.5f, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(+m_Wight * 0.5f + (m_Digit * m_Wight), +m_Height * 0.5f, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(-m_Wight * 0.5f + (m_Digit * m_Wight), -m_Height * 0.5f, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(+m_Wight * 0.5f + (m_Digit * m_Wight), -m_Height * 0.5f, 0.0f);
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();

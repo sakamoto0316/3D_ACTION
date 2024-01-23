@@ -13,7 +13,8 @@
 class CModel;
 class CMotion;
 class CObjGauge2D;
-class CObjmeshCube;
+class CObjmeshCube; 
+class CNumber; 
 
 //オブジェクトプレイヤークラス
 class CPlayer : public CObject
@@ -43,6 +44,7 @@ public:
 		STATE_NORMAL = 0,
 		STATE_DEATH,
 		STATE_WAIT,
+		STATE_DAMAGE,
 		STATE_MAX,
 		
 	}STATE;
@@ -73,6 +75,7 @@ public:
 	void HitDamage(float Damage);								//攻撃を受けた時の処理
 
 private:
+	void FallDamage(void);								//落下した時の処理
 	void StateManager(void);							//状態管理
 	void Move2D(void);									//移動処理
 	void Rot2D(void);									//移動方向処理
@@ -90,6 +93,7 @@ private:
 	void DeleteMap(void);								//マップの削除
 	void CameraDiff(void);								//カメラの補正設定
 	bool CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut);	//円の当たり判定
+	void SetLifeUI(void);
 	
 	ACTION_TYPE m_Action;
 	ACTION_TYPE m_AtkAction;	//攻撃状態記録用変数
@@ -128,6 +132,7 @@ private:
 	CObjmeshCube* m_pMeshCubeSample;//メッシュキューブのサンプル
 	bool CameraDiffMove;		//カメラの上下差分移動が緩やかか否か
 	int CameraDiffTime;			//カメラの上下差分移動が緩やかな時間
+	CNumber* m_pLifeNumber[4];		//ライフ用UI
 
 	CModel *m_apModel[64];
 	CMotion *m_pMotion;

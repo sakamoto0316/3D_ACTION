@@ -45,6 +45,8 @@ public:
 	{
 		ATTACK_NOT = 0,
 		ATTACK_BULLET,
+		ATTACK_RUSH,
+		ATTACK_BLOCKRUN,
 		ATTACK_MAX,
 
 	}ATTACK;
@@ -61,16 +63,20 @@ public:
 	bool Collision(D3DXVECTOR3* pPos, D3DXVECTOR3 pPosOld, D3DXVECTOR3* pMove, float fHeight, float fWidth, bool* bJumpMove, bool* bHit, bool bX);
 	void HitDamage(float Damage);
 	void SetLifeUI(void);
+	ACTION GetAction(void) { return m_Action; }
 
 private:
-	void StateManager(void);		//状態管理
-	void WarpUpdate(D3DXVECTOR3* pos);	//ワープ処理
-	void Warp(ATTACK Pattern);	//攻撃前ワープ処理
-	void AttackBullet(D3DXVECTOR3* pos);	//ワープ処理
+	void StateManager(void);				//状態管理
+	void WarpUpdate(D3DXVECTOR3* pos);		//ワープ更新処理
+	void Warp(ATTACK Pattern);				//ワープ位置指定処理
+	void AttackUpdate(D3DXVECTOR3* pos);	//攻撃更新処理
+	void AttackBullet(D3DXVECTOR3* pos);	//攻撃パターン射撃
+	void AttackRush(D3DXVECTOR3* pos);		//攻撃パターン突進
+	void AttackBlockRun(D3DXVECTOR3* pos);	//攻撃パターンブロックラン
 
 	int m_nIdxXModel;				//Xモデルの番号
 	D3DXVECTOR3 m_CollisionPos;		//当たり判定用の座標
-	D3DXVECTOR3 m_WarpPos;				//ワープ先の位置
+	D3DXVECTOR3 m_WarpPos;			//ワープ先の位置
 	bool m_bCollision;				//当たり判定用の座標
 	int m_nIdxTexture;				//テクスチャの番号
 	float m_MoveCount;				//待機中の浮遊用変数
@@ -80,7 +86,8 @@ private:
 	bool m_nWarpOK;					//ワープ前かワープ後か
 	float m_ColorA;					//不透明度
 	ATTACK m_AttackPattern;			//攻撃パターン
-	int m_BulletCount;				//射撃間隔
+	int m_AttackCount;				//攻撃に使うカウント
+	int m_AttackWave;				//攻撃段階
 
 	D3DXVECTOR3 m_move;				//移動量	
 	D3DXVECTOR3 m_rot;				//向き	
