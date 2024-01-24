@@ -30,6 +30,10 @@
 #define BLOCKRUN_TIME (600)			//ブロックランの時間
 #define BLOCKRUN_SPEED (5.0f)		//ブロックランの速度
 #define BLOCKRUN_DAMAGE (30.0f)		//ブロックランのダメージ
+#define COOLTIME_BULLET (30)		//弾攻撃のクールタイム
+#define COOLTIME_RUSH (30)			//突進攻撃のクールタイム
+#define COOLTIME_BLOCKRUN (100)		//ブロックランのクールタイム
+#define COOLTIME_SPINPILLAR (30)	//回転柱のクールタイム
 
 //====================================================================
 //コンストラクタ
@@ -50,6 +54,9 @@ CBoss::CBoss(int nPriority) : CObjectX(nPriority)
 	m_ColorA = 1.0f;
 	m_AttackCount = 0;
 	m_AttackWave = 0;
+	m_AttackCoolTime = 0;
+	m_SpinCount = 0.0f;
+	m_Scaling = 1.0f;
 
 	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
@@ -147,6 +154,15 @@ void CBoss::Update(void)
 		AttackUpdate(&pos);
 	}
 
+	if (m_AttackCoolTime > 0)
+	{
+		m_AttackCoolTime--;
+	}
+	else
+	{
+
+	}
+
 	if(CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_6) == true)
 	{
 		D3DXVECTOR3 RandPos;
@@ -163,11 +179,60 @@ void CBoss::Update(void)
 	}
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_8) == true)
 	{
-		Warp(ATTACK_RUSH);
+		Warp(ATTACK_RAIN);
 	}
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_9) == true)
 	{
-		Warp(ATTACK_BLOCKRUN);
+		Warp(ATTACK_SPINPILLAR);
+	}
+
+	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_0) == true)
+	{
+		for (int nCnt = 0; nCnt < 4; nCnt++)
+		{
+			CCubeDamage* pCubeDamage = CCubeDamage::Create();
+			pCubeDamage->SetUseSpin(true);
+			pCubeDamage->SetSpinPos(pos);
+			pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
+			pCubeDamage->SetSpinSpeedY(0.05f);
+			pCubeDamage->SetSpinDistance(150.0f);
+			pCubeDamage->SetBreak(true);
+			pCubeDamage->SetLife(600);
+			pCubeDamage->SetMove(D3DXVECTOR3(0.0f, 0.0f, -10.0f));
+			pCubeDamage->SetSpinDisMove(5.0f);
+		}
+	}
+
+	m_SpinCount += 0.05f;
+
+	for (int nCnt = 0; nCnt < 4; nCnt++)
+	{
+		CCubeDamage* pCubeDamage = CCubeDamage::Create();
+		pCubeDamage->SetUseSpin(true);
+		pCubeDamage->SetSpinPos(pos);
+		pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
+		pCubeDamage->SetSpinDistance(150.0f);
+		pCubeDamage->SetSpinSpeedX(0.05f);
+		pCubeDamage->SetBreak(true);
+		pCubeDamage->SetLife(1);
+
+		//pCubeDamage = CCubeDamage::Create();
+		//pCubeDamage->SetUseSpin(true);
+		//pCubeDamage->SetSpinPos(pos);
+		//pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
+		//pCubeDamage->SetSpinDistance(150.0f);
+		//pCubeDamage->SetSpinSpeedY(0.05f);
+		//pCubeDamage->SetBreak(true);
+		//pCubeDamage->SetLife(1);
+
+		//pCubeDamage = CCubeDamage::Create();
+		//pCubeDamage->SetUseSpin(true);
+		//pCubeDamage->SetSpinPos(pos);
+		//pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
+		//pCubeDamage->SetSpinDistance(150.0f);
+		//pCubeDamage->SetSpinSpeedZ(0.05f);
+		//pCubeDamage->SetBreak(true);
+		//pCubeDamage->SetLife(1);
 	}
 
 	//位置更新
@@ -175,6 +240,8 @@ void CBoss::Update(void)
 
 	SetPos(pos);
 	SetRot(m_rot);
+
+	SetScaling(D3DXVECTOR3(m_Scaling, m_Scaling, m_Scaling));
 
 	//状態管理
 	StateManager();
@@ -340,6 +407,22 @@ void CBoss::Warp(ATTACK Pattern)
 		m_WarpPos.y = 350.0f;
 		m_WarpPos.z = -500.0f;
 		break;
+
+	case ATTACK_SPINPILLAR:
+
+		m_WarpPos.x = (float)(rand() % 1001) - 500.0f;
+		m_WarpPos.y = 250.0f;
+		m_WarpPos.z = (float)(rand() % 1001) - 500.0f;
+
+		break;
+
+	case ATTACK_RAIN:
+
+		m_WarpPos.x = 0.0f;
+		m_WarpPos.y = 500.0f;
+		m_WarpPos.z = 0.0f;
+
+		break;
 	}
 }
 
@@ -360,6 +443,12 @@ void CBoss::AttackUpdate(D3DXVECTOR3* pos)
 		break;
 	case ATTACK_BLOCKRUN:
 		AttackBlockRun(pos);
+		break;
+	case ATTACK_SPINPILLAR:
+		AttackSpinPillar(pos);
+		break;
+	case ATTACK_RAIN:
+		AttackRain(pos);
 		break;
 	}
 }
@@ -455,6 +544,7 @@ void CBoss::AttackBullet(D3DXVECTOR3* pos)
 	{
 		Warp(ATTACK_NOT);
 		SetDefColor();
+		m_AttackCoolTime = COOLTIME_BULLET;
 	}
 }
 
@@ -464,6 +554,7 @@ void CBoss::AttackBullet(D3DXVECTOR3* pos)
 void CBoss::AttackRush(D3DXVECTOR3* pos)
 {
 	CPlayer* pPlayer = CGame::GetPlayer();
+	CCubeDamage* pCubeDamage = nullptr;
 
 	switch (m_AttackWave)
 	{
@@ -483,6 +574,34 @@ void CBoss::AttackRush(D3DXVECTOR3* pos)
 		m_move.x = -sinf(m_rot.y) * 15.0f;
 		m_move.y = 0.0f;
 		m_move.z = -cosf(m_rot.y) * 15.0f;
+
+		pCubeDamage = CCubeDamage::Create();
+		pCubeDamage->SetPos(D3DXVECTOR3(
+			pos->x - sinf(m_rot.y) * 100.0f,
+			pos->y + 10.0f,
+			pos->z - cosf(m_rot.y) * 100.0f));
+		pCubeDamage->SetMove(D3DXVECTOR3(
+		sinf(m_rot.y + D3DX_PI * 0.5f) * 15.0f,
+		0.0f,
+		cosf(m_rot.y + D3DX_PI * 0.5f) * 15.0f));
+		pCubeDamage->SetSize(D3DXVECTOR3(10.0f, 50.0f, 10.0f));
+		pCubeDamage->SetLife(20);
+		pCubeDamage->SetBreak(false);
+		pCubeDamage->SetDamage(30.0f);
+
+		pCubeDamage = CCubeDamage::Create();
+		pCubeDamage->SetPos(D3DXVECTOR3(
+			pos->x - sinf(m_rot.y) * 100.0f,
+			pos->y + 10.0f, 
+			pos->z - cosf(m_rot.y) * 100.0f));
+		pCubeDamage->SetMove(D3DXVECTOR3(
+			sinf(m_rot.y + D3DX_PI * -0.5f) * 15.0f,
+			0.0f,
+			cosf(m_rot.y + D3DX_PI * -0.5f) * 15.0f));
+		pCubeDamage->SetSize(D3DXVECTOR3(10.0f, 50.0f, 10.0f));
+		pCubeDamage->SetLife(20);
+		pCubeDamage->SetBreak(false);
+		pCubeDamage->SetDamage(30.0f);
 
 		if (pos->x > 500.0f ||
 			pos->x < -500.0f || 
@@ -510,6 +629,7 @@ void CBoss::AttackRush(D3DXVECTOR3* pos)
 		m_move = INITVECTOR3;
 		Warp(ATTACK_NOT);
 		SetDefColor();
+		m_AttackCoolTime = COOLTIME_RUSH;
 		break;
 	}
 }
@@ -623,6 +743,137 @@ void CBoss::AttackBlockRun(D3DXVECTOR3* pos)
 		m_move = INITVECTOR3;
 		Warp(ATTACK_NOT);
 		SetDefColor();
+		m_AttackCoolTime = COOLTIME_BLOCKRUN;
+		break;
+	}
+}
+
+//====================================================================
+//攻撃(柱の回転)
+//====================================================================
+void CBoss::AttackSpinPillar(D3DXVECTOR3* pos)
+{
+	CPlayer* pPlayer = CGame::GetPlayer();
+	CCubeBlock* pCubeBlock = nullptr;
+	CCubeDamage* pCubeDamage = nullptr;
+	m_move = INITVECTOR3;
+
+	switch (m_AttackWave)
+	{
+	case 0:
+
+		if (m_AttackCount % 5 == 0)
+		{
+			m_Scaling += 0.02f;
+		}
+		else
+		{
+			m_Scaling -= 0.02f;
+		}
+
+		if (m_Scaling <= 0.5f)
+		{
+			m_AttackWave++;
+			m_AttackCount = 0;
+		}
+
+		m_AttackCount++;
+		break;
+
+	case 1:
+		m_Scaling += 0.1f;
+
+		if (m_Scaling >= 1.0f)
+		{
+			m_Scaling = 1.0f;
+			m_AttackWave++;
+
+			for (int nCnt = 0; nCnt < 4; nCnt++)
+			{
+				CCubeDamage* pCubeDamage = CCubeDamage::Create();
+				pCubeDamage->SetUseSpin(true);
+				pCubeDamage->SetSpinPos(*pos);
+				pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
+				pCubeDamage->SetSpinSpeedY(0.015f);
+				pCubeDamage->SetSpinDistance(100.0f);
+				pCubeDamage->SetBreak(true);
+				pCubeDamage->SetLife(900);
+				pCubeDamage->SetSpinDisMove(3.0f);
+				pCubeDamage->SetSize(D3DXVECTOR3(20.0f, 5000.0f, 20.0f));
+			}
+		}
+		break;
+
+	default:
+		m_move = INITVECTOR3;
+		Warp(ATTACK_NOT);
+		SetDefColor();
+		m_AttackCoolTime = COOLTIME_BLOCKRUN;
+		break;
+	}
+}
+
+//====================================================================
+//攻撃(雨)
+//====================================================================
+void CBoss::AttackRain(D3DXVECTOR3* pos)
+{
+	CPlayer* pPlayer = CGame::GetPlayer();
+	CCubeDamage* pCubeDamage = nullptr;
+
+	switch (m_AttackWave)
+	{
+	case 0:
+
+		m_move = D3DXVECTOR3(0.0f, -20.0f, 0.0f);
+
+		if (pos->y < 250.0f)
+		{
+			m_AttackWave++;
+		}
+		break;
+
+	case 1:
+
+		m_move = D3DXVECTOR3(0.0f, 20.0f, 0.0f);
+
+		if (pos->y >= 500.0f)
+		{
+			m_AttackWave++;
+		}
+		break;
+
+	case 2:
+
+		m_move = INITVECTOR3;
+
+		if (m_AttackCount % 3 == 0)
+		{
+			CCubeDamage* pCubeDamage = CCubeDamage::Create();
+			pCubeDamage->SetPos(D3DXVECTOR3(
+			(float)(rand() % 1001) - 500.0f,
+			1000.0f,
+			(float)(rand() % 1001) - 500.0f
+			));
+			pCubeDamage->SetMove(D3DXVECTOR3(0.0f, -5.0f - (float)(rand() % 4), 0.0f));
+			pCubeDamage->SetBreak(true);
+			pCubeDamage->SetDamage(BULLET_DAMAGE);
+			pCubeDamage->SetLife(BULLET_LIFE);
+		}
+
+		if (m_AttackCount > 600.0f)
+		{
+			m_AttackWave++;
+		}
+
+		m_AttackCount++;
+		break;
+
+	default:
+		m_move = INITVECTOR3;
+		Warp(ATTACK_NOT);
+		SetDefColor();
+		m_AttackCoolTime = COOLTIME_BLOCKRUN;
 		break;
 	}
 }

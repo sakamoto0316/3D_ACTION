@@ -44,6 +44,7 @@ public:
 	void SetMatColor(D3DXCOLOR SetColor) { m_MatColor = SetColor; m_bUseColor = true; }
 	void SetMatAlpha(float SetAlpha) { m_StateMat.MatD3D.Diffuse.a = SetAlpha; }
 	void SetDefColor(void) { m_bUseColor = false; }
+	void SetScaling(D3DXVECTOR3 Scaling) { m_Scaling = Scaling; }
 
 	void SetXModelIdx(int Idx);
 	int GetXModelIdx(void) { return m_IdxModelNumber; }
@@ -65,6 +66,7 @@ private:
 	D3DXVECTOR3 m_pos;						//頂点の位置
 	D3DXVECTOR3 m_posOld;					//過去の位置
 	D3DXVECTOR3 m_rot;						//向き
+	D3DXVECTOR3 m_Scaling;					//大きさ
 	D3DXMATERIAL m_StateMat;				//状態管理時の色
 	D3DXCOLOR m_MatColor;					//マテリアルの色
 	bool m_bUseColor;						//色を変更しているかどうか

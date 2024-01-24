@@ -15,6 +15,7 @@ class CMotion;
 class CObjGauge2D;
 class CObjmeshCube; 
 class CNumber; 
+class CObject3D; 
 
 //オブジェクトプレイヤークラス
 class CPlayer : public CObject
@@ -94,6 +95,7 @@ private:
 	void CameraDiff(void);								//カメラの補正設定
 	bool CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut);	//円の当たり判定
 	void SetLifeUI(void);
+	bool CollisionShadow(void);	//オブジェクトとの当たり判定
 	
 	ACTION_TYPE m_Action;
 	ACTION_TYPE m_AtkAction;	//攻撃状態記録用変数
@@ -129,10 +131,10 @@ private:
 	float m_fLife;				//プレイヤーのライフ
 	float m_fLifeMax;			//プレイヤーのライフの最大値
 	CObjGauge2D *m_pLifeGauge;	//ライフゲージのポインタ
-	CObjmeshCube* m_pMeshCubeSample;//メッシュキューブのサンプル
 	bool CameraDiffMove;		//カメラの上下差分移動が緩やかか否か
 	int CameraDiffTime;			//カメラの上下差分移動が緩やかな時間
-	CNumber* m_pLifeNumber[4];		//ライフ用UI
+	CNumber* m_pLifeNumber[4];	//ライフ用UI
+	CObject3D* m_pShadow;		//影
 
 	CModel *m_apModel[64];
 	CMotion *m_pMotion;

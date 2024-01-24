@@ -42,6 +42,8 @@ public:
 	float GetWight(void) { return m_Wight; }
 	void SetHeight(float Height) { m_Height = Height; }
 	float GetHeight(void) { return m_Height; }
+	void SetAddDorw(bool Set) { m_AddDarw = Set; }
+	bool GetAddDorw(void) { return m_AddDarw; }
 	LPDIRECT3DVERTEXBUFFER9 GetVtxBuff(void) { return m_pVtxBuff; }
 	virtual int GetIdx(void) { return m_nIdxTexture; }
 
@@ -54,6 +56,7 @@ private:
 	int m_nIdxTexture;
 	float m_Wight;							//•
 	float m_Height;							//‚‚³
+	bool m_AddDarw;							//‰ÁZ‡¬
 	D3DXVECTOR3 m_pos;						//Œ»İ‚ÌˆÊ’u
 	D3DXVECTOR3 m_posOld;					//‰ß‹‚ÌˆÊ’u
 	D3DXVECTOR3 m_rot;						//Œü‚«

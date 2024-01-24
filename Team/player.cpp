@@ -23,6 +23,8 @@
 #include "number.h"
 #include "numberFall.h"
 #include "camera.h"
+#include "object3D.h"
+#include "CubeBlock.h"
 
 #define PLAYER_LIFE (2000.0f)		//プレイヤーの初期ライフ
 #define PLAYER_ROT_SPEED (0.2f)		//プレイヤーの回転スピード
@@ -75,11 +77,11 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 	m_pLifeGauge = nullptr;
 	m_fLife = PLAYER_LIFE;
 	m_fLifeMax = m_fLife;
-	m_pMeshCubeSample = nullptr;
 	m_AtkPos = INITVECTOR3;
 	m_bRight = true;
 	CameraDiffMove = false;
 	CameraDiffTime = 0;
+	m_pShadow = nullptr;
 
 	for (int nCnt = 0; nCnt < 4; nCnt++)
 	{
@@ -137,15 +139,25 @@ HRESULT CPlayer::Init(void)
 
 	SetType(CObject::TYPE_PLAYER3D);
 
-	m_pLifeGauge = CObjGauge2D::Create();
-	m_pLifeGauge->SetPos(D3DXVECTOR3(1000.0f, 600.0f, 0.0f));
-	m_pLifeGauge->SetWight(250.0f);
-	m_pLifeGauge->SetHeight(10.0f);
-	m_pLifeGauge->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-	m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
+	if (m_pLifeGauge == nullptr)
+	{
+		m_pLifeGauge = CObjGauge2D::Create();
+		m_pLifeGauge->SetPos(D3DXVECTOR3(1000.0f, 600.0f, 0.0f));
+		m_pLifeGauge->SetWight(250.0f);
+		m_pLifeGauge->SetHeight(10.0f);
+		m_pLifeGauge->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+		m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
+	}
 
-	m_pMeshCubeSample = CObjmeshCube::Create();
-	m_pMeshCubeSample->SetSize(D3DXVECTOR3(20.0f, 20.0f, 20.0f));
+	if (m_pShadow == nullptr)
+	{
+		m_pShadow = CObject3D::Create();
+		m_pShadow->SetPos(m_pos);
+		m_pShadow->SetRot(D3DXVECTOR3(D3DX_PI * 0.5f, m_rot.y, 0.0f));
+		m_pShadow->SetColor(D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f));
+		m_pShadow->SetTexture("data\\TEXTURE\\Effect000.jpg");
+		m_pShadow->SetAddDorw(true);
+	}
 
 	for (int nCnt = 0; nCnt < 4; nCnt++)
 	{
@@ -293,6 +305,7 @@ void CPlayer::Update(void)
 
 		CollisionBlock(&m_pos, COLLISION::COLLISION_Z);
 
+		//当たり判定の処理
 		if (m_State == STATE_NORMAL)
 		{
 			if (m_nDodgeCount <= 0)
@@ -301,6 +314,9 @@ void CPlayer::Update(void)
 				CollisionBoss();
 			}
 		}
+
+		//影の更新
+		CollisionShadow();
 
 		//カメラ位置の更新
 		m_CameraPos.x = m_pos.x;
@@ -1115,7 +1131,6 @@ void CPlayer::HitDamage(float Damage)
 	{
 		m_State = STATE_DAMAGE;
 		m_nStateCount = DAMAGE_TIME;
-		m_move = INITVECTOR3;
 		m_Action = ACTION_WAIT;
 		m_nAttackCount = 0;
 		m_pMotion->Set(ACTION_WAIT, 5);
@@ -1359,6 +1374,69 @@ void CPlayer::CollisionBoss(void)
 			pObj = pObjNext;
 		}
 	}
+}
+
+//====================================================================
+//影の当たり判定処理
+//====================================================================
+bool CPlayer::CollisionShadow(void)
+{
+	float BlockPosY = -10000.0f;
+	bool bShadow = false;;
+
+	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	{
+		//オブジェクトを取得
+		CObject* pObj = CObject::GetTop(nCntPriority);
+
+		while (pObj != NULL)
+		{
+			CObject* pObjNext = pObj->GetNext();
+
+			CObject::TYPE type = pObj->GetType();			//種類を取得
+
+			if (type == TYPE_CUBEBLOCK)
+			{//種類がブロックの時
+				CCubeBlock* pBlock = (CCubeBlock*)pObj;
+
+				D3DXVECTOR3 MyPos = GetPos();
+				D3DXVECTOR3 MySize = COLLISION_SIZE * 2.0f;
+				D3DXVECTOR3 BlockPos = pBlock->GetPos();
+				D3DXVECTOR3 BlockSize = pBlock->GetSize();
+				D3DXVECTOR3 BlockMove = pBlock->GetMove();
+
+				if (BlockPos.y + BlockSize.y > BlockPosY)
+				{
+					if (BlockPos.x + BlockSize.x > MyPos.x &&
+						BlockPos.x - BlockSize.x < MyPos.x &&
+						BlockPos.z + BlockSize.z > MyPos.z &&
+						BlockPos.z - BlockSize.z < MyPos.z &&
+						BlockPos.y - BlockSize.y < MyPos.y)
+					{
+						m_pShadow->SetPos(D3DXVECTOR3(
+							MyPos.x,
+							BlockPos.y + BlockSize.y + BlockMove.y,
+							MyPos.z));
+						m_pShadow->SetWight(MySize.x);
+						m_pShadow->SetHeight(MySize.z);
+
+						BlockPosY = BlockPos.y + BlockSize.y;
+						bShadow = true;
+					}
+				}
+			}
+
+			pObj = pObjNext;
+		}
+	}
+
+	if (bShadow == false)
+	{
+		m_pShadow->SetWight(0.0f);
+		m_pShadow->SetHeight(0.0f);
+	}
+
+	return false;
 }
 
 //====================================================================

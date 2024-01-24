@@ -23,6 +23,7 @@ CObjectX::CObjectX(int nPriority) :CObject(nPriority)
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_MatColor = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_bUseColor = false;
+	m_Scaling = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 }
 
 //====================================================================
@@ -118,6 +119,8 @@ void CObjectX::Draw(void)
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
+	D3DXMatrixScaling(&m_mtxWorld, m_Scaling.x, m_Scaling.y, m_Scaling.z);
+
 	//向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
 
@@ -127,7 +130,7 @@ void CObjectX::Draw(void)
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-
+	
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 

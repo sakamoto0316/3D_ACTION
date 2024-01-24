@@ -47,6 +47,8 @@ public:
 		ATTACK_BULLET,
 		ATTACK_RUSH,
 		ATTACK_BLOCKRUN,
+		ATTACK_SPINPILLAR,
+		ATTACK_RAIN,
 		ATTACK_MAX,
 
 	}ATTACK;
@@ -73,6 +75,8 @@ private:
 	void AttackBullet(D3DXVECTOR3* pos);	//攻撃パターン射撃
 	void AttackRush(D3DXVECTOR3* pos);		//攻撃パターン突進
 	void AttackBlockRun(D3DXVECTOR3* pos);	//攻撃パターンブロックラン
+	void AttackSpinPillar(D3DXVECTOR3* pos);//攻撃パターン回転する柱
+	void AttackRain(D3DXVECTOR3* pos);		//攻撃パターン雨
 
 	int m_nIdxXModel;				//Xモデルの番号
 	D3DXVECTOR3 m_CollisionPos;		//当たり判定用の座標
@@ -88,6 +92,9 @@ private:
 	ATTACK m_AttackPattern;			//攻撃パターン
 	int m_AttackCount;				//攻撃に使うカウント
 	int m_AttackWave;				//攻撃段階
+	int m_AttackCoolTime;			//攻撃に使うカウント
+	float m_SpinCount;				//回転のカウント
+	float m_Scaling;				//大きさ
 
 	D3DXVECTOR3 m_move;				//移動量	
 	D3DXVECTOR3 m_rot;				//向き	
