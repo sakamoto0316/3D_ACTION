@@ -32,7 +32,7 @@
 #define PLAYER_JAMPPOWER (15.0f)	//ƒvƒŒƒCƒ„[‚ÌƒWƒƒƒ“ƒv—Í
 #define PLAYER_JAMPWALL (4.0f)		//ƒWƒƒƒ“ƒv‚Ü‚Å‚Ì—Í‚ÌU‚è•
 #define JAMP_ACTIONNOT (4)			//ƒWƒƒƒ“ƒv‚©‚çs“®o—ˆ‚é‚Ü‚Å
-#define COLLISION_SIZE (D3DXVECTOR3(40.0f,80.0f,40.0f))		//‰¡‚Ì“–‚½‚è”»’è
+#define COLLISION_SIZE (D3DXVECTOR3(35.0f,80.0f,35.0f))		//‰¡‚Ì“–‚½‚è”»’è
 #define ATTACK1_DAMAGE (200.0f)		//’nãUŒ‚‚P‚ÌUŒ‚—Í
 #define ATTACK2_DAMAGE (150.0f)		//’nãUŒ‚‚Q‚ÌUŒ‚—Í
 #define ATTACK3_DAMAGE (600.0f)		//’nãUŒ‚‚R‚ÌUŒ‚—Í
@@ -142,7 +142,7 @@ HRESULT CPlayer::Init(void)
 	if (m_pLifeGauge == nullptr)
 	{
 		m_pLifeGauge = CObjGauge2D::Create();
-		m_pLifeGauge->SetPos(D3DXVECTOR3(1000.0f, 600.0f, 0.0f));
+		m_pLifeGauge->SetPos(D3DXVECTOR3(1000.0f, 500.0f, 0.0f));
 		m_pLifeGauge->SetWight(250.0f);
 		m_pLifeGauge->SetHeight(10.0f);
 		m_pLifeGauge->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
@@ -162,7 +162,7 @@ HRESULT CPlayer::Init(void)
 	for (int nCnt = 0; nCnt < 4; nCnt++)
 	{
 		m_pLifeNumber[nCnt] = CNumber::Create();
-		m_pLifeNumber[nCnt]->SetPos(D3DXVECTOR3(1200.0f + nCnt * 15.0f, 630.0f, 0.0f));
+		m_pLifeNumber[nCnt]->SetPos(D3DXVECTOR3(1200.0f + nCnt * 15.0f, 530.0f, 0.0f));
 		m_pLifeNumber[nCnt]->SetWight(20.0f);
 		m_pLifeNumber[nCnt]->SetHeight(20.0f);
 	}
@@ -861,7 +861,7 @@ void CPlayer::Jump(void)
 
 	if (
 		(pInputKeyboard->GetTrigger(DIK_SPACE) == true ||
-			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_A, 0) == true) &&
+			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_B, 0) == true) &&
 		m_bJump == false)
 	{//UŒ‚’†‚¶‚á‚È‚¢Žž‚ÉƒWƒƒƒ“ƒvƒ{ƒ^ƒ“‚ð‰Ÿ‚µ‚½‚Æ‚«
 
@@ -888,7 +888,7 @@ void CPlayer::Attack(void)
 
 	if (
 		(pInputKeyboard->GetTrigger(DIK_RETURN) == true ||
-			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_B, 0) == true ||
+			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_A, 0) == true ||
 			pInputMouse->GetTrigger(CInputMouse::PUSH_LEFT) == true) &&
 		m_nAttackCount <= 0
 		)

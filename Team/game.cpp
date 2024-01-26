@@ -39,13 +39,18 @@ CPause *CGame::m_pPause = NULL;
 CScore *CGame::m_pScore = NULL;
 CTime *CGame::m_pTime = NULL;
 CObject2D *CGame::m_p2DSample = NULL;
+CObject2D *CGame::m_p2DUI_Attack = NULL;		//UŒ‚‚Ì2DUI
+CObject2D *CGame::m_p2DUI_Jump = NULL;			//ƒWƒƒƒ“ƒv‚Ì2DUI
+CObject2D *CGame::m_p2DUI_Dodge = NULL;			//‰ñ”ð‚Ì2DUI
+CObject2D* CGame::m_p2DUI_Attention = NULL;		//’–Ú‚Ì2DUI
+CObject2D *CGame::m_p2DUI_AttentionOK = NULL;	//’–Ú‚Ì2DUI
 CObject3D *CGame::m_p3DSample = NULL;
 CObjectBillboard* CGame::m_pBillboardSample = NULL;
 CObjectX* CGame::m_pXModelSample = NULL;
 CObjmeshField* CGame::m_pMeshFieldSample = NULL;
 CObjmeshWall* CGame::m_pMeshWallSample = NULL;
 CObjmeshCylinder* CGame::m_pMeshCylinderSample = NULL;
-CObjmeshDome* CGame::m_pMeshDomeSample = NULL;
+CObjmeshDome* CGame::m_pMeshDome = NULL;
 CCubeBlock* CGame::m_pCubeBlock = NULL;
 CPlayer* CGame::m_pPlayer = NULL;
 CBoss*CGame::m_pBoss = NULL;
@@ -73,7 +78,7 @@ CGame::~CGame()
 HRESULT CGame::Init(void)
 {
 	//ƒQ[ƒ€‚ÌBGM‚ðÄ¶‚·‚é
-	CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_BGM_GAME);
+	CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_BGM_BOSS);
 
 	//m_p2DSample = CObject2D::Create();
 	//m_p2DSample->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
@@ -81,17 +86,17 @@ HRESULT CGame::Init(void)
 	//m_p2DSample->SetHeight(100.0f);
 	//m_p2DSample->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 
-	m_p3DSample = CObject3D::Create();
-	m_p3DSample->SetPos(D3DXVECTOR3(200.0f, 0.0f, 0.0f));
-	m_p3DSample->SetRot(D3DXVECTOR3(1.57f, 0.0f, 0.0f));
-	m_p3DSample->SetWight(100.0f);
-	m_p3DSample->SetHeight(100.0f);
+	//m_p3DSample = CObject3D::Create();
+	//m_p3DSample->SetPos(D3DXVECTOR3(200.0f, 0.0f, 0.0f));
+	//m_p3DSample->SetRot(D3DXVECTOR3(1.57f, 0.0f, 0.0f));
+	//m_p3DSample->SetWight(100.0f);
+	//m_p3DSample->SetHeight(100.0f);
 
-	m_pBillboardSample = CObjectBillboard::Create();
-	m_pBillboardSample->SetPos(INITVECTOR3);
+	//m_pBillboardSample = CObjectBillboard::Create();
+	//m_pBillboardSample->SetPos(INITVECTOR3);
 
-	m_pXModelSample = CObjectX::Create("data\\MODEL\\player00.x");
-	m_pXModelSample->SetPos(D3DXVECTOR3(-200.0f, 0.0f, 0.0f));
+	//m_pXModelSample = CObjectX::Create("data\\MODEL\\player00.x");
+	//m_pXModelSample->SetPos(D3DXVECTOR3(-200.0f, 0.0f, 0.0f));
 
 	//m_pMeshFieldSample = CObjmeshField::Create();
 	//m_pMeshFieldSample->SetPos(D3DXVECTOR3(0.0f, 0.0f, 200.0f));
@@ -101,7 +106,12 @@ HRESULT CGame::Init(void)
 
 	//m_pMeshCylinderSample = CObjmeshCylinder::Create();
 
-	//m_pMeshDomeSample = CObjmeshDome::Create();
+	m_pMeshDome = CObjmeshDome::Create();
+	m_pMeshDome->SetTexture("data\\TEXTURE\\SkyBG.jpg");
+
+	m_pMeshDome = CObjmeshDome::Create();
+	m_pMeshDome->SetTexture("data\\TEXTURE\\SkyBG.jpg");
+	m_pMeshDome->SetRot(D3DXVECTOR3(D3DX_PI, D3DX_PI * 0.9f, 0.0f));
 
 	m_pCubeBlock = CCubeBlock::Create();
 	m_pCubeBlock->SetPos(D3DXVECTOR3(0.0f, 100.0f, 0.0f));
@@ -123,6 +133,36 @@ HRESULT CGame::Init(void)
 
 	m_pBoss = CBoss::Create("data\\MODEL\\boss.x");
 	m_pBoss->SetPos(D3DXVECTOR3(100.0f, 300.0f, 100.0f));
+
+	m_p2DUI_Attention = CObject2D::Create();
+	m_p2DUI_Attention->SetPos(D3DXVECTOR3(130.0f, 600.0f, 0.0f));
+	m_p2DUI_Attention->SetWight(150.0f);
+	m_p2DUI_Attention->SetHeight(40.0f);
+	m_p2DUI_Attention->SetTexture("data\\TEXTURE\\UI_Attention.png");
+
+	m_p2DUI_AttentionOK = CObject2D::Create();
+	m_p2DUI_AttentionOK->SetPos(D3DXVECTOR3(130.0f, 650.0f, 0.0f));
+	m_p2DUI_AttentionOK->SetWight(100.0f);
+	m_p2DUI_AttentionOK->SetHeight(100.0f);
+	m_p2DUI_AttentionOK->SetTexture("data\\TEXTURE\\UI_AttentionOFF.png");
+
+	m_p2DUI_Dodge = CObject2D::Create();
+	m_p2DUI_Dodge->SetPos(D3DXVECTOR3(1120.0f, 550.0f, 0.0f));
+	m_p2DUI_Dodge->SetWight(150.0f);
+	m_p2DUI_Dodge->SetHeight(40.0f);
+	m_p2DUI_Dodge->SetTexture("data\\TEXTURE\\UI_Dodge.png");
+
+	m_p2DUI_Jump = CObject2D::Create();
+	m_p2DUI_Jump->SetPos(D3DXVECTOR3(1170.0f, 600.0f, 0.0f));
+	m_p2DUI_Jump->SetWight(150.0f);
+	m_p2DUI_Jump->SetHeight(40.0f);
+	m_p2DUI_Jump->SetTexture("data\\TEXTURE\\UI_Jump.png");
+
+	m_p2DUI_Attack = CObject2D::Create();
+	m_p2DUI_Attack->SetPos(D3DXVECTOR3(1120.0f, 650.0f, 0.0f));
+	m_p2DUI_Attack->SetWight(150.0f);
+	m_p2DUI_Attack->SetHeight(40.0f);
+	m_p2DUI_Attack->SetTexture("data\\TEXTURE\\UI_Attack.png");
 
 	if (m_pPause == NULL)
 	{
@@ -176,6 +216,8 @@ void CGame::Update(void)
 	}
 
 	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
+
 	if (pInputKeyboard->GetTrigger(DIK_1) == true)
 	{
 		m_pCubeBlock = CCubeBlock::Create();
@@ -213,6 +255,20 @@ void CGame::Update(void)
 	{
 		CNumberFall* pNumber = CNumberFall::Create();
 		pNumber->SetPos(D3DXVECTOR3(0.0f, 300.0f, 0.0f));
+	}
+
+	//’–Ú‚ÌØ‚è‘Ö‚¦
+	if (pInputKeyboard->GetTrigger(DIK_LSHIFT) == true ||
+		pInputJoypad->GetTrigger(CInputJoypad::BUTTON_L, 0) == true)
+	{
+		if (CManager::GetInstance()->GetCamera()->GetAttention() == false)
+		{
+			m_p2DUI_AttentionOK->SetTexture("data\\TEXTURE\\UI_AttentionON.png");
+		}
+		else
+		{
+			m_p2DUI_AttentionOK->SetTexture("data\\TEXTURE\\UI_AttentionOFF.png");
+		}
 	}
 
 #endif

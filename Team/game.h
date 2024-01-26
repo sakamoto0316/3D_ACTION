@@ -59,14 +59,19 @@ private:
 	static CPause *m_pPause;				//ポーズのポインタ
 	static CScore *m_pScore;				//スコアのポインタ
 	static CTime *m_pTime;
-	static CObject2D *m_p2DSample;			//2Dポリゴンのサンプル
+	static CObject2D* m_p2DSample;			//2Dポリゴンのサンプル
+	static CObject2D* m_p2DUI_Attack;		//攻撃の2DUI
+	static CObject2D* m_p2DUI_Jump;			//ジャンプの2DUI
+	static CObject2D* m_p2DUI_Dodge;		//回避の2DUI
+	static CObject2D* m_p2DUI_Attention;	//注目の2DUI
+	static CObject2D *m_p2DUI_AttentionOK;	//注目の2DUI
 	static CObject3D *m_p3DSample;			//3Dポリゴンのサンプル
 	static CObjectBillboard* m_pBillboardSample; //Billboardポリゴンのサンプル
 	static CObjectX* m_pXModelSample;		//Xモデルのサンプル
 	static CObjmeshField* m_pMeshFieldSample;//メッシュフィールドのサンプル
 	static CObjmeshWall* m_pMeshWallSample;//メッシュウォールのサンプル
 	static CObjmeshCylinder* m_pMeshCylinderSample;//メッシュシリンダーのサンプル
-	static CObjmeshDome* m_pMeshDomeSample;//メッシュドームのサンプル
+	static CObjmeshDome* m_pMeshDome;		//メッシュドーム
 	static CCubeBlock* m_pCubeBlock;		//キューブブロック
 	static CBoss* m_pBoss;					//ボス
 };

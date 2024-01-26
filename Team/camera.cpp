@@ -42,6 +42,7 @@ CCamera::CCamera()
 	CameraMode = CAMERAMODE_FOLLOW;
 	m_FollowTime = 0;
 	m_bFollowY = false;
+	m_bAttention = false;
 }
 
 //====================================================================
@@ -252,6 +253,8 @@ void CCamera::Update(void)
 				}
 
 				//右スティックの上下視点移動入力
+				m_rot.x += pInputJoypad->Get_Stick_Right(0).y * CAMERA_VR_SPEED;
+
 				m_rot.x -= pInputMouse->GetMouseMove().y * CAMERA_VR_SPEED;
 			}
 		}
@@ -273,6 +276,8 @@ void CCamera::Update(void)
 		}
 
 		//右スティックの左右視点移動入力
+		m_rot.y += pInputJoypad->Get_Stick_Right(0).x * CAMERA_VR_SPEED;
+
 		m_rot.y += pInputMouse->GetMouseMove().x * CAMERA_VR_SPEED;
 
 
@@ -292,7 +297,7 @@ void CCamera::Update(void)
 
 		m_posVDest.x = pPlayer->GetCameraPos().x + sinf(-pPlayer->GetRot().y) * MODEL_DISTANCE + sinf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE;
 		m_posVDest.z = pPlayer->GetCameraPos().z + cosf(-pPlayer->GetRot().y) * MODEL_DISTANCE + cosf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE;
-		m_posVDest.y = pPlayer->GetCameraPos().y + 100.0f + sinf(-m_rot.x) * CAMERA_DISTANCE;
+		m_posVDest.y = pPlayer->GetCameraPos().y + 175.0f + sinf(-m_rot.x) * CAMERA_DISTANCE;
 
 		m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING;
 		m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
@@ -314,9 +319,14 @@ void CCamera::Update(void)
 		}
 
 
-		//キーボード
-		if (pInputKeyboard->GetPress(DIK_LSHIFT) == true ||
-			pInputJoypad->GetPress(CInputJoypad::BUTTON_L,0) == true)
+		//注目の切り替え
+		if (pInputKeyboard->GetTrigger(DIK_LSHIFT) == true ||
+			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_L,0) == true)
+		{
+			m_bAttention = m_bAttention ? false : true;
+		}
+
+		if (m_bAttention == true)
 		{
 			m_FollowTime = 10;
 		}

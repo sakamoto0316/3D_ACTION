@@ -4,6 +4,7 @@ CSound::SOUNDINFO CSound::m_aSoundInfo[SOUND_LABEL_MAX] =
 {
 	{ "data/BGM/Title.wav", -1 },				// タイトルBGM
 	{ "data/BGM/Game.wav", -1 },				// ゲームBGM
+	{ "data/BGM/Boss_H_100.wav", -1 },			// ボスBGM
 	{ "data/BGM/Result.wav", -1 },				// リザルトBGM
 	{ "data/SE/Select.wav", 0 },				// 選択音
 	{ "data/SE/Enter.wav", 0 },					// 決定音

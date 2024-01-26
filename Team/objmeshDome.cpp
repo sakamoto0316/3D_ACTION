@@ -12,11 +12,11 @@
 #include "texture.h"
 
 #define WAIGHT_SIZE (17)			//横の頂点数(９or１７or３３)偶数だとバグる
-#define HEIGHT_SIZE (7)				//縦の頂点数
+#define HEIGHT_SIZE (8)				//縦の頂点数
 #define WAIGHT_CENTER (0.5f)		//横の原点(0.0f～1.0f)
 #define HEIGHT_CENTER (1.0f)		//縦の原点(0.0f～1.0f)
-#define CYLINDER_HEIGHT (150.0f)	//壁一枚の高さ
-#define CYLINDER_RADIUS (2800.0f)	//円の半径
+#define CYLINDER_HEIGHT (750.0f)	//壁一枚の高さ
+#define CYLINDER_RADIUS (6000.0f)	//円の半径
 
 //====================================================================
 //コンストラクタ
@@ -114,27 +114,27 @@ HRESULT CObjmeshDome::Init(void)
 		//頂点カラーの設定
 		pVtx[nCnt].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
-		////テクスチャ座標の設定
-		//if (nCenterW % 2 == 0)
-		//{
-		//	pVtx[nCnt].tex.x = 0.0f;
-		//}
-		//else
-		//{
-		//	pVtx[nCnt].tex.x = 1.0f;
-		//}
-		//if (nCenterH % 2 == 0)
-		//{
-		//	pVtx[nCnt].tex.y = 0.0f;
-		//}
-		//else
-		//{
-		//	pVtx[nCnt].tex.y = 1.0f;
-		//}
-
 		//テクスチャ座標の設定
-		pVtx[nCnt].tex.x = 1.0f / (WAIGHT_SIZE - 1) * nCenterW;
-		pVtx[nCnt].tex.y = 1.0f / (HEIGHT_SIZE - 1) * nCenterH;
+		if (nCenterW % 2 == 0)
+		{
+			pVtx[nCnt].tex.x = 0.0f;
+		}
+		else
+		{
+			pVtx[nCnt].tex.x = 1.0f;
+		}
+		if (nCenterH % 2 == 0)
+		{
+			pVtx[nCnt].tex.y = 0.0f;
+		}
+		else
+		{
+			pVtx[nCnt].tex.y = 1.0f;
+		}
+
+		////テクスチャ座標の設定
+		//pVtx[nCnt].tex.x = 1.0f / (WAIGHT_SIZE - 1) * nCenterW;
+		//pVtx[nCnt].tex.y = 1.0f / (HEIGHT_SIZE - 1) * nCenterH;
 
 
 		if ((nCnt - nCenterH) % (WAIGHT_SIZE - 1) == 0 && nCnt != 0 && nCnt != (WAIGHT_SIZE - 1) * nCenterH + nCenterH)

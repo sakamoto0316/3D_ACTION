@@ -42,6 +42,8 @@ public:
 	void SetFollowTime(int Time) { m_FollowTime = Time; }
 	D3DXVECTOR3 GetPosV(void) { return m_posV; }
 	D3DXVECTOR3 GetPosR(void) { return m_posR; }
+	void SetAttention(bool Set) { m_bAttention = Set; }
+	bool GetAttention(void) { return m_bAttention; }
 
 private:
 	D3DXMATRIX m_mtxView;		//ビューマトリックス
@@ -64,6 +66,7 @@ private:
 	float m_fBibPowor;			//カメラ振動の強さ
 	int m_FollowTime;			//回り込み時間
 	int m_FollowDistance;		//追従時のカメラ距離
+	bool m_bAttention;			//注目状態
 };
 
 #endif

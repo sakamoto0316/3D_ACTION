@@ -72,6 +72,7 @@ private:
 	void WarpUpdate(D3DXVECTOR3* pos);		//ワープ更新処理
 	void Warp(ATTACK Pattern);				//ワープ位置指定処理
 	void AttackUpdate(D3DXVECTOR3* pos);	//攻撃更新処理
+	void AttackSelect(void);				//攻撃選択処理
 	void AttackBullet(D3DXVECTOR3* pos);	//攻撃パターン射撃
 	void AttackRush(D3DXVECTOR3* pos);		//攻撃パターン突進
 	void AttackBlockRun(D3DXVECTOR3* pos);	//攻撃パターンブロックラン

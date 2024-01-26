@@ -100,7 +100,7 @@ public:
 	bool GetRelease(JOYKEY key, int nPlayer);
 
 	D3DXVECTOR3 Get_Stick_Left(int nPlayer);
-	//D3DXVECTOR3 Get_Stick_Right(int nPlayer);
+	D3DXVECTOR3 Get_Stick_Right(int nPlayer);
 	//float Get_Trigger_Left(int nPlayer);
 	//float Get_Trigger_Right(int nPlayer);
 

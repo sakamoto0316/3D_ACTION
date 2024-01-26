@@ -17,7 +17,7 @@ public:
 	CObject2D(int nPriority);
 	~CObject2D();
 
-	static CObject2D *Create(int nPriority = 4);
+	static CObject2D *Create(int nPriority = 5);
 
 	virtual HRESULT Init(void);
 	virtual void Uninit(void);

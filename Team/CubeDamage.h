@@ -16,7 +16,7 @@ class CObject3D;
 class CCubeDamage : public CObjmeshCube
 {
 public:
-	CCubeDamage(int nPriority = 5);
+	CCubeDamage(int nPriority = 4);
 	~CCubeDamage();
 
 	static CCubeDamage* Create(void);

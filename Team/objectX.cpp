@@ -24,6 +24,11 @@ CObjectX::CObjectX(int nPriority) :CObject(nPriority)
 	m_MatColor = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_bUseColor = false;
 	m_Scaling = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+
+	for(int nCnt = 0; nCnt < 64; nCnt++)
+	{
+		m_IdxTextureNumber[nCnt] = -1;
+	}
 }
 
 //====================================================================

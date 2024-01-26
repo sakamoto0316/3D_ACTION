@@ -344,6 +344,34 @@ D3DXVECTOR3 CInputJoypad::Get_Stick_Left(int nPlayer)
 //====================================================================
 //ゲームパッドのLスティックの情報を所得
 //====================================================================
+D3DXVECTOR3 CInputJoypad::Get_Stick_Right(int nPlayer)
+{
+	//ローカル変数宣言
+	D3DXVECTOR3 Stick = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	Stick.x = (float)m_JoyKeyState[nPlayer].Gamepad.sThumbRX / (float)SHRT_MAX;
+	//if (fabsf(Stick.x) < (float)XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE / (float)SHRT_MAX)
+	//{
+	//	Stick.x = 0.0f;
+	//}
+
+	Stick.y = (float)m_JoyKeyState[nPlayer].Gamepad.sThumbRY / (float)SHRT_MAX;
+	//if (fabsf(Stick.y) < (float)XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE / (float)SHRT_MAX)
+	//{
+	//	Stick.y = 0.0f;
+	//}
+
+	if (Stick.x > 0.5f || Stick.x < -0.5f && Stick.y > 0.5f || Stick.x < -0.5f)
+	{
+		D3DXVec3Normalize(&Stick, &Stick);	//ベクトルを正規化する
+	}
+
+	return Stick;
+}
+
+//====================================================================
+//ゲームパッドのLスティックの情報を所得
+//====================================================================
 bool CInputJoypad::Get_LStick_Trigger(JOYPAD_LSTICK Type, int nPlayer)
 {
 	//ローカル変数宣言

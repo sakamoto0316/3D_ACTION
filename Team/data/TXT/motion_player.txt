@@ -52,7 +52,7 @@ CHARACTERSET
 		PARTSSET
 		INDEX = 3					# åï
 		PARENT = 2					# (êe)ëÃ
-		POS = 0.0 45.0 0.0
+		POS = 0.0 70.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 

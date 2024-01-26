@@ -14,7 +14,7 @@
 class CCubeBlock : public CObjmeshCube
 {
 public:
-	CCubeBlock(int nPriority = 4);
+	CCubeBlock(int nPriority = 3);
 	~CCubeBlock();
 
 	static CCubeBlock* Create(void);

@@ -22,18 +22,21 @@
 #define BLOCK_WIGHT (300.0f)		//横幅
 #define BLOCK_HEIGHT (300.0f)		//縦幅
 #define WALL_UPEND (20.0f)			//上昇位置
-#define BOSS_LIFE (30000.0f)		//ボスの体力
+#define BOSS_LIFE (10000.0f)		//ボスの体力
 #define BULLET_INTERVAL (20)		//弾の発射感覚
 #define COLLISION_SIZE (D3DXVECTOR3(90.0f,90.0f,90.0f))		//当たり判定
-#define BULLET_DAMAGE (50.0f)		//弾のダメージ量
 #define BULLET_LIFE (600)			//弾の寿命
 #define BLOCKRUN_TIME (600)			//ブロックランの時間
 #define BLOCKRUN_SPEED (5.0f)		//ブロックランの速度
-#define BLOCKRUN_DAMAGE (30.0f)		//ブロックランのダメージ
-#define COOLTIME_BULLET (30)		//弾攻撃のクールタイム
-#define COOLTIME_RUSH (30)			//突進攻撃のクールタイム
-#define COOLTIME_BLOCKRUN (100)		//ブロックランのクールタイム
+#define COOLTIME_BULLET (240)		//弾攻撃のクールタイム
+#define BULLET_DAMAGE (50.0f)		//弾のダメージ量
+#define RUSH_DAMAGE (90.0f)			//突進攻撃のダメージ
+#define BLOCKRUN_DAMAGE (60.0f)		//ブロックランのダメージ
+#define SPINPILLAR_DAMAGE (60.0f)	//回転柱のダメージ
+#define COOLTIME_RUSH (180)			//突進攻撃のクールタイム
+#define COOLTIME_BLOCKRUN (300)		//ブロックランのクールタイム
 #define COOLTIME_SPINPILLAR (30)	//回転柱のクールタイム
+#define COOLTIME_RAIN (240)			//雨攻撃のクールタイム
 
 //====================================================================
 //コンストラクタ
@@ -154,13 +157,16 @@ void CBoss::Update(void)
 		AttackUpdate(&pos);
 	}
 
-	if (m_AttackCoolTime > 0)
+	if (m_Action == ACTION_NORMAL)
 	{
-		m_AttackCoolTime--;
-	}
-	else
-	{
-
+		if (m_AttackCoolTime > 0)
+		{
+			m_AttackCoolTime--;
+		}
+		else
+		{
+			AttackSelect();
+		}
 	}
 
 	if(CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_6) == true)
@@ -207,14 +213,14 @@ void CBoss::Update(void)
 
 	for (int nCnt = 0; nCnt < 4; nCnt++)
 	{
-		CCubeDamage* pCubeDamage = CCubeDamage::Create();
-		pCubeDamage->SetUseSpin(true);
-		pCubeDamage->SetSpinPos(pos);
-		pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
-		pCubeDamage->SetSpinDistance(150.0f);
-		pCubeDamage->SetSpinSpeedX(0.05f);
-		pCubeDamage->SetBreak(true);
-		pCubeDamage->SetLife(1);
+		//CCubeDamage* pCubeDamage = CCubeDamage::Create();
+		//pCubeDamage->SetUseSpin(true);
+		//pCubeDamage->SetSpinPos(pos);
+		//pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
+		//pCubeDamage->SetSpinDistance(150.0f);
+		//pCubeDamage->SetSpinSpeedX(0.05f);
+		//pCubeDamage->SetBreak(true);
+		//pCubeDamage->SetLife(1);
 
 		//pCubeDamage = CCubeDamage::Create();
 		//pCubeDamage->SetUseSpin(true);
@@ -354,8 +360,9 @@ void CBoss::Warp(ATTACK Pattern)
 	case ATTACK_NOT:
 
 		m_WarpPos.x = (float)(rand() % 1001) - 500.0f;
-		m_WarpPos.y = (float)(rand() % 201) + 250.0f;
+		m_WarpPos.y = (float)(rand() % 101) + 250.0f;
 		m_WarpPos.z = (float)(rand() % 1001) - 500.0f;
+		m_AttackCoolTime = 5;
 		break;
 
 	case ATTACK_BULLET:
@@ -404,7 +411,7 @@ void CBoss::Warp(ATTACK Pattern)
 
 		m_rot.y = D3DX_PI;
 		m_WarpPos.x = 0.0f;
-		m_WarpPos.y = 350.0f;
+		m_WarpPos.y = 550.0f;
 		m_WarpPos.z = -500.0f;
 		break;
 
@@ -450,6 +457,39 @@ void CBoss::AttackUpdate(D3DXVECTOR3* pos)
 	case ATTACK_RAIN:
 		AttackRain(pos);
 		break;
+	}
+}
+
+//====================================================================
+//攻撃選択処理
+//====================================================================
+void CBoss::AttackSelect(void)
+{
+	int RandAttack = rand() % 201;
+
+	if (RandAttack <= 10)
+	{
+		Warp(ATTACK_BULLET);
+	}
+	else if (RandAttack <= 40)
+	{
+		Warp(ATTACK_RUSH);
+	}
+	else if (RandAttack <= 50)
+	{
+		Warp(ATTACK_BLOCKRUN);
+	}
+	else if (RandAttack <= 85)
+	{
+		Warp(ATTACK_SPINPILLAR);
+	}
+	else if (RandAttack <= 100)
+	{
+		Warp(ATTACK_RAIN);
+	}
+	else if (RandAttack <= 200)
+	{
+		Warp(ATTACK_NOT);
 	}
 }
 
@@ -587,7 +627,7 @@ void CBoss::AttackRush(D3DXVECTOR3* pos)
 		pCubeDamage->SetSize(D3DXVECTOR3(10.0f, 50.0f, 10.0f));
 		pCubeDamage->SetLife(20);
 		pCubeDamage->SetBreak(false);
-		pCubeDamage->SetDamage(30.0f);
+		pCubeDamage->SetDamage(RUSH_DAMAGE);
 
 		pCubeDamage = CCubeDamage::Create();
 		pCubeDamage->SetPos(D3DXVECTOR3(
@@ -601,7 +641,7 @@ void CBoss::AttackRush(D3DXVECTOR3* pos)
 		pCubeDamage->SetSize(D3DXVECTOR3(10.0f, 50.0f, 10.0f));
 		pCubeDamage->SetLife(20);
 		pCubeDamage->SetBreak(false);
-		pCubeDamage->SetDamage(30.0f);
+		pCubeDamage->SetDamage(RUSH_DAMAGE);
 
 		if (pos->x > 500.0f ||
 			pos->x < -500.0f || 
@@ -800,6 +840,7 @@ void CBoss::AttackSpinPillar(D3DXVECTOR3* pos)
 				pCubeDamage->SetLife(900);
 				pCubeDamage->SetSpinDisMove(3.0f);
 				pCubeDamage->SetSize(D3DXVECTOR3(20.0f, 5000.0f, 20.0f));
+				pCubeDamage->SetDamage(SPINPILLAR_DAMAGE);
 			}
 		}
 		break;
@@ -808,7 +849,7 @@ void CBoss::AttackSpinPillar(D3DXVECTOR3* pos)
 		m_move = INITVECTOR3;
 		Warp(ATTACK_NOT);
 		SetDefColor();
-		m_AttackCoolTime = COOLTIME_BLOCKRUN;
+		m_AttackCoolTime = COOLTIME_SPINPILLAR;
 		break;
 	}
 }
@@ -827,7 +868,7 @@ void CBoss::AttackRain(D3DXVECTOR3* pos)
 
 		m_move = D3DXVECTOR3(0.0f, -20.0f, 0.0f);
 
-		if (pos->y < 250.0f)
+		if (pos->y < 200.0f)
 		{
 			m_AttackWave++;
 		}
@@ -837,7 +878,7 @@ void CBoss::AttackRain(D3DXVECTOR3* pos)
 
 		m_move = D3DXVECTOR3(0.0f, 20.0f, 0.0f);
 
-		if (pos->y >= 500.0f)
+		if (pos->y >= 300.0f)
 		{
 			m_AttackWave++;
 		}
@@ -873,7 +914,7 @@ void CBoss::AttackRain(D3DXVECTOR3* pos)
 		m_move = INITVECTOR3;
 		Warp(ATTACK_NOT);
 		SetDefColor();
-		m_AttackCoolTime = COOLTIME_BLOCKRUN;
+		m_AttackCoolTime = COOLTIME_RAIN;
 		break;
 	}
 }
@@ -884,6 +925,11 @@ void CBoss::AttackRain(D3DXVECTOR3* pos)
 void CBoss::HitDamage(float Damage)
 {
 	m_fLife -= Damage;
+	if (m_fLife < 0.0f)
+	{
+		m_fLife = 0.0f;
+	}
+
 	m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
 	m_State = STATE_DAMAGE;
 	m_nStateCount = 5;
