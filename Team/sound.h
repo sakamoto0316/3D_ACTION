@@ -21,6 +21,16 @@ public:
 		SOUND_LABEL_SE_SELECT_PUSH,			// 選択音
 		SOUND_LABEL_SE_ENTER_PUSH,			// 決定音
 		SOUND_LABEL_SE_WARNING,				// 警告音
+		SOUND_LABEL_SE_BOSS_BULLET,			// ボスの射撃音
+		SOUND_LABEL_SE_BOSS_RAIN,			// ボスの雨攻撃発動音
+		SOUND_LABEL_SE_BOSS_RUSH,			// ボスの突進音
+		SOUND_LABEL_SE_DAMAGE_BOSS,			// ボスのダメージ音
+		SOUND_LABEL_SE_DAMAGE_PLAYER,		// プレイヤーダメージ音
+		SOUND_LABEL_SE_ATTACK_NORMAL,		// プレイヤー通常攻撃音
+		SOUND_LABEL_SE_ATTACK_SKY,			// プレイヤー空中攻撃音
+		SOUND_LABEL_SE_DODGE,				// プレイヤー回避音
+		SOUND_LABEL_SE_JUMP,				// プレイヤージャンプ音
+		SOUND_LABEL_SE_ATTENTION,			// 注目切り替え音
 		SOUND_LABEL_MAX,
 	} SOUND_LABEL;
 

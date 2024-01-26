@@ -12,14 +12,16 @@
 #include "debugproc.h"
 #include "player.h"
 #include "boss.h"
+#include "sound.h"
 
 //マクロ定義
-#define CAMERA_DISTANCE (550.0f)//視点と注視点の距離
-#define MODEL_DISTANCE (10.0f)	//モデルと注視点の距離
-#define CAMERA_SPEED (3.0f)		//カメラの移動スピード
-#define CAMERA_VR_SPEED (0.03f)	//カメラの視点スピード
-#define CAMERA_HOMING (0.2f)	//カメラの追従スピード
-#define POS_HOMING (0.9f)		//位置への追従スピード
+#define CAMERA_DISTANCE (550.0f)	//視点と注視点の距離
+#define MODEL_DISTANCE (10.0f)		//モデルと注視点の距離
+#define CAMERA_SPEED (3.0f)			//カメラの移動スピード
+#define CAMERA_VR_SPEED (0.03f)		//カメラの視点スピード
+#define CAMERA_PAD_VR_SPEED (0.05f)	//カメラのパッドの視点スピード
+#define CAMERA_HOMING (0.2f)		//カメラの追従スピード
+#define POS_HOMING (0.9f)			//位置への追従スピード
 #define DOWNVIEW_POSV (D3DXVECTOR3(0.0f, 1000.0f, -5.0f))	//見下ろしの視点
 #define DOWNVIEW_POSR (D3DXVECTOR3(0.0f, 0.0f, 0.0f))		//見下ろしの注視点
 #define SIDEVIEW_POSV (D3DXVECTOR3(0.0f, 200.0f, -1000.0f))	//2Dの視点
@@ -276,7 +278,7 @@ void CCamera::Update(void)
 		}
 
 		//右スティックの左右視点移動入力
-		m_rot.y += pInputJoypad->Get_Stick_Right(0).x * CAMERA_VR_SPEED;
+		m_rot.y += pInputJoypad->Get_Stick_Right(0).x * CAMERA_PAD_VR_SPEED;
 
 		m_rot.y += pInputMouse->GetMouseMove().x * CAMERA_VR_SPEED;
 
@@ -323,6 +325,9 @@ void CCamera::Update(void)
 		if (pInputKeyboard->GetTrigger(DIK_LSHIFT) == true ||
 			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_L,0) == true)
 		{
+			//ゲームのSEを再生する
+			CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_ATTENTION);
+
 			m_bAttention = m_bAttention ? false : true;
 		}
 

@@ -17,12 +17,15 @@
 #include "input.h"
 #include "CubeBlock.h"
 #include "CubeDamage.h"
+#include "sound.h"
 
 //マクロ定義
 #define BLOCK_WIGHT (300.0f)		//横幅
 #define BLOCK_HEIGHT (300.0f)		//縦幅
 #define WALL_UPEND (20.0f)			//上昇位置
-#define BOSS_LIFE (10000.0f)		//ボスの体力
+#define BOSS_LIFE (5000.0f)			//ボスの体力
+#define BOSS_LIFESPEED_PLUS (128.0f)//体力増の移動量
+#define BOSS_LIFESPEED_DEL (64.0f)	//体力減の移動量
 #define BULLET_INTERVAL (20)		//弾の発射感覚
 #define COLLISION_SIZE (D3DXVECTOR3(90.0f,90.0f,90.0f))		//当たり判定
 #define BULLET_LIFE (600)			//弾の寿命
@@ -50,6 +53,8 @@ CBoss::CBoss(int nPriority) : CObjectX(nPriority)
 	m_bCollision = false;
 	m_MoveCount = 0.0f;
 	m_fLife = BOSS_LIFE;
+	m_fMoveLife = 0.0f;
+	m_bDelLife = false;
 	m_fLifeMax = m_fLife;
 	m_State = STATE_NORMAL;
 	m_Action = ACTION_NORMAL;
@@ -60,6 +65,8 @@ CBoss::CBoss(int nPriority) : CObjectX(nPriority)
 	m_AttackCoolTime = 0;
 	m_SpinCount = 0.0f;
 	m_Scaling = 1.0f;
+	m_nForm = 0;
+	m_bRevivalColorSwitch = false;
 
 	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
@@ -111,7 +118,7 @@ HRESULT CBoss::Init(char* pModelName)
 	m_pLifeGauge->SetWight(800.0f);
 	m_pLifeGauge->SetHeight(10.0f);
 	m_pLifeGauge->SetColor(D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f));
-	m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
+	m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fMoveLife);
 
 	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
@@ -151,6 +158,11 @@ void CBoss::Update(void)
 	{
 		//ワープ処理
 		WarpUpdate(&pos);
+	}
+	else if (m_Action == ACTION_REVIVAL)
+	{
+		//蘇生処理
+		AttackRevival(&pos);
 	}
 	else if (m_Action == ACTION_ATTACK)
 	{
@@ -209,36 +221,22 @@ void CBoss::Update(void)
 		}
 	}
 
-	m_SpinCount += 0.05f;
-
-	for (int nCnt = 0; nCnt < 4; nCnt++)
+	if (m_nForm == 1)
 	{
-		//CCubeDamage* pCubeDamage = CCubeDamage::Create();
-		//pCubeDamage->SetUseSpin(true);
-		//pCubeDamage->SetSpinPos(pos);
-		//pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
-		//pCubeDamage->SetSpinDistance(150.0f);
-		//pCubeDamage->SetSpinSpeedX(0.05f);
-		//pCubeDamage->SetBreak(true);
-		//pCubeDamage->SetLife(1);
+		m_SpinCount += 0.075f;
 
-		//pCubeDamage = CCubeDamage::Create();
-		//pCubeDamage->SetUseSpin(true);
-		//pCubeDamage->SetSpinPos(pos);
-		//pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
-		//pCubeDamage->SetSpinDistance(150.0f);
-		//pCubeDamage->SetSpinSpeedY(0.05f);
-		//pCubeDamage->SetBreak(true);
-		//pCubeDamage->SetLife(1);
-
-		//pCubeDamage = CCubeDamage::Create();
-		//pCubeDamage->SetUseSpin(true);
-		//pCubeDamage->SetSpinPos(pos);
-		//pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
-		//pCubeDamage->SetSpinDistance(150.0f);
-		//pCubeDamage->SetSpinSpeedZ(0.05f);
-		//pCubeDamage->SetBreak(true);
-		//pCubeDamage->SetLife(1);
+		for (int nCnt = 0; nCnt < 10; nCnt++)
+		{
+			CCubeDamage* pCubeDamage = CCubeDamage::Create();
+			pCubeDamage->SetUseSpin(true);
+			pCubeDamage->SetSpinPos(pos);
+			pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.2f,  m_SpinCount + nCnt * D3DX_PI * 0.25f, m_SpinCount + nCnt * D3DX_PI * 0.2f));
+			pCubeDamage->SetSpinDistance(350.0f);
+			pCubeDamage->SetSpinSpeedY(0.05f);
+			pCubeDamage->SetBreak(false);
+			pCubeDamage->SetLife(1);
+			pCubeDamage->SetDamage(50.0f);
+		}
 	}
 
 	//位置更新
@@ -248,6 +246,32 @@ void CBoss::Update(void)
 	SetRot(m_rot);
 
 	SetScaling(D3DXVECTOR3(m_Scaling, m_Scaling, m_Scaling));
+
+	//ライフゲージの位置管理
+	if (m_pLifeGauge != nullptr)
+	{
+		if (m_bDelLife == false)
+		{
+			m_fMoveLife += BOSS_LIFESPEED_PLUS;
+
+			if (m_fMoveLife >= m_fLife)
+			{
+				m_fMoveLife = m_fLife;
+				m_bDelLife = true;
+			}
+		}
+		else
+		{
+			m_fMoveLife -= BOSS_LIFESPEED_DEL;
+
+			if (m_fMoveLife <= m_fLife)
+			{
+				m_fMoveLife = m_fLife;
+			}
+		}
+
+		m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fMoveLife);
+	}
 
 	//状態管理
 	StateManager();
@@ -297,6 +321,8 @@ void CBoss::StateManager(void)
 			m_nStateCount = 0;
 		}
 		break;
+	case STATE_INVINCIBLE:
+		break;
 	}
 
 	if (m_nStateCount > 0)
@@ -335,9 +361,16 @@ void CBoss::WarpUpdate(D3DXVECTOR3 *pos)
 			{
 				m_Action = ACTION_NORMAL;
 			}
+			else if (m_AttackPattern == ATTACK_REVIVAL)
+			{
+				m_Action = ACTION_REVIVAL;
+			}
 			else
 			{
 				m_Action = ACTION_ATTACK;
+
+				//ゲームのSEを再生する
+				CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_WARNING);
 			}
 		}
 	}
@@ -513,6 +546,9 @@ void CBoss::AttackBullet(D3DXVECTOR3* pos)
 		m_AttackCount++;
 		if (m_AttackCount % BULLET_INTERVAL == 0)
 		{
+			//ゲームのSEを再生する
+			CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_BOSS_BULLET);
+
 			for (int nCnt = 0; nCnt < 8; nCnt++)
 			{
 				CCubeDamage* pCubeDamage = CCubeDamage::Create();
@@ -599,6 +635,9 @@ void CBoss::AttackRush(D3DXVECTOR3* pos)
 	switch (m_AttackWave)
 	{
 	case 0:
+		//ゲームのSEを再生する
+		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_BOSS_RUSH);
+
 		m_move.x = -sinf(m_rot.y) * 2.0f;
 		m_move.y = -10.0f;
 		m_move.z = -cosf(m_rot.y) * 2.0f;
@@ -621,31 +660,47 @@ void CBoss::AttackRush(D3DXVECTOR3* pos)
 			pos->y + 10.0f,
 			pos->z - cosf(m_rot.y) * 100.0f));
 		pCubeDamage->SetMove(D3DXVECTOR3(
-		sinf(m_rot.y + D3DX_PI * 0.5f) * 15.0f,
-		0.0f,
-		cosf(m_rot.y + D3DX_PI * 0.5f) * 15.0f));
-		pCubeDamage->SetSize(D3DXVECTOR3(10.0f, 50.0f, 10.0f));
-		pCubeDamage->SetLife(20);
+			sinf(m_rot.y + D3DX_PI * 0.5f) * 15.0f,
+			0.0f,
+			cosf(m_rot.y + D3DX_PI * 0.5f) * 15.0f));
+		if (m_nForm == 0)
+		{
+			pCubeDamage->SetSize(D3DXVECTOR3(10.0f, 50.0f, 10.0f));
+			pCubeDamage->SetLife(20);
+		}
+		else if (m_nForm == 1)
+		{
+			pCubeDamage->SetSize(D3DXVECTOR3(10.0f, 100.0f, 10.0f));
+			pCubeDamage->SetLife(50);
+		}
 		pCubeDamage->SetBreak(false);
 		pCubeDamage->SetDamage(RUSH_DAMAGE);
 
 		pCubeDamage = CCubeDamage::Create();
 		pCubeDamage->SetPos(D3DXVECTOR3(
 			pos->x - sinf(m_rot.y) * 100.0f,
-			pos->y + 10.0f, 
+			pos->y + 10.0f,
 			pos->z - cosf(m_rot.y) * 100.0f));
 		pCubeDamage->SetMove(D3DXVECTOR3(
 			sinf(m_rot.y + D3DX_PI * -0.5f) * 15.0f,
 			0.0f,
 			cosf(m_rot.y + D3DX_PI * -0.5f) * 15.0f));
-		pCubeDamage->SetSize(D3DXVECTOR3(10.0f, 50.0f, 10.0f));
-		pCubeDamage->SetLife(20);
+		if (m_nForm == 0)
+		{
+			pCubeDamage->SetSize(D3DXVECTOR3(10.0f, 50.0f, 10.0f));
+			pCubeDamage->SetLife(20);
+		}
+		else if (m_nForm == 1)
+		{
+			pCubeDamage->SetSize(D3DXVECTOR3(10.0f, 100.0f, 10.0f));
+			pCubeDamage->SetLife(50);
+		}
 		pCubeDamage->SetBreak(false);
 		pCubeDamage->SetDamage(RUSH_DAMAGE);
 
 		if (pos->x > 500.0f ||
-			pos->x < -500.0f || 
-			pos->z > 500.0f || 
+			pos->x < -500.0f ||
+			pos->z > 500.0f ||
 			pos->z < -500.0f)
 		{
 			m_AttackWave++;
@@ -765,7 +820,14 @@ void CBoss::AttackBlockRun(D3DXVECTOR3* pos)
 				pCubeBlock->SetPos(D3DXVECTOR3(375.0f, 200.0f, -500.0f));
 				break;
 			}
-			pCubeBlock->SetSize(D3DXVECTOR3(125.0f, 50.0f, 125.0f));
+			if (m_nForm == 0)
+			{
+				pCubeBlock->SetSize(D3DXVECTOR3(125.0f, 50.0f, 125.0f));
+			}
+			else if (m_nForm == 1)
+			{
+				pCubeBlock->SetSize(D3DXVECTOR3(75.0f, 50.0f, 75.0f));
+			}
 			pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, BLOCKRUN_SPEED));
 			pCubeBlock->SetUninitPos(D3DXVECTOR3(pCubeBlock->GetPos().x, pCubeBlock->GetPos().y, 625.0f));
 			pCubeBlock->SetBoolLife(true);
@@ -828,19 +890,42 @@ void CBoss::AttackSpinPillar(D3DXVECTOR3* pos)
 			m_Scaling = 1.0f;
 			m_AttackWave++;
 
-			for (int nCnt = 0; nCnt < 4; nCnt++)
+			//ゲームのSEを再生する
+			CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_BOSS_BULLET);
+
+			if (m_nForm == 0)
 			{
-				CCubeDamage* pCubeDamage = CCubeDamage::Create();
-				pCubeDamage->SetUseSpin(true);
-				pCubeDamage->SetSpinPos(*pos);
-				pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
-				pCubeDamage->SetSpinSpeedY(0.015f);
-				pCubeDamage->SetSpinDistance(100.0f);
-				pCubeDamage->SetBreak(true);
-				pCubeDamage->SetLife(900);
-				pCubeDamage->SetSpinDisMove(3.0f);
-				pCubeDamage->SetSize(D3DXVECTOR3(20.0f, 5000.0f, 20.0f));
-				pCubeDamage->SetDamage(SPINPILLAR_DAMAGE);
+				for (int nCnt = 0; nCnt < 4; nCnt++)
+				{
+					CCubeDamage* pCubeDamage = CCubeDamage::Create();
+					pCubeDamage->SetUseSpin(true);
+					pCubeDamage->SetSpinPos(*pos);
+					pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
+					pCubeDamage->SetSpinSpeedY(0.015f);
+					pCubeDamage->SetSpinDistance(100.0f);
+					pCubeDamage->SetBreak(true);
+					pCubeDamage->SetLife(900);
+					pCubeDamage->SetSpinDisMove(3.0f);
+					pCubeDamage->SetSize(D3DXVECTOR3(20.0f, 5000.0f, 20.0f));
+					pCubeDamage->SetDamage(SPINPILLAR_DAMAGE);
+				}
+			}
+			else if (m_nForm == 1)
+			{
+				for (int nCnt = 0; nCnt < 8; nCnt++)
+				{
+					CCubeDamage* pCubeDamage = CCubeDamage::Create();
+					pCubeDamage->SetUseSpin(true);
+					pCubeDamage->SetSpinPos(*pos);
+					pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.25f, m_SpinCount + nCnt * D3DX_PI * 0.25f, m_SpinCount + nCnt * D3DX_PI * 0.25f));
+					pCubeDamage->SetSpinSpeedY(0.015f);
+					pCubeDamage->SetSpinDistance(100.0f);
+					pCubeDamage->SetBreak(true);
+					pCubeDamage->SetLife(900);
+					pCubeDamage->SetSpinDisMove(3.0f);
+					pCubeDamage->SetSize(D3DXVECTOR3(20.0f, 5000.0f, 20.0f));
+					pCubeDamage->SetDamage(SPINPILLAR_DAMAGE);
+				}
 			}
 		}
 		break;
@@ -876,6 +961,9 @@ void CBoss::AttackRain(D3DXVECTOR3* pos)
 
 	case 1:
 
+		//ゲームのSEを再生する
+		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_BOSS_RAIN);
+
 		m_move = D3DXVECTOR3(0.0f, 20.0f, 0.0f);
 
 		if (pos->y >= 300.0f)
@@ -902,7 +990,7 @@ void CBoss::AttackRain(D3DXVECTOR3* pos)
 			pCubeDamage->SetLife(BULLET_LIFE);
 		}
 
-		if (m_AttackCount > 600.0f)
+		if (m_AttackCount > 600)
 		{
 			m_AttackWave++;
 		}
@@ -920,21 +1008,161 @@ void CBoss::AttackRain(D3DXVECTOR3* pos)
 }
 
 //====================================================================
+//攻撃(蘇生)
+//====================================================================
+void CBoss::AttackRevival(D3DXVECTOR3* pos)
+{
+	CPlayer* pPlayer = CGame::GetPlayer();
+	CCubeDamage* pCubeDamage = nullptr;
+
+	switch (m_AttackWave)
+	{
+	case 0:
+		m_MoveCount += 0.1f;
+		m_move.y = sinf(m_MoveCount) * 4.0f;
+
+		m_AttackCount++;
+
+		if (m_AttackCount % 10 == 0)
+		{
+			m_bRevivalColorSwitch = m_bRevivalColorSwitch ? false : true;
+
+			if (m_bRevivalColorSwitch == true)
+			{
+				SetMatColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else
+			{
+				SetDefColor();
+			}
+		}
+
+		if (m_AttackCount > 100)
+		{
+			m_AttackCount = 0;
+			m_AttackWave++;
+		}
+		break;
+
+	case 1:
+		m_MoveCount += 0.1f;
+		m_move.y = sinf(m_MoveCount) * 4.0f;
+
+		m_AttackCount++;
+
+		if (m_AttackCount % 5 == 0)
+		{
+			m_bRevivalColorSwitch = m_bRevivalColorSwitch ? false : true;
+
+			if (m_bRevivalColorSwitch == true)
+			{
+				SetMatColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else
+			{
+				SetDefColor();
+			}
+		}
+
+		if (m_AttackCount % 5 == 0)
+		{
+			pos->x = (float)(rand() % 1001) - 500.0f;
+			pos->y = (float)(rand() % 101) + 250.0f;
+			pos->z = (float)(rand() % 1001) - 500.0f;
+		}
+
+		if (m_AttackCount > 120)
+		{
+			m_AttackCount = 0;
+			m_AttackWave++;
+		}
+		break;
+
+	case 2:
+		m_move = INITVECTOR3;
+
+		SetDefColor();
+
+		if (m_AttackCount % 30 == 0)
+		{
+			pos->x = 0.0f;
+			pos->y = 300.0f;
+			pos->z = 0.0f;
+		}
+
+		m_AttackWave++;
+		break;
+
+	case 3:
+		m_move = INITVECTOR3;
+
+		m_Scaling -= 0.01f;
+
+		if (m_Scaling <= 0.0f)
+		{
+			m_Scaling = 1.0f;
+			m_AttackWave++;
+			m_nForm++;
+			m_fLife = BOSS_LIFE;
+			m_bDelLife = false;
+			SetLifeUI();
+		}
+
+		break;
+
+	case 4:
+		m_MoveCount += 0.03f;
+		m_move.y = sinf(m_MoveCount) * 2.0f;
+
+		m_AttackCount++;
+
+		if (m_AttackCount > 100)
+		{
+			m_AttackWave++;
+		}
+
+		break;
+
+	default:
+		m_move = INITVECTOR3;
+		Warp(ATTACK_NOT);
+		SetDefColor();
+		m_AttackCoolTime = COOLTIME_RAIN;
+		m_State = STATE_NORMAL;
+		break;
+	}
+}
+
+//====================================================================
 //ダメージ処理
 //====================================================================
 void CBoss::HitDamage(float Damage)
 {
-	m_fLife -= Damage;
-	if (m_fLife < 0.0f)
+	if (m_State == STATE_NORMAL)
 	{
-		m_fLife = 0.0f;
-	}
+		m_fLife -= Damage;
+		if (m_fLife < 0.0f)
+		{
+			m_fLife = 0.0f;
 
-	m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
-	m_State = STATE_DAMAGE;
-	m_nStateCount = 5;
-	SetMatColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-	SetLifeUI();
+			if (m_nForm == 0)
+			{
+				m_State = STATE_INVINCIBLE;
+				Warp(ATTACK_REVIVAL);
+			}
+		}
+		else
+		{
+			//ゲームのSEを再生する
+			CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_DAMAGE_BOSS);
+
+			m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
+			m_State = STATE_DAMAGE;
+			m_nStateCount = 5;
+			SetMatColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+		}
+		SetLifeUI();
+	}
 }
 
 //====================================================================

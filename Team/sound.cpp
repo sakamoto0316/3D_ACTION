@@ -9,7 +9,17 @@ CSound::SOUNDINFO CSound::m_aSoundInfo[SOUND_LABEL_MAX] =
 	{ "data/SE/Select.wav", 0 },				// 選択音
 	{ "data/SE/Enter.wav", 0 },					// 決定音
 	{ "data/SE/Warning.wav", 0 },				// 警告音
-};
+	{ "data/SE/Boss_Attack_shot.wav", 0 },		// ボスの射撃音
+	{ "data/SE/Boss_Attack_wall.wav", 0 },		// ボスの雨攻撃発動音
+	{ "data/SE/Boss_Attack_go.wav", 0 },		// ボスの突進音
+	{ "data/SE/Damage_Boss.wav", 0 },			// ボスのダメージ音
+	{ "data/SE/Damage_Player.wav", 0 },			// プレイヤーダメージ音
+	{ "data/SE/Attack_Normal.wav", 0 },			// プレイヤー通常攻撃音
+	{ "data/SE/Attack_Big.wav", 0 },			// プレイヤー空中攻撃音
+	{ "data/SE/Dodge.wav", 0 },					// プレイヤー回避音
+	{ "data/SE/PlayerJump.wav", 0 },			// プレイヤージャンプ音
+	{ "data/SE/Attention.wav", 0 },				// 注目切り替え音
+}; 
 
 //=============================================================================
 // コンストラクタ

@@ -203,6 +203,9 @@ void CGame::DeleteTutorial(void)
 //====================================================================
 void CGame::Update(void)
 {
+	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
+
 #if _DEBUG
 	//リセット処理
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_R) == true)
@@ -214,9 +217,6 @@ void CGame::Update(void)
 	{
 		CFade::SetFade(CScene::MODE_RESULT);
 	}
-
-	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
 
 	if (pInputKeyboard->GetTrigger(DIK_1) == true)
 	{
@@ -257,6 +257,9 @@ void CGame::Update(void)
 		pNumber->SetPos(D3DXVECTOR3(0.0f, 300.0f, 0.0f));
 	}
 
+#endif
+
+
 	//注目の切り替え
 	if (pInputKeyboard->GetTrigger(DIK_LSHIFT) == true ||
 		pInputJoypad->GetTrigger(CInputJoypad::BUTTON_L, 0) == true)
@@ -270,8 +273,6 @@ void CGame::Update(void)
 			m_p2DUI_AttentionOK->SetTexture("data\\TEXTURE\\UI_AttentionOFF.png");
 		}
 	}
-
-#endif
 
 	//ポーズの更新処理
 	m_pPause->Update();

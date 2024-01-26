@@ -554,6 +554,9 @@ void CPlayer::Dodge2D(void)
 		m_nDodgeCoolTime <= 0
 		)
 	{
+		//ゲームのSEを再生する
+		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_DODGE);
+
 		m_nDodgeCount = DODGE_FRAME;
 		m_nDodgeCoolTime = DODGE_COOL;
 	}
@@ -577,6 +580,7 @@ void CPlayer::Dodge2D(void)
 			m_move.x = -DODGE_SPEED;
 		}
 		m_move.y = 0.0f;
+		m_Objmove.y = 0.0f;
 
 		m_nDodgeCount--;
 	}
@@ -823,6 +827,9 @@ void CPlayer::Dodge(void)
 	{
 		m_nDodgeCount = DODGE_FRAME;
 		m_nDodgeCoolTime = DODGE_COOL;
+
+		//ゲームのSEを再生する
+		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_DODGE);
 	}
 
 	if (m_nDodgeCount > 0)
@@ -838,6 +845,7 @@ void CPlayer::Dodge(void)
 		m_move.x = sinf(m_rot.y + D3DX_PI) * DODGE_SPEED;
 		m_move.z = cosf(m_rot.y + D3DX_PI) * DODGE_SPEED;
 		m_move.y = 0.0f;
+		m_Objmove.y = 0.0f;
 
 		m_nDodgeCount--;
 	}
@@ -863,10 +871,10 @@ void CPlayer::Jump(void)
 		(pInputKeyboard->GetTrigger(DIK_SPACE) == true ||
 			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_B, 0) == true) &&
 		m_bJump == false)
-	{//攻撃中じゃない時にジャンプボタンを押したとき
+	{//ジャンプ使用状態じゃない時にジャンプボタンを押したとき
 
-		////SE
-		//CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_PLAYER_JUMP);
+		//ゲームのSEを再生する
+		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_JUMP);
 
 		m_move.y = 20.0f;
 		m_bJump = true;
@@ -896,9 +904,11 @@ void CPlayer::Attack(void)
 
 		if (m_bJump == true)
 		{//空中にいる時
-
 			if (m_bAirAttack == false)
 			{//空中攻撃を行っていないとき
+
+				//ゲームのSEを再生する
+				CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_ATTACK_SKY);
 
 				//攻撃モーション
 				if (m_Action != ACTION_SKYATTACK)
@@ -921,6 +931,9 @@ void CPlayer::Attack(void)
 		}
 		else
 		{//地上にいる時
+
+			//ゲームのSEを再生する
+			CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_ATTACK_NORMAL);
 
 			switch (m_AtkAction)
 			{
@@ -975,7 +988,6 @@ void CPlayer::Attack(void)
 				break;
 			}
 		}
-
 
 		////SE
 		//CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_PLAYER_JUMP);

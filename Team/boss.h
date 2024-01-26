@@ -28,6 +28,7 @@ public:
 		STATE_NORMAL = 0,
 		STATE_DAMAGE,
 		STATE_DEATH,
+		STATE_INVINCIBLE,
 		STATE_MAX,
 	}STATE;
 
@@ -37,6 +38,7 @@ public:
 		ACTION_NORMAL = 0,
 		ACTION_ATTACK,
 		ACTION_WARP,
+		ACTION_REVIVAL,
 		ACTION_MAX,
 	}ACTION;
 
@@ -49,6 +51,7 @@ public:
 		ATTACK_BLOCKRUN,
 		ATTACK_SPINPILLAR,
 		ATTACK_RAIN,
+		ATTACK_REVIVAL,
 		ATTACK_MAX,
 
 	}ATTACK;
@@ -78,6 +81,7 @@ private:
 	void AttackBlockRun(D3DXVECTOR3* pos);	//攻撃パターンブロックラン
 	void AttackSpinPillar(D3DXVECTOR3* pos);//攻撃パターン回転する柱
 	void AttackRain(D3DXVECTOR3* pos);		//攻撃パターン雨
+	void AttackRevival(D3DXVECTOR3* pos);	//攻撃パターン復活
 
 	int m_nIdxXModel;				//Xモデルの番号
 	D3DXVECTOR3 m_CollisionPos;		//当たり判定用の座標
@@ -96,10 +100,14 @@ private:
 	int m_AttackCoolTime;			//攻撃に使うカウント
 	float m_SpinCount;				//回転のカウント
 	float m_Scaling;				//大きさ
+	int m_nForm;					//形態
+	bool m_bRevivalColorSwitch;		//蘇生中の色の変化
 
 	D3DXVECTOR3 m_move;				//移動量	
 	D3DXVECTOR3 m_rot;				//向き	
 	float m_fLife;					//ボスのライフ
+	float m_fMoveLife;				//演出用ライフ
+	bool m_bDelLife;					//ライフが減る状態になったら
 	float m_fLifeMax;				//ボスのライフの最大値
 	CObjGauge2D* m_pLifeGauge;		//ライフゲージのポインタ
 	CNumber* m_pLifeNumber[5];		//ライフ用UI

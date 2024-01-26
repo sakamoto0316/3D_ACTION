@@ -14,7 +14,7 @@
 class CObject3D : public CObject
 {
 public:
-	CObject3D(int nPriority = 3);
+	CObject3D(int nPriority = 4);
 	~CObject3D();
 
 	static CObject3D *Create(void);
