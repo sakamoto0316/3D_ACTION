@@ -21,6 +21,10 @@ class CBreak_Block3D;
 class CBlockUI;
 class CTitleUI;
 class CFallEffect;
+class CObjmeshDome;
+class CPlayer;
+class CCubeBlock;
+class CBoss;
 
 //シーンクラス
 class CTitle : public CScene
@@ -40,11 +44,16 @@ private:
 
 	static int m_nSelect;
 	static int m_CreateCount;
+	static D3DXVECTOR2 m_Scroll;
 	static D3DXVECTOR2 m_Tex;
 	static D3DXCOLOR m_Color;
 	static CObject2D *m_pTitle;
 	static CObject2D *m_pTitleLogo[4];
-	static CObject2D *m_pTitleButton;
+	static CObject2D* m_pTitleButton;
+	static CObjmeshDome* m_pMeshDome;		//メッシュドーム
+	static CPlayer* m_pPlayer;				//プレイヤーのポインタ
+	static CCubeBlock* m_pCubeBlock;		//キューブブロック
+	static CBoss* m_pBoss;					//ボス
 
 };
 #endif

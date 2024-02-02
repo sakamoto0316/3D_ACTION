@@ -15,7 +15,8 @@
 #include "sound.h"
 
 //マクロ定義
-#define CAMERA_DISTANCE (550.0f)	//視点と注視点の距離
+#define CAMERA_DISTANCE (550.0f)		//視点と注視点の距離
+#define CAMERA_DISTANCE_EVENT (300.0f)	//イベント時の視点と注視点の距離
 #define MODEL_DISTANCE (10.0f)		//モデルと注視点の距離
 #define CAMERA_SPEED (3.0f)			//カメラの移動スピード
 #define CAMERA_VR_SPEED (0.03f)		//カメラの視点スピード
@@ -76,6 +77,216 @@ void CCamera::Uninit(void)
 //====================================================================
 void CCamera::Update(void)
 {
+#ifdef _DEBUG
+	//デバイスの取得
+	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	if (pInputKeyboard->GetTrigger(DIK_F3) == true)
+	{
+		if (CameraMode == CAMERAMODE_CONTROL)
+		{
+			CameraMode = CAMERAMODE_FOLLOW;
+			m_FollowTime = 10;
+		}
+		else if (CameraMode == CAMERAMODE_FOLLOW)
+		{
+			CameraMode = CAMERAMODE_DOWNVIEW;
+		}
+		else if (CameraMode == CAMERAMODE_DOWNVIEW)
+		{
+			CameraMode = CAMERAMODE_SIDEVIEW;
+		}
+		else if (CameraMode == CAMERAMODE_SIDEVIEW)
+		{
+			CameraMode = CAMERAMODE_CONTROL;
+		}
+	}
+
+#endif // _DEBUG
+
+	switch (CScene::GetMode())
+	{
+	case CScene::MODE_TITLE:
+
+		ControlCamera();
+
+		//視点の情報を出力する
+		m_posV.x = m_posR.x + sinf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
+		m_posV.y = m_posR.y + sinf(-m_rot.x) * m_CameraDistance;
+		m_posV.z = m_posR.z + cosf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
+
+		break;
+	case CScene::MODE_GAME:
+
+		switch (CameraMode)
+		{
+		case CAMERAMODE_CONTROL:	//操作カメラの更新
+			ControlCamera();
+			break;
+		case CAMERAMODE_FOLLOW:		//追従カメラの更新
+			FollowCamera();
+			break;
+		case CAMERAMODE_DOWNVIEW:	//見下ろしカメラの更新
+			DownviewCamera();
+			break;
+		case CAMERAMODE_SIDEVIEW:	//2Dカメラの更新
+			SideviewCamera();
+			break;
+		case CAMERAMODE_EVENTBOSS:	//イベント中のボス注目カメラの更新
+			EventBossCamera();
+			break;
+		}
+
+		break;
+	case CScene::MODE_RESULT:
+
+		//視点の情報を出力する
+		m_posV.x = m_posR.x + sinf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
+		m_posV.y = m_posR.y + sinf(-m_rot.x) * m_CameraDistance;
+		m_posV.z = m_posR.z + cosf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
+
+		break;
+	}
+	//デバッグ表示の取得
+	CDebugProc* pDebugProc = CManager::GetInstance()->GetDebugProc();
+	pDebugProc->Print("%f:%f:%f\n", m_posV.x, m_posV.y, m_posV.z);
+	pDebugProc->Print("%f:%f:%f\n", m_posR.x, m_posR.y, m_posR.z);
+}
+
+//====================================================================
+//操作カメラの更新処理
+//====================================================================
+void CCamera::ControlCamera(void)
+{
+	//デバイスの取得
+	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
+	CInputMouse* pInputMouse = CManager::GetInstance()->GetInputMouse();
+
+	if (m_rot.x <= D3DX_PI * 0.5f && m_rot.x >= -(D3DX_PI * 0.5f))
+	{//入力
+		m_rotOld.x = m_rot.x;
+
+		//キーボード
+		if (pInputKeyboard->GetPress(DIK_I) == true)
+		{
+			m_rot.x += CAMERA_VR_SPEED;
+		}
+		if (pInputKeyboard->GetPress(DIK_K) == true)
+		{
+			m_rot.x -= CAMERA_VR_SPEED;
+		}
+	}
+
+	if (fabsf(m_rot.x) > fabsf(D3DX_PI * 0.5f))
+	{//上限に達した時１フレーム前のrotにもどる
+		m_rot.x = m_rotOld.x;
+	}
+
+	//キーボード
+	if (pInputKeyboard->GetPress(DIK_J) == true)
+	{
+		m_rot.y -= CAMERA_VR_SPEED;
+
+	}
+	if (pInputKeyboard->GetPress(DIK_L) == true)
+	{
+		m_rot.y += CAMERA_VR_SPEED;
+	}
+
+	//一周した時の向きの補正
+	if (m_rot.y > D3DX_PI * 1.0f)
+	{
+		m_rot.y -= D3DX_PI * 2.0f;
+	}
+	else if (m_rot.y < -D3DX_PI * 1.0f)
+	{
+		m_rot.y += D3DX_PI * 2.0f;
+	}
+
+
+	//キーボード
+	if (pInputKeyboard->GetPress(DIK_LSHIFT) == true)
+	{
+		m_posV.y += CAMERA_SPEED;
+		m_posR.y += CAMERA_SPEED;
+
+	}
+	if (pInputKeyboard->GetPress(DIK_LCONTROL) == true)
+	{
+		m_posV.y -= CAMERA_SPEED;
+		m_posR.y -= CAMERA_SPEED;
+	}
+	if (pInputKeyboard->GetPress(DIK_RSHIFT) == true)
+	{
+		m_posV.y += CAMERA_SPEED;
+		m_posR.y += CAMERA_SPEED;
+
+	}
+	if (pInputKeyboard->GetPress(DIK_RCONTROL) == true)
+	{
+		m_posV.y -= CAMERA_SPEED;
+		m_posR.y -= CAMERA_SPEED;
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_4) == true)
+	{
+		m_CameraDistance -= 500.0f;
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_5) == true)
+	{
+		m_CameraDistance += 500.0f;
+	}
+
+	//キーボード
+	if (pInputKeyboard->GetPress(DIK_T) == true)
+	{
+		m_posR.z += CAMERA_SPEED * cosf(m_rot.y);
+		m_posR.x += CAMERA_SPEED * sinf(m_rot.y);
+
+		m_posV.z += CAMERA_SPEED * cosf(m_rot.y);
+		m_posV.x += CAMERA_SPEED * sinf(m_rot.y);
+	}
+	if (pInputKeyboard->GetPress(DIK_G) == true)
+	{
+		m_posR.z += -CAMERA_SPEED * cosf(m_rot.y);
+		m_posR.x += -CAMERA_SPEED * sinf(m_rot.y);
+
+		m_posV.z += -CAMERA_SPEED * cosf(m_rot.y);
+		m_posV.x += -CAMERA_SPEED * sinf(m_rot.y);
+	}
+	if (pInputKeyboard->GetPress(DIK_F) == true)
+	{
+		m_posR.x += -CAMERA_SPEED * cosf(m_rot.y);
+		m_posR.z -= -CAMERA_SPEED * sinf(m_rot.y);
+
+		m_posV.x += -CAMERA_SPEED * cosf(m_rot.y);
+		m_posV.z -= -CAMERA_SPEED * sinf(m_rot.y);
+	}
+	if (pInputKeyboard->GetPress(DIK_H) == true)
+	{
+		m_posR.x += CAMERA_SPEED * cosf(m_rot.y);
+		m_posR.z -= CAMERA_SPEED * sinf(m_rot.y);
+
+		m_posV.x += CAMERA_SPEED * cosf(m_rot.y);
+		m_posV.z -= CAMERA_SPEED * sinf(m_rot.y);
+	}
+
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+	{
+		//視点の情報を出力する
+		m_posV.x = m_posR.x + sinf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
+		m_posV.y = m_posR.y + sinf(-m_rot.x) * m_CameraDistance;
+		m_posV.z = m_posR.z + cosf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
+	}
+}
+
+//====================================================================
+//追従カメラの更新処理
+//====================================================================
+void CCamera::FollowCamera(void)
+{
 	//デバイスの取得
 	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
@@ -86,38 +297,8 @@ void CCamera::Update(void)
 	//ボスの取得
 	CBoss* pBoss = CGame::GetBoss();
 
-	D3DXVECTOR3 FollowPos = INITVECTOR3;
-
-#ifdef _DEBUG
-
-	if (pInputKeyboard->GetTrigger(DIK_F3) == true)
+	if (pPlayer->GetJump() == false)
 	{
-		if (CameraMode == CAMERAMODE_CONTROL)
-		{
-			CameraMode = CAMERAMODE_FOLLOW;
-			m_FollowTime = 10;
-		}
-		else if(CameraMode == CAMERAMODE_FOLLOW)
-		{
-			CameraMode = CAMERAMODE_DOWNVIEW;
-		}
-		else if (CameraMode == CAMERAMODE_DOWNVIEW)
-		{
-			CameraMode = CAMERAMODE_2D;
-		}
-		else if (CameraMode == CAMERAMODE_2D)
-		{
-			CameraMode = CAMERAMODE_CONTROL;
-		}
-	}
-
-#endif // _DEBUG
-
-
-	switch (CameraMode)
-	{
-	case CAMERAMODE_CONTROL:
-
 		if (m_rot.x <= D3DX_PI * 0.5f && m_rot.x >= -(D3DX_PI * 0.5f))
 		{//入力
 			m_rotOld.x = m_rot.x;
@@ -131,290 +312,177 @@ void CCamera::Update(void)
 			{
 				m_rot.x -= CAMERA_VR_SPEED;
 			}
+
+			//右スティックの上下視点移動入力
+			m_rot.x += pInputJoypad->Get_Stick_Right(0).y * CAMERA_VR_SPEED;
+
+			m_rot.x -= pInputMouse->GetMouseMove().y * CAMERA_VR_SPEED;
 		}
-
-		if (fabsf(m_rot.x) > fabsf(D3DX_PI * 0.5f))
-		{//上限に達した時１フレーム前のrotにもどる
-			m_rot.x = m_rotOld.x;
-		}
-
-		//キーボード
-		if (pInputKeyboard->GetPress(DIK_J) == true)
-		{
-			m_rot.y -= CAMERA_VR_SPEED;
-
-		}
-		if (pInputKeyboard->GetPress(DIK_L) == true)
-		{
-			m_rot.y += CAMERA_VR_SPEED;
-		}
-
-		//一周した時の向きの補正
-		if (m_rot.y > D3DX_PI * 1.0f)
-		{
-			m_rot.y -= D3DX_PI * 2.0f;
-		}
-		else if (m_rot.y < -D3DX_PI * 1.0f)
-		{
-			m_rot.y += D3DX_PI * 2.0f;
-		}
-
-
-		//キーボード
-		if (pInputKeyboard->GetPress(DIK_LSHIFT) == true)
-		{
-			m_posV.y += CAMERA_SPEED;
-			m_posR.y += CAMERA_SPEED;
-
-		}
-		if (pInputKeyboard->GetPress(DIK_LCONTROL) == true)
-		{
-			m_posV.y -= CAMERA_SPEED;
-			m_posR.y -= CAMERA_SPEED;
-		}
-		if (pInputKeyboard->GetPress(DIK_RSHIFT) == true)
-		{
-			m_posV.y += CAMERA_SPEED;
-			m_posR.y += CAMERA_SPEED;
-
-		}
-		if (pInputKeyboard->GetPress(DIK_RCONTROL) == true)
-		{
-			m_posV.y -= CAMERA_SPEED;
-			m_posR.y -= CAMERA_SPEED;
-		}
-
-		if (pInputKeyboard->GetTrigger(DIK_4) == true)
-		{
-			m_CameraDistance -= 500.0f;
-		}
-
-		if (pInputKeyboard->GetTrigger(DIK_5) == true)
-		{
-			m_CameraDistance += 500.0f;
-		}
-
-		//キーボード
-		if (pInputKeyboard->GetPress(DIK_T) == true)
-		{
-			m_posR.z += CAMERA_SPEED * cosf(m_rot.y);
-			m_posR.x += CAMERA_SPEED * sinf(m_rot.y);
-
-			m_posV.z += CAMERA_SPEED * cosf(m_rot.y);
-			m_posV.x += CAMERA_SPEED * sinf(m_rot.y);
-		}
-		if (pInputKeyboard->GetPress(DIK_G) == true)
-		{
-			m_posR.z += -CAMERA_SPEED * cosf(m_rot.y);
-			m_posR.x += -CAMERA_SPEED * sinf(m_rot.y);
-
-			m_posV.z += -CAMERA_SPEED * cosf(m_rot.y);
-			m_posV.x += -CAMERA_SPEED * sinf(m_rot.y);
-		}
-		if (pInputKeyboard->GetPress(DIK_F) == true)
-		{
-			m_posR.x += -CAMERA_SPEED * cosf(m_rot.y);
-			m_posR.z -= -CAMERA_SPEED * sinf(m_rot.y);
-
-			m_posV.x += -CAMERA_SPEED * cosf(m_rot.y);
-			m_posV.z -= -CAMERA_SPEED * sinf(m_rot.y);
-		}
-		if (pInputKeyboard->GetPress(DIK_H) == true)
-		{
-			m_posR.x += CAMERA_SPEED * cosf(m_rot.y);
-			m_posR.z -= CAMERA_SPEED * sinf(m_rot.y);
-
-			m_posV.x += CAMERA_SPEED * cosf(m_rot.y);
-			m_posV.z -= CAMERA_SPEED * sinf(m_rot.y);
-		}
-
-		if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
-		{
-			//視点の情報を出力する
-			m_posV.x = m_posR.x + sinf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
-			m_posV.y = m_posR.y + sinf(-m_rot.x) * m_CameraDistance;
-			m_posV.z = m_posR.z + cosf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
-		}
-		break;
-	case CAMERAMODE_FOLLOW:
-
-		if (pPlayer->GetJump() == false)
-		{
-			if (m_rot.x <= D3DX_PI * 0.5f && m_rot.x >= -(D3DX_PI * 0.5f))
-			{//入力
-				m_rotOld.x = m_rot.x;
-
-				//キーボード
-				if (pInputKeyboard->GetPress(DIK_I) == true)
-				{
-					m_rot.x += CAMERA_VR_SPEED;
-				}
-				if (pInputKeyboard->GetPress(DIK_K) == true)
-				{
-					m_rot.x -= CAMERA_VR_SPEED;
-				}
-
-				//右スティックの上下視点移動入力
-				m_rot.x += pInputJoypad->Get_Stick_Right(0).y * CAMERA_VR_SPEED;
-
-				m_rot.x -= pInputMouse->GetMouseMove().y * CAMERA_VR_SPEED;
-			}
-		}
-
-		if (m_rot.x > D3DX_PI * 0.05f || m_rot.x < -(D3DX_PI * 0.45f))
-		{//上限に達した時１フレーム前のrotにもどる
-			m_rot.x = m_rotOld.x;
-		}
-
-		//キーボード
-		if (pInputKeyboard->GetPress(DIK_J) == true)
-		{
-			m_rot.y -= CAMERA_VR_SPEED;
-
-		}
-		if (pInputKeyboard->GetPress(DIK_L) == true)
-		{
-			m_rot.y += CAMERA_VR_SPEED;
-		}
-
-		//右スティックの左右視点移動入力
-		m_rot.y += pInputJoypad->Get_Stick_Right(0).x * CAMERA_PAD_VR_SPEED;
-
-		m_rot.y += pInputMouse->GetMouseMove().x * CAMERA_VR_SPEED;
-
-
-		//一周した時の向きの補正
-		if (m_rot.y > D3DX_PI * 1.0f)
-		{
-			m_rot.y -= D3DX_PI * 2.0f;
-		}
-		else if (m_rot.y < -D3DX_PI * 1.0f)
-		{
-			m_rot.y += D3DX_PI * 2.0f;
-		}
-
-		m_posRDest.x = m_posV.x + sinf(m_rot.y) * cosf(m_rot.x) * CAMERA_DISTANCE;
-		m_posRDest.z = m_posV.z + cosf(m_rot.y) * cosf(m_rot.x) * CAMERA_DISTANCE;
-		m_posRDest.y = m_posV.y + sinf(m_rot.x) * CAMERA_DISTANCE;
-
-		m_posVDest.x = pPlayer->GetCameraPos().x + sinf(-pPlayer->GetRot().y) * MODEL_DISTANCE + sinf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE;
-		m_posVDest.z = pPlayer->GetCameraPos().z + cosf(-pPlayer->GetRot().y) * MODEL_DISTANCE + cosf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE;
-		m_posVDest.y = pPlayer->GetCameraPos().y + 175.0f + sinf(-m_rot.x) * CAMERA_DISTANCE;
-
-		m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING;
-		m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
-		m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 5.0f;
-		m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 5.0f;
-
-		if (pPlayer->GetJump() == false)
-		{
-			if (pPlayer->GetCameraDiff() == true)
-			{
-				m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 0.5f;
-				m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 0.5f;
-			}
-			else
-			{
-				m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING;
-				m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING;
-			}
-		}
-
-
-		//注目の切り替え
-		if (pInputKeyboard->GetTrigger(DIK_LSHIFT) == true ||
-			pInputJoypad->GetTrigger(CInputJoypad::BUTTON_L,0) == true)
-		{
-			//ゲームのSEを再生する
-			CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_ATTENTION);
-
-			m_bAttention = m_bAttention ? false : true;
-		}
-
-		if (m_bAttention == true)
-		{
-			m_FollowTime = 10;
-		}
-
-		//モデルが止まった時に正面を向く処理
-		float fRotMove, fRotDest, fRotDiff;
-
-		if (m_FollowTime > 0)
-		{
-			m_FollowTime--;
-
-			fRotMove = atan2f(sinf(m_rot.y), cosf(m_rot.y));	//現在の向き
-			fRotDest = atan2f(pBoss->GetPos().x - pPlayer->GetPos().x, pBoss->GetPos().z - pPlayer->GetPos().z);	//目的の向き
-			//fRotDest = atan2f(sinf(pPlayer->GetRot().y + D3DX_PI), cosf(pPlayer->GetRot().y + D3DX_PI));	//目的の向き
-			fRotDiff = fRotDest - fRotMove;									 //差分
-
-			if (fRotDiff > D3DX_PI * 1.0f)
-			{
-				fRotDiff -= D3DX_PI * 2.0f;
-			}
-			else if (fRotDiff < -D3DX_PI * 1.0f)
-			{
-				fRotDiff += D3DX_PI * 2.0f;
-			}
-
-			fRotMove += fRotDiff * 0.1f;
-
-			if (fRotMove > D3DX_PI * 1.0f)
-			{
-				fRotMove -= D3DX_PI * 2.0f;
-			}
-			else if (fRotMove < -D3DX_PI * 1.0f)
-			{
-				fRotMove += D3DX_PI * 2.0f;
-			}
-			m_rot.y = fRotMove;
-		}
-
-		break;
-	case CAMERAMODE_DOWNVIEW:
-
-		m_rot.y = 0.0f;
-		m_posV.x += (DOWNVIEW_POSV.x - m_posV.x) * CAMERA_HOMING;
-		m_posV.y += (DOWNVIEW_POSV.y - m_posV.y) * CAMERA_HOMING;
-		m_posV.z += (DOWNVIEW_POSV.z - m_posV.z) * CAMERA_HOMING;
-		m_posR.x += (DOWNVIEW_POSR.x - m_posR.x) * CAMERA_HOMING;
-		m_posR.y += (DOWNVIEW_POSR.y - m_posR.y) * CAMERA_HOMING;
-		m_posR.z += (DOWNVIEW_POSR.z - m_posR.z) * CAMERA_HOMING;
-
-		break;
-	case CAMERAMODE_2D:
-
-		m_rot.y = 0.0f;
-		m_posV.x += (SIDEVIEW_POSV.x - m_posV.x) * CAMERA_HOMING;
-		m_posV.y += (SIDEVIEW_POSV.y - m_posV.y) * CAMERA_HOMING;
-		m_posV.z += (SIDEVIEW_POSV.z - m_posV.z) * CAMERA_HOMING;
-		m_posR.x += (SIDEVIEW_POSR.x - m_posR.x) * CAMERA_HOMING;
-		m_posR.y += (SIDEVIEW_POSR.y - m_posR.y) * CAMERA_HOMING;
-		m_posR.z += (SIDEVIEW_POSR.z - m_posR.z) * CAMERA_HOMING;
-
-		break;
 	}
 
-	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_TITLE)
+	if (m_rot.x > D3DX_PI * 0.05f || m_rot.x < -(D3DX_PI * 0.45f))
+	{//上限に達した時１フレーム前のrotにもどる
+		m_rot.x = m_rotOld.x;
+	}
+
+	//キーボード
+	if (pInputKeyboard->GetPress(DIK_J) == true)
 	{
-		//視点の情報を出力する
-		m_posV.x = m_posR.x + sinf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
-		m_posV.y = m_posR.y + sinf(-m_rot.x) * m_CameraDistance;
-		m_posV.z = m_posR.z + cosf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
+		m_rot.y -= CAMERA_VR_SPEED;
+
 	}
-	else if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_RESULT)
+	if (pInputKeyboard->GetPress(DIK_L) == true)
 	{
-		//視点の情報を出力する
-		m_posV.x = m_posR.x + sinf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
-		m_posV.y = m_posR.y + sinf(-m_rot.x) * m_CameraDistance;
-		m_posV.z = m_posR.z + cosf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
+		m_rot.y += CAMERA_VR_SPEED;
 	}
 
-	//デバッグ表示の取得
-	CDebugProc *pDebugProc = CManager::GetInstance()->GetDebugProc();
-	pDebugProc->Print("%f:%f:%f\n", m_posV.x, m_posV.y, m_posV.z);
-	pDebugProc->Print("%f:%f:%f\n", m_posR.x, m_posR.y, m_posR.z);
+	//右スティックの左右視点移動入力
+	m_rot.y += pInputJoypad->Get_Stick_Right(0).x * CAMERA_PAD_VR_SPEED;
 
+	m_rot.y += pInputMouse->GetMouseMove().x * CAMERA_VR_SPEED;
+
+
+	//一周した時の向きの補正
+	if (m_rot.y > D3DX_PI * 1.0f)
+	{
+		m_rot.y -= D3DX_PI * 2.0f;
+	}
+	else if (m_rot.y < -D3DX_PI * 1.0f)
+	{
+		m_rot.y += D3DX_PI * 2.0f;
+	}
+
+	m_posRDest.x = m_posV.x + sinf(m_rot.y) * cosf(m_rot.x) * CAMERA_DISTANCE;
+	m_posRDest.z = m_posV.z + cosf(m_rot.y) * cosf(m_rot.x) * CAMERA_DISTANCE;
+	m_posRDest.y = m_posV.y + sinf(m_rot.x) * CAMERA_DISTANCE;
+
+	m_posVDest.x = pPlayer->GetCameraPos().x + sinf(-pPlayer->GetRot().y) * MODEL_DISTANCE + sinf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE;
+	m_posVDest.z = pPlayer->GetCameraPos().z + cosf(-pPlayer->GetRot().y) * MODEL_DISTANCE + cosf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE;
+	m_posVDest.y = pPlayer->GetCameraPos().y + 175.0f + sinf(-m_rot.x) * CAMERA_DISTANCE;
+
+	m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING;
+	m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
+	m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 5.0f;
+	m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 5.0f;
+
+	if (pPlayer->GetJump() == false)
+	{
+		if (pPlayer->GetCameraDiff() == true)
+		{
+			m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 0.5f;
+			m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 0.5f;
+		}
+		else
+		{
+			m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING;
+			m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING;
+		}
+	}
+
+
+	//注目の切り替え
+	if (pInputKeyboard->GetTrigger(DIK_LSHIFT) == true ||
+		pInputJoypad->GetTrigger(CInputJoypad::BUTTON_L, 0) == true)
+	{
+		//ゲームのSEを再生する
+		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_ATTENTION);
+
+		m_bAttention = m_bAttention ? false : true;
+	}
+
+	if (m_bAttention == true)
+	{
+		m_FollowTime = 10;
+	}
+
+	//モデルが止まった時に正面を向く処理
+	float fRotMove, fRotDest, fRotDiff;
+
+	if (m_FollowTime > 0)
+	{
+		m_FollowTime--;
+
+		fRotMove = atan2f(sinf(m_rot.y), cosf(m_rot.y));	//現在の向き
+		fRotDest = atan2f(pBoss->GetPos().x - pPlayer->GetPos().x, pBoss->GetPos().z - pPlayer->GetPos().z);	//目的の向き
+		//fRotDest = atan2f(sinf(pPlayer->GetRot().y + D3DX_PI), cosf(pPlayer->GetRot().y + D3DX_PI));	//目的の向き
+		fRotDiff = fRotDest - fRotMove;									 //差分
+
+		if (fRotDiff > D3DX_PI * 1.0f)
+		{
+			fRotDiff -= D3DX_PI * 2.0f;
+		}
+		else if (fRotDiff < -D3DX_PI * 1.0f)
+		{
+			fRotDiff += D3DX_PI * 2.0f;
+		}
+
+		fRotMove += fRotDiff * 0.1f;
+
+		if (fRotMove > D3DX_PI * 1.0f)
+		{
+			fRotMove -= D3DX_PI * 2.0f;
+		}
+		else if (fRotMove < -D3DX_PI * 1.0f)
+		{
+			fRotMove += D3DX_PI * 2.0f;
+		}
+		m_rot.y = fRotMove;
+	}
+}
+
+//====================================================================
+//見下ろしカメラの更新処理
+//====================================================================
+void CCamera::DownviewCamera(void)
+{
+	m_rot.y = 0.0f;
+	m_posV.x += (DOWNVIEW_POSV.x - m_posV.x) * CAMERA_HOMING;
+	m_posV.y += (DOWNVIEW_POSV.y - m_posV.y) * CAMERA_HOMING;
+	m_posV.z += (DOWNVIEW_POSV.z - m_posV.z) * CAMERA_HOMING;
+	m_posR.x += (DOWNVIEW_POSR.x - m_posR.x) * CAMERA_HOMING;
+	m_posR.y += (DOWNVIEW_POSR.y - m_posR.y) * CAMERA_HOMING;
+	m_posR.z += (DOWNVIEW_POSR.z - m_posR.z) * CAMERA_HOMING;
+}
+
+//====================================================================
+//2Dカメラの更新処理
+//====================================================================
+void CCamera::SideviewCamera(void)
+{
+	m_rot.y = 0.0f;
+	m_posV.x += (SIDEVIEW_POSV.x - m_posV.x) * CAMERA_HOMING;
+	m_posV.y += (SIDEVIEW_POSV.y - m_posV.y) * CAMERA_HOMING;
+	m_posV.z += (SIDEVIEW_POSV.z - m_posV.z) * CAMERA_HOMING;
+	m_posR.x += (SIDEVIEW_POSR.x - m_posR.x) * CAMERA_HOMING;
+	m_posR.y += (SIDEVIEW_POSR.y - m_posR.y) * CAMERA_HOMING;
+	m_posR.z += (SIDEVIEW_POSR.z - m_posR.z) * CAMERA_HOMING;
+}
+
+//====================================================================
+//イベント中のボス注目カメラの更新処理
+//====================================================================
+void CCamera::EventBossCamera(void)
+{
+	//ボスの取得
+	CBoss* pBoss = CGame::GetBoss();
+
+	m_rot.y = 0.0f;
+
+	m_posRDest.x = m_posV.x + sinf(m_rot.y) * cosf(m_rot.x) * CAMERA_DISTANCE_EVENT;
+	m_posRDest.z = m_posV.z + cosf(m_rot.y) * cosf(m_rot.x) * CAMERA_DISTANCE_EVENT;
+	m_posRDest.y = m_posV.y + sinf(m_rot.x) * CAMERA_DISTANCE_EVENT;
+
+	m_posVDest.x = pBoss->GetPos().x - 50.0f + sinf(-pBoss->GetRot().y) * MODEL_DISTANCE + sinf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE_EVENT;
+	m_posVDest.z = pBoss->GetPos().z + cosf(-pBoss->GetRot().y) * MODEL_DISTANCE + cosf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE_EVENT;
+	m_posVDest.y = pBoss->GetPos().y + sinf(-m_rot.x) * CAMERA_DISTANCE_EVENT;
+
+	m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING;
+	m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
+	m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 5.0f;
+	m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 5.0f;
+
+	m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 5.0f;
+	m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 5.0f;
 }
 
 //====================================================================

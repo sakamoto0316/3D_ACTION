@@ -278,7 +278,7 @@ void CObjmeshField::SetAnim(D3DXVECTOR2 Tex)
 {
 	VERTEX_3D* pVtx;	//頂点ポインタを所得
 
-					//頂点バッファをロックし、両店情報へのポインタを所得
+	//頂点バッファをロックし、両店情報へのポインタを所得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//テクスチャ座標の設定

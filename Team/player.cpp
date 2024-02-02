@@ -137,8 +137,36 @@ HRESULT CPlayer::Init(void)
 	m_pMotion->SetModel(&m_apModel[0], m_nNumModel);
 	m_pMotion->LoadData("data\\TXT\\motion_player.txt");
 
+	//種類設定
 	SetType(CObject::TYPE_PLAYER3D);
 
+	switch (CScene::GetMode())
+	{
+	case CScene::MODE_TITLE:
+		m_pMotion->Set(ACTION_TITLE, 0);
+		break;
+
+	case CScene::MODE_GAME:
+		//自分が保持するオブジェクトの生成
+		MyObjCreate();
+
+		//ライフの文字設定
+		SetLifeUI();
+		break;
+
+	case CScene::MODE_RESULT:
+		break;
+	}
+
+	return S_OK;
+}
+
+//====================================================================
+//自分が保持するオブジェクトの生成
+//====================================================================
+void CPlayer::MyObjCreate(void)
+{
+	//ライフゲージの生成
 	if (m_pLifeGauge == nullptr)
 	{
 		m_pLifeGauge = CObjGauge2D::Create();
@@ -149,6 +177,7 @@ HRESULT CPlayer::Init(void)
 		m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
 	}
 
+	//影の生成
 	if (m_pShadow == nullptr)
 	{
 		m_pShadow = CObject3D::Create();
@@ -159,6 +188,7 @@ HRESULT CPlayer::Init(void)
 		m_pShadow->SetAddDorw(true);
 	}
 
+	//ライフ用数字UIの生成
 	for (int nCnt = 0; nCnt < 4; nCnt++)
 	{
 		m_pLifeNumber[nCnt] = CNumber::Create();
@@ -166,9 +196,6 @@ HRESULT CPlayer::Init(void)
 		m_pLifeNumber[nCnt]->SetWight(20.0f);
 		m_pLifeNumber[nCnt]->SetHeight(20.0f);
 	}
-	SetLifeUI();
-
-	return S_OK;
 }
 
 //====================================================================
@@ -199,6 +226,40 @@ void CPlayer::Uninit(void)
 //====================================================================
 void CPlayer::Update(void)
 {
+	switch (CScene::GetMode())
+	{
+	case CScene::MODE_TITLE:
+		TitleUpdate();
+		break;
+	case CScene::MODE_GAME:
+
+		if (CGame::GetEvent() == false)
+		{
+			GameUpdate();
+		}
+
+		break;
+	case CScene::MODE_RESULT:
+		break;
+	}
+}
+
+//====================================================================
+//タイトルでの更新処理
+//====================================================================
+void CPlayer::TitleUpdate(void)
+{
+
+
+	//モーションの更新
+	m_pMotion->Update();
+}
+
+//====================================================================
+//ゲームでの更新処理
+//====================================================================
+void CPlayer::GameUpdate(void)
+{
 	if (m_State != STATE_DEATH)
 	{
 		//キーボードの取得
@@ -222,7 +283,7 @@ void CPlayer::Update(void)
 			}
 		}
 
-		if (CManager::GetInstance()->GetCamera()->GetCameraMode() == CCamera::CAMERAMODE_2D)
+		if (CManager::GetInstance()->GetCamera()->GetCameraMode() == CCamera::CAMERAMODE_SIDEVIEW)
 		{
 			//移動処理
 			Move2D();
@@ -312,6 +373,11 @@ void CPlayer::Update(void)
 			{
 				CollisionDamageCube(m_pos);
 				CollisionBoss();
+
+				if (CGame::GetEventEnd() == false)
+				{
+					CollisionBossEvent();
+				}
 			}
 		}
 
@@ -350,21 +416,6 @@ void CPlayer::Update(void)
 
 	//モーションの更新
 	m_pMotion->Update();
-
-	//D3DXVECTOR3 NumberPos;
-
-	//NumberPos.x = (atan2f(CManager::GetInstance()->GetCamera()->GetPosV().x, CGame::GetBoss()->GetPos().x));
-	//NumberPos.y = 0.0f;
-	//NumberPos.z = (atan2f(CManager::GetInstance()->GetCamera()->GetPosV().z, CGame::GetBoss()->GetPos().z));
-
-	//D3DXVec3Normalize(&NumberPos, &NumberPos);
-
-	//CNumberFall* pNumber = CNumberFall::Create();
-	//pNumber->SetPos(D3DXVECTOR3(
-	//	CGame::GetBoss()->GetPos().x + sinf(NumberPos.x) * 500.0f,
-	//	CGame::GetBoss()->GetPos().y,
-	//	CGame::GetBoss()->GetPos().z + cosf(NumberPos.z) * 500.0f));
-	//pNumber->SetNumber(0);
 }
 
 //====================================================================
@@ -372,6 +423,14 @@ void CPlayer::Update(void)
 //====================================================================
 void CPlayer::SetLifeUI(void)
 {
+	for (int nCnt = 0; nCnt < 4; nCnt++)
+	{
+		if (m_pLifeNumber[nCnt] == nullptr)
+		{
+			return;
+		}
+	}
+
 	m_pLifeNumber[0]->SetNumber((int)m_fLife % 10000 / 1000);
 	m_pLifeNumber[1]->SetNumber((int)m_fLife % 1000 / 100);
 	m_pLifeNumber[2]->SetNumber((int)m_fLife % 100 / 10);
@@ -1167,18 +1226,6 @@ void CPlayer::HitDamage(float Damage)
 //====================================================================
 void CPlayer::ActionState(void)
 {
-	////攻撃モーション
-	//if (m_nAttackCount > 0)
-	//{
-	//	if (m_Action != ACTION_ATTACK1)
-	//	{
-	//		m_Action = ACTION_ATTACK1;
-	//		m_pMotion->Set(ACTION_ATTACK1, 5);
-	//	}
-
-	//	m_nAttackCount--;
-	//}
-
 	if (m_nAttackCount <= 0)
 	{
 		//回避モーション
@@ -1379,6 +1426,44 @@ void CPlayer::CollisionBoss(void)
 					if (CollisionCircle(m_pos, ObjPos, COLLISION_SIZE.x + ObjWight) == true)
 					{
 						HitDamage(BOSS_DAMAGE);
+					}
+				}
+			}
+
+			pObj = pObjNext;
+		}
+	}
+}
+
+//====================================================================
+//ボスとの当たり判定処理
+//====================================================================
+void CPlayer::CollisionBossEvent(void)
+{
+	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	{
+		//オブジェクトを取得
+		CObject* pObj = CObject::GetTop(nCntPriority);
+
+		while (pObj != NULL)
+		{
+			CObject* pObjNext = pObj->GetNext();
+
+			CObject::TYPE type = pObj->GetType();			//種類を取得
+
+			if (type == TYPE_BOSS)
+			{//種類がブロックの時
+
+				CBoss* pBoss = (CBoss*)pObj;
+
+				D3DXVECTOR3 ObjPos = pBoss->GetPos();
+				float ObjWight = pBoss->GetWight();
+
+				if (pBoss->GetAction() == CBoss::ACTION_EVENT)
+				{
+					if (CollisionCircle(m_pos, ObjPos, 300.0f) == true)
+					{
+						CGame::EventStart();
 					}
 				}
 			}

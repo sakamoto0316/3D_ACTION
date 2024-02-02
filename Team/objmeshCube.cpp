@@ -22,7 +22,6 @@
 //====================================================================
 CObjmeshCube::CObjmeshCube(int nPriority) :CObject(nPriority)
 {
-	m_pTexture = NULL;
 	m_pVtxBuff = NULL;
 	g_pIdxBuff = NULL;
 	m_pos = INITVECTOR3;
@@ -350,7 +349,10 @@ void CObjmeshCube::Draw(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 	D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
 
-		//ワールドマトリックスの初期化
+	//ライティングをオフにする
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
+	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
 	//向きを反映
@@ -389,14 +391,9 @@ void CObjmeshCube::Draw(void)
 		0,//用意した頂点の数
 		0,
 		(28) - 2);//描画するプリミティブの数
-}
 
-//====================================================================
-//テクスチャの割り当て
-//====================================================================
-void CObjmeshCube::BindTexture(LPDIRECT3DTEXTURE9 pTexture)
-{
-	m_pTexture = pTexture;
+	//ライティングをオンにする
+	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 }
 
 //====================================================================

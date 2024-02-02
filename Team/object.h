@@ -16,7 +16,7 @@
 class CObject
 {
 public:
-	typedef enum
+	enum TYPE
 	{
 		TYPE_NONE = 0,
 		TYPE_OBJECT2D,
@@ -58,18 +58,19 @@ public:
 		TYPE_BOSS,
 		TYPE_CUBEBLOCK,
 		TYPE_CUBEDAMEGE,
+		TYPE_CUBESPIN,
 		TYPE_MAX,
-	}TYPE;
+	};
 
 	//“–‚½‚è”»’è‚ÌŽg—pŽ²
-	typedef enum
+	enum COLLISION
 	{
 		COLLISION_X = 0,
 		COLLISION_Y,
 		COLLISION_Z,
 		COLLISION_MAX,
 
-	}COLLISION;
+	};
 	
 	CObject(int nPriority = 3);
 	~CObject();

@@ -12,6 +12,10 @@
 #include "texture.h"
 #include "particle.h"
 #include "sound.h"
+#include "objmeshDome.h"
+#include "player.h"
+#include "boss.h"
+#include "CubeBlock.h"
 
 //静的メンバ変数宣言
 CObject2D *CTitle::m_pTitle = NULL;
@@ -19,7 +23,13 @@ CObject2D *CTitle::m_pTitleButton = NULL;
 CObject2D *CTitle::m_pTitleLogo[4] = {};
 int CTitle::m_nSelect = 1;
 int CTitle::m_CreateCount = 0;
+D3DXVECTOR2 CTitle::m_Scroll = D3DXVECTOR2(0.0f,0.0f);
 D3DXVECTOR2 CTitle::m_Tex = D3DXVECTOR2(0.0f, 0.0f);
+CObjmeshDome* CTitle::m_pMeshDome = NULL;
+CCubeBlock* CTitle::m_pCubeBlock = NULL;
+CPlayer* CTitle::m_pPlayer = NULL;
+CBoss* CTitle::m_pBoss = NULL;
+
 //====================================================================
 //コンストラクタ
 //====================================================================
@@ -51,36 +61,28 @@ HRESULT CTitle::Init(void)
 	m_pTitle->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
 	m_pTitle->SetWight(1280.0f);
 	m_pTitle->SetHeight(720.0f);
-	m_pTitle->SetColor(D3DXCOLOR(0.2f, 0.2f, 0.2f, 1.0f));
-	m_pTitle->SetIdx(pTexture->Regist("data\\TEXTURE\\BG.png"));
+	m_pTitle->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	m_pTitle->SetIdx(pTexture->Regist("data\\TEXTURE\\TitleBG.png"));
 
-	m_pTitleLogo[0] = CObject2D::Create();
-	m_pTitleLogo[0]->SetPos(D3DXVECTOR3(640.0f, 460.0f, 0.0f));
-	m_pTitleLogo[0]->SetWight(1280.0f);
-	m_pTitleLogo[0]->SetHeight(720.0f);
-	m_pTitleLogo[0]->SetIdx(pTexture->Regist("data\\TEXTURE\\TitleBG00.png"));
+	m_pMeshDome = CObjmeshDome::Create();
+	m_pMeshDome->SetTexture("data\\TEXTURE\\SkyBG.jpg");
+	m_pMeshDome->SetRot(D3DXVECTOR3(D3DX_PI * 0.55f, D3DX_PI * -0.89f, D3DX_PI));
 
-	m_pTitleLogo[1] = CObject2D::Create();
-	m_pTitleLogo[1]->SetPos(D3DXVECTOR3(640.0f, 350.0f, 0.0f));
-	m_pTitleLogo[1]->SetRot(D3DXVECTOR3(0.0f, 0.0f, -0.0f));
-	m_pTitleLogo[1]->SetWight(1280.0f);
-	m_pTitleLogo[1]->SetHeight(720.0f);
-	m_pTitleLogo[1]->SetIdx(pTexture->Regist("data\\TEXTURE\\TitleLogoBG.png"));
+	m_pPlayer = CPlayer::Create();
+	m_pPlayer->SetPos(D3DXVECTOR3(-50.0f, 60.0f, -450.0f));
+	m_pPlayer->SetRot(D3DXVECTOR3(0.0f, D3DX_PI * -0.9f, 0.0f));
 
-	m_pTitleLogo[2] = CObject2D::Create();
-	m_pTitleLogo[2]->SetPos(D3DXVECTOR3(640.0f, 350.0f, 0.0f));
-	m_pTitleLogo[2]->SetWight(300.0f);
-	m_pTitleLogo[2]->SetHeight(400.0f);
-	m_pTitleLogo[2]->SetIdx(pTexture->Regist("data\\TEXTURE\\TitleBG01.png"));
+	m_pBoss = CBoss::Create("data\\MODEL\\boss.x");
+	m_pBoss->SetPos(D3DXVECTOR3(500.0f, 300.0f, 1000.0f));
+	m_pBoss->SetRot(D3DXVECTOR3(0.0f, D3DX_PI * 0.1f, 0.0f));
 
-	m_pTitleLogo[3] = CObject2D::Create();
-	m_pTitleLogo[3]->SetPos(D3DXVECTOR3(640.0f, 310.0f, 0.0f));
-	m_pTitleLogo[3]->SetWight(1050.0f);
-	m_pTitleLogo[3]->SetHeight(860.0f);
-	m_pTitleLogo[3]->SetIdx(pTexture->Regist("data\\TEXTURE\\TitleLogo.png"));
+	m_pCubeBlock = CCubeBlock::Create();
+	m_pCubeBlock->SetPos(D3DXVECTOR3(-50.0f, 40.0f, -450.0f));
+	m_pCubeBlock->SetRot(D3DXVECTOR3(D3DX_PI * 0.98f, D3DX_PI * -0.9f, 0.0f));
+	m_pCubeBlock->SetSize(D3DXVECTOR3(250.0f, 25.0f, 10000.0f));
 
 	m_pTitleButton = CObject2D::Create();
-	m_pTitleButton->SetPos(D3DXVECTOR3(640.0f, 500.0f, 0.0f));
+	m_pTitleButton->SetPos(D3DXVECTOR3(640.0f, 670.0f, 0.0f));
 	m_pTitleButton->SetWight(600.0f);
 	m_pTitleButton->SetHeight(350.0f);
 	m_pTitleButton->SetIdx(pTexture->Regist("data\\TEXTURE\\TitleBotton.png"));
@@ -102,9 +104,9 @@ void CTitle::Uninit(void)
 //====================================================================
 void CTitle::Update(void)
 {
-	m_Tex.y -= 0.001f;
-
-	m_pTitle->SetScroll(m_Tex);
+	m_Scroll.x += 0.01f;
+	m_Scroll.y += 0.0f;
+	m_pMeshDome->SetScroll(m_Scroll);
 
 	//選択処理
 	Select();

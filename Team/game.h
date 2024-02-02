@@ -50,9 +50,19 @@ public:
 	static CEdit *GetEdit(void) { return m_pEdit; }
 	static CTime *GetTime(void) { return m_pTime; }
 	static void DeleteTutorial(void);
+	static void EventStart(void);
+	static void SetEvent(bool Set) { m_bEvent = Set; }
+	static bool GetEvent(void) { return m_bEvent; }
+	static bool GetEventEnd(void) { return m_bEventEnd; }
 
 private:
+	static void EventUpdate();				//イベントの更新
+
 	static bool m_bGameEnd;					//ゲーム終了状態かどうか
+	static bool m_bEvent;					//イベント状態かどうか
+	static bool m_bEventEnd;				//イベントが終わったかどうか
+	static int m_nEventCount;				//イベント時間
+	static float m_EventHeight;				//イベント用ポリゴンの高さ
 	static CTutorialUI *m_pTutorialUI;		//チュートリアルUIのポインタ
 	static CPlayer *m_pPlayer;				//プレイヤーのポインタ
 	static CEdit *m_pEdit;					//エディットモードのポインタ
@@ -60,16 +70,18 @@ private:
 	static CScore *m_pScore;				//スコアのポインタ
 	static CTime *m_pTime;
 	static CObject2D* m_p2DSample;			//2Dポリゴンのサンプル
+	static CObject2D* m_pEventBG[2];		//イベント時の背景表示
 	static CObject2D* m_p2DUI_Attack;		//攻撃の2DUI
 	static CObject2D* m_p2DUI_Jump;			//ジャンプの2DUI
 	static CObject2D* m_p2DUI_Dodge;		//回避の2DUI
 	static CObject2D* m_p2DUI_Attention;	//注目の2DUI
 	static CObject2D *m_p2DUI_AttentionOK;	//注目の2DUI
-	static CObject3D *m_p3DSample;			//3Dポリゴンのサンプル
+	static CObject3D* m_p3DSample;			//3Dポリゴンのサンプル
+	static CObject3D *m_p3DEventBG;			//イベント時の背景
 	static CObjectBillboard* m_pBillboardSample; //Billboardポリゴンのサンプル
 	static CObjectX* m_pXModelSample;		//Xモデルのサンプル
 	static CObjmeshField* m_pMeshFieldSample;//メッシュフィールドのサンプル
-	static CObjmeshWall* m_pMeshWallSample;//メッシュウォールのサンプル
+	static CObjmeshWall* m_pMeshWallSample;	//メッシュウォールのサンプル
 	static CObjmeshCylinder* m_pMeshCylinderSample;//メッシュシリンダーのサンプル
 	static CObjmeshDome* m_pMeshDome;		//メッシュドーム
 	static CCubeBlock* m_pCubeBlock;		//キューブブロック

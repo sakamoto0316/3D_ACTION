@@ -17,15 +17,15 @@ public:
 	~CCamera();
 
 	//カメラのモード
-	typedef enum
+	enum CAMERAMODE
 	{
 		CAMERAMODE_CONTROL = 0,	//操作
 		CAMERAMODE_FOLLOW,		//追従
 		CAMERAMODE_DOWNVIEW,	//見下ろし
-		CAMERAMODE_2D,			//2D
+		CAMERAMODE_SIDEVIEW,	//2D
+		CAMERAMODE_EVENTBOSS,	//イベント中のボス注目
 		CAMERAMODE_MAX,
-
-	}CAMERAMODE;
+	};
 
 	HRESULT Init(void);
 	void Uninit(void);
@@ -38,6 +38,7 @@ public:
 	void SetBib(bool Set) { m_bBib = Set; }
 	float GetPosY(void) { return m_posR.y; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
+	void SetCameraMode(CAMERAMODE Mode) { CameraMode = Mode; }
 	CAMERAMODE GetCameraMode(void) { return CameraMode; }
 	void SetFollowTime(int Time) { m_FollowTime = Time; }
 	D3DXVECTOR3 GetPosV(void) { return m_posV; }
@@ -46,6 +47,12 @@ public:
 	bool GetAttention(void) { return m_bAttention; }
 
 private:
+	void ControlCamera(void);
+	void FollowCamera(void);
+	void DownviewCamera(void);
+	void SideviewCamera(void);
+	void EventBossCamera(void);
+
 	D3DXMATRIX m_mtxView;		//ビューマトリックス
 	D3DXMATRIX m_mtxProjection;	//プロジェクションマトリックス
 	D3DXVECTOR3 m_move;			//移動量

@@ -25,7 +25,7 @@ public:
 	~CPlayer();
 
 	//プレイヤーのモーション
-	typedef enum
+	enum ACTION_TYPE
 	{
 		ACTION_WAIT = 0,
 		ACTION_MOVE,
@@ -35,12 +35,13 @@ public:
 		ACTION_SKYATTACK,
 		ACTION_JAMP,
 		ACTION_EVASION,
+		ACTION_TITLE,
 		ACTION_MAX,
 
-	}ACTION_TYPE;
+	};
 
 	//プレイヤーの状態
-	typedef enum
+	enum STATE
 	{
 		STATE_NORMAL = 0,
 		STATE_DEATH,
@@ -48,14 +49,17 @@ public:
 		STATE_DAMAGE,
 		STATE_MAX,
 		
-	}STATE;
+	};
 
 	D3DMATRIX GetMtxWorld(void) { return m_mtxWorld; }
 	static CPlayer *Create();
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
+	void TitleUpdate(void);
+	void GameUpdate(void);
 	void Draw(void);
+
 	void LoadLevelData(const char *pFilename);
 	void SetCameraPos(D3DXVECTOR3 pos) { m_CameraPos = pos; }
 	D3DXVECTOR3 GetCameraPos(void) { return m_CameraPos; }
@@ -76,6 +80,7 @@ public:
 	void HitDamage(float Damage);								//攻撃を受けた時の処理
 
 private:
+	void MyObjCreate(void);								//自分が保持するオブジェクトの生成
 	void FallDamage(void);								//落下した時の処理
 	void StateManager(void);							//状態管理
 	void Move2D(void);									//移動処理
@@ -89,8 +94,9 @@ private:
 	void AttackCollision(void);							//攻撃判定処理
 	void ActionState(void);								//モーションと状態の管理
 	bool CollisionBlock(D3DXVECTOR3* pos, COLLISION XYZ);	//オブジェクトとの当たり判定
-	bool CollisionDamageCube(D3DXVECTOR3 pos);				//オブジェクトとの当たり判定
+	bool CollisionDamageCube(D3DXVECTOR3 pos);			//オブジェクトとの当たり判定
 	void CollisionBoss(void);							//ボスとの当たり判定
+	void CollisionBossEvent(void);						//イベント発生の当たり判定
 	void DeleteMap(void);								//マップの削除
 	void CameraDiff(void);								//カメラの補正設定
 	bool CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut);	//円の当たり判定

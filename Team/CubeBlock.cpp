@@ -62,7 +62,8 @@ HRESULT CCubeBlock::Init(void)
 {	
 	CObjmeshCube::Init();
 
-	SetTexture("data\\TEXTURE\\Wood002.png");
+	SetTexture("data\\TEXTURE\\Test.jpg");
+	SetColor(D3DXCOLOR(0.5f, 0.5f, 0.0f, 0.5f));
 
 	SetType(TYPE_CUBEBLOCK);
 

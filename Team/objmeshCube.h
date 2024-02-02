@@ -23,7 +23,6 @@ public:
 	virtual void Uninit(void);
 	virtual void Update(void);
 	virtual void Draw(void);
-	void BindTexture(LPDIRECT3DTEXTURE9 pTexture);
 
 	void SetVerPos(D3DXVECTOR3 Pos0, D3DXVECTOR3 Pos1, D3DXVECTOR3 Pos2, D3DXVECTOR3 Pos3);	//頂点座標の設定
 	void SetVerSize(void);																	//頂点位置の設定
@@ -54,7 +53,6 @@ public:
 	int GetLife(void) { return m_nLife; }
 
 protected:
-	LPDIRECT3DTEXTURE9 m_pTexture;			//テクスチャへのポインタ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;		//頂点バッファへのポインタ
 	LPDIRECT3DINDEXBUFFER9 g_pIdxBuff;		//インデックスバッファへのポインタ
 	D3DXMATRIX m_mtxWorld;					//ワールドマトリックス

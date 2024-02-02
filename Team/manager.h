@@ -31,12 +31,12 @@ public:
 	CScene();
 	~CScene();
 
-	typedef enum
+	enum MODE
 	{
 		MODE_TITLE = 0,
 		MODE_GAME,
 		MODE_RESULT
-	}MODE;
+	};
 
 	static CScene *Create(MODE mode);
 	virtual HRESULT Init(void);

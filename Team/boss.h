@@ -13,6 +13,7 @@
 //前方宣言
 class CObjGauge2D;
 class CNumber;
+class CCubeSpin;
 
 //オブジェクトプレイヤークラス
 class CBoss : public CObjectX
@@ -23,44 +24,47 @@ public:
 	~CBoss();
 
 	//ボスの状態
-	typedef enum
+	enum STATE
 	{
-		STATE_NORMAL = 0,
-		STATE_DAMAGE,
-		STATE_DEATH,
-		STATE_INVINCIBLE,
+		STATE_NORMAL = 0,	//通常
+		STATE_DAMAGE,		//被弾
+		STATE_DEATH,		//死亡
+		STATE_INVINCIBLE,	//無敵
 		STATE_MAX,
-	}STATE;
+	};
 
 	//ボスの行動
-	typedef enum
+	enum ACTION
 	{
-		ACTION_NORMAL = 0,
-		ACTION_ATTACK,
-		ACTION_WARP,
-		ACTION_REVIVAL,
+		ACTION_NORMAL = 0,	//通常
+		ACTION_ATTACK,		//攻撃
+		ACTION_WARP,		//瞬間移動
+		ACTION_REVIVAL,		//復活
+		ACTION_EVENT,		//イベント時
 		ACTION_MAX,
-	}ACTION;
+	};
 
 	//ボスの攻撃
-	typedef enum
+	enum ATTACK
 	{
-		ATTACK_NOT = 0,
-		ATTACK_BULLET,
-		ATTACK_RUSH,
-		ATTACK_BLOCKRUN,
-		ATTACK_SPINPILLAR,
-		ATTACK_RAIN,
-		ATTACK_REVIVAL,
+		ATTACK_NOT = 0,		//攻撃しない
+		ATTACK_BULLET,		//弾
+		ATTACK_RUSH,		//突進
+		ATTACK_BLOCKRUN,	//ブロックラン
+		ATTACK_SPINPILLAR,	//ブロックの柱
+		ATTACK_RAIN,		//ブロックの雨
+		ATTACK_REVIVAL,		//復活
 		ATTACK_MAX,
 
-	}ATTACK;
+	};
 
 	static CBoss* Create(char* pModelName);
 
 	HRESULT Init(char* pModelName);
 	void Uninit(void);
 	void Update(void);
+	void TitleUpdate(void);
+	void GameUpdate(void);
 	void Draw(void);
 
 	int GetIdx(void) { return m_nIdxTexture; }
@@ -68,6 +72,7 @@ public:
 	bool Collision(D3DXVECTOR3* pPos, D3DXVECTOR3 pPosOld, D3DXVECTOR3* pMove, float fHeight, float fWidth, bool* bJumpMove, bool* bHit, bool bX);
 	void HitDamage(float Damage);
 	void SetLifeUI(void);
+	void SetAction(ACTION Action) { m_Action = Action; }
 	ACTION GetAction(void) { return m_Action; }
 
 private:
@@ -107,9 +112,11 @@ private:
 	D3DXVECTOR3 m_rot;				//向き	
 	float m_fLife;					//ボスのライフ
 	float m_fMoveLife;				//演出用ライフ
-	bool m_bDelLife;					//ライフが減る状態になったら
+	bool m_bDelLife;				//ライフが減る状態になったら
 	float m_fLifeMax;				//ボスのライフの最大値
 	CObjGauge2D* m_pLifeGauge;		//ライフゲージのポインタ
 	CNumber* m_pLifeNumber[5];		//ライフ用UI
+	CCubeSpin* m_CubeSpin;			//回転用のキューブ
+	CCubeSpin* m_CubeSpinTitle;		//回転用のキューブ(タイトル演出用)
 };
 #endif

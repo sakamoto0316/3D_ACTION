@@ -23,7 +23,6 @@
 //====================================================================
 CObjmeshDome::CObjmeshDome(int nPriority) :CObject(nPriority)
 {
-	m_pTexture = NULL;
 	m_pVtxBuff = NULL;
 	g_pIdxBuff = NULL;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -71,6 +70,8 @@ HRESULT CObjmeshDome::Init(void)
 
 	SetTexture("data\\TEXTURE\\Wood002.png");
 
+	SetType(TYPE_NONE);
+
 	//頂点バッファの生成
 	if (FAILED(pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * HEIGHT_SIZE * WAIGHT_SIZE,
 		D3DUSAGE_WRITEONLY,
@@ -99,10 +100,6 @@ HRESULT CObjmeshDome::Init(void)
 
 		//頂点座標の設定 
 		pVtx[nCnt].pos.x = m_pos.x + sinf(D3DX_PI * (1.0f / ((WAIGHT_SIZE - 1) / 2)) * (nCnt - nHeight)) * cosf(D3DX_PI * (1.0f / ((HEIGHT_SIZE - 1) * 2)) * ((HEIGHT_SIZE - 1) - nHeight)) * CYLINDER_RADIUS;
-
-		//pVtx[nCnt].pos.y = CYLINDER_HEIGHT * ((HEIGHT_SIZE - 1) - nHeight);
-
-		//pVtx[nCnt].pos.y = sinf(D3DX_PI * 0.0625f * ((HEIGHT_SIZE - 1) - nHeight)) * CYLINDER_RADIUS;
 
 		pVtx[nCnt].pos.y = sinf(D3DX_PI * (1.0f / ((HEIGHT_SIZE - 1) * 2)) * ((HEIGHT_SIZE - 1) - nHeight)) * CYLINDER_RADIUS;
 
@@ -262,14 +259,6 @@ void CObjmeshDome::Draw(void)
 }
 
 //====================================================================
-//テクスチャの割り当て
-//====================================================================
-void CObjmeshDome::BindTexture(LPDIRECT3DTEXTURE9 pTexture)
-{
-	m_pTexture = pTexture;
-}
-
-//====================================================================
 //頂点座標の設定
 //====================================================================
 void CObjmeshDome::SetVerPos(D3DXVECTOR3 Pos0, D3DXVECTOR3 Pos1, D3DXVECTOR3 Pos2, D3DXVECTOR3 Pos3)
@@ -292,18 +281,46 @@ void CObjmeshDome::SetVerPos(D3DXVECTOR3 Pos0, D3DXVECTOR3 Pos1, D3DXVECTOR3 Pos
 //====================================================================
 //テクスチャ座標の設定
 //====================================================================
-void CObjmeshDome::SetAnim(D3DXVECTOR2 Tex)
+void CObjmeshDome::SetScroll(D3DXVECTOR2 Scroll)
 {
 	VERTEX_3D* pVtx;	//頂点ポインタを所得
 
-					//頂点バッファをロックし、両店情報へのポインタを所得
+	//頂点バッファをロックし、両店情報へのポインタを所得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	//テクスチャ座標の設定
-	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-	pVtx[1].tex = D3DXVECTOR2(Tex.x, 0.0f);
-	pVtx[2].tex = D3DXVECTOR2(0.0f, Tex.y);
-	pVtx[3].tex = D3DXVECTOR2(Tex.x, Tex.y);
+	for (int nCnt = 0, nData = 0, nCenterW = 0, nCenterH = 0, nHeight = 0; nCnt < HEIGHT_SIZE * WAIGHT_SIZE; nCnt++)
+	{
+		//横番号の代入
+		nCenterW = nCnt % WAIGHT_SIZE;
+
+		if (nCnt % WAIGHT_SIZE == 0 && nCnt != 0)
+		{
+			nHeight++;
+		}
+
+		//テクスチャ座標の設定
+		if (nCenterW % 2 == 0)
+		{
+			pVtx[nCnt].tex.x = 0.0f + Scroll.x;
+		}
+		else
+		{
+			pVtx[nCnt].tex.x = 1.0f + Scroll.x;
+		}
+		if (nCenterH % 2 == 0)
+		{
+			pVtx[nCnt].tex.y = 0.0f + Scroll.y;
+		}
+		else
+		{
+			pVtx[nCnt].tex.y = 1.0f + Scroll.y;
+		}
+
+		if ((nCnt - nCenterH) % (WAIGHT_SIZE - 1) == 0 && nCnt != 0 && nCnt != (WAIGHT_SIZE - 1) * nCenterH + nCenterH)
+		{//縦番号の代入
+			nCenterH++;
+		}
+	}
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();

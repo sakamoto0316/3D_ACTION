@@ -26,7 +26,7 @@ public:
 	void BindTexture(LPDIRECT3DTEXTURE9 pTexture);
 
 	void SetVerPos(D3DXVECTOR3 Pos0, D3DXVECTOR3 Pos1, D3DXVECTOR3 Pos2, D3DXVECTOR3 Pos3);	//頂点座標の設定
-	void SetAnim(D3DXVECTOR2 Tex);															//テクスチャ座標の設定
+	void SetScroll(D3DXVECTOR2 Scroll);															//テクスチャ座標の設定
 	void SetColor(D3DXCOLOR col);															//頂点カラーの設定
 	void SetColorA(float A) { m_Color.a = A; SetColor(m_Color); }							//頂点不透明度の設定
 	void SetTexture(const char* name);
@@ -41,7 +41,6 @@ public:
 	virtual int GetIdx(void) { return m_nIdxTexture; }
 
 protected:
-	LPDIRECT3DTEXTURE9 m_pTexture;			//テクスチャへのポインタ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;		//頂点バッファへのポインタ
 	LPDIRECT3DINDEXBUFFER9 g_pIdxBuff;		//インデックスバッファへのポインタ
 	D3DXMATRIX m_mtxWorld;					//ワールドマトリックス

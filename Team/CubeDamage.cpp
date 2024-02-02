@@ -19,13 +19,18 @@
 #define HEIGHT_CENTER (0.5f)	//縦の原点(0.0f～1.0f)
 #define FIELD_SIZE (200.0f)		//床一枚の大きさ
 
+//静的メンバ変数宣言
+int CCubeDamage::m_nExplosionCount = 0;
+int CCubeDamage::m_nExplosionNum = 0;
+
 //====================================================================
 //コンストラクタ
 //====================================================================
 CCubeDamage::CCubeDamage(int nPriority) :CObjmeshCube(nPriority)
 {
+	m_pos = INITVECTOR3;
 	m_fDamage = 0.0f;
-	m_bBreak = false;
+	m_CubeType = CUBETYPE_NORMAL;
 	m_pShadow = nullptr;
 	m_fSpinCount = INITVECTOR3;
 	m_fSpinSpeed = D3DXVECTOR3(-100.0f, -100.0f, -100.0f);
@@ -34,6 +39,8 @@ CCubeDamage::CCubeDamage(int nPriority) :CObjmeshCube(nPriority)
 	SpinPos = INITVECTOR3;
 	m_fSpinDistance = 0.0f;
 	m_fSpinDisMove = 0.0f;
+	m_nLife = -1;
+	m_nExplosionIdx = -1;
 	m_Move = INITVECTOR3;
 }
 
@@ -98,6 +105,11 @@ void CCubeDamage::Uninit(void)
 		m_pShadow->SetDeathFlag(true);
 	}
 
+	if (m_CubeType == CUBETYPE_EXPLOSION)
+	{
+		ExplosionSet();
+	}
+
 	CObjmeshCube::Uninit();
 
 	SetDeathFlag(true);
@@ -108,12 +120,15 @@ void CCubeDamage::Uninit(void)
 //====================================================================
 void CCubeDamage::Update(void)
 {
-	D3DXVECTOR3 pos = GetPos();
+	m_pos = GetPos();
 
 	if (m_bSpin == true)
 	{
-		m_fSpinCount += m_fSpinSpeed;
-		m_fSpinDistance += m_fSpinDisMove;
+		if (m_CubeType != CUBETYPE_EXPLOSION)
+		{
+			m_fSpinCount += m_fSpinSpeed;
+			m_fSpinDistance += m_fSpinDisMove;
+		}
 
 		if (m_fSpinSpeed.x > -100.0f)
 		{
@@ -128,20 +143,49 @@ void CCubeDamage::Update(void)
 			m_fBOOLSpin.z = 1.0f;
 		}
 
-		pos.x = SpinPos.x + (sinf(m_fSpinCount.y) * m_fSpinDistance * m_fBOOLSpin.y) + (sinf(m_fSpinCount.x) * m_fSpinDistance * m_fBOOLSpin.x);
-		pos.y = SpinPos.y + (cosf(m_fSpinCount.x) * m_fSpinDistance * m_fBOOLSpin.x) + (sinf(m_fSpinCount.z) * m_fSpinDistance * m_fBOOLSpin.z);
-		pos.z = SpinPos.z + (cosf(m_fSpinCount.y) * m_fSpinDistance * m_fBOOLSpin.y) + (cosf(m_fSpinCount.z) * m_fSpinDistance * m_fBOOLSpin.z);
+		m_pos.x = SpinPos.x + (sinf(m_fSpinCount.y) * m_fSpinDistance * m_fBOOLSpin.y) + (sinf(m_fSpinCount.x) * m_fSpinDistance * m_fBOOLSpin.x);
+		m_pos.y = SpinPos.y + (cosf(m_fSpinCount.x) * m_fSpinDistance * m_fBOOLSpin.x) + (sinf(m_fSpinCount.z) * m_fSpinDistance * m_fBOOLSpin.z);
+		m_pos.z = SpinPos.z + (cosf(m_fSpinCount.y) * m_fSpinDistance * m_fBOOLSpin.y) + (cosf(m_fSpinCount.z) * m_fSpinDistance * m_fBOOLSpin.z);
 
 		SpinPos += m_Move;
 	}
+	if (m_CubeType != CUBETYPE_EXPLOSION)
+	{
+		m_pos += m_Move;
+	}
 
-	pos += m_Move;
-
-	SetPos(pos);
+	SetPos(m_pos);
 
 	CollisionShadow();
 
 	CObjmeshCube::Update();
+
+	if (m_CubeType == CUBETYPE_EXPLOSION)
+	{
+		if (m_nExplosionIdx == 0)
+		{
+			if (m_nExplosionCount > 0)
+			{
+				m_nExplosionCount--;
+			}
+			else
+			{
+				m_nExplosionNum = 0;
+				UninitExplosion();
+			}
+		}
+	}
+	else
+	{
+		if (m_nLife != -1 && m_nLife > 0)
+		{
+			m_nLife--;
+		}
+		else if (m_nLife == 0)
+		{
+			Uninit();
+		}
+	}
 }
 
 //====================================================================
@@ -153,19 +197,77 @@ void CCubeDamage::Draw(void)
 }
 
 //====================================================================
-//描画処理
+//種類設定処理
 //====================================================================
-void CCubeDamage::SetBreak(bool Set)
+void CCubeDamage::SetCubeType(CUBETYPE Set)
 {
-	m_bBreak = Set;
+	m_CubeType = Set;
 
-	if (m_bBreak == true)
+	switch (m_CubeType)
 	{
-		SetColor(D3DXCOLOR(0.8f, 0.3f, 0.0f, 0.5f));
-	}
-	else
-	{
+	case CUBETYPE_EXPLOSION:
+		SetColor(D3DXCOLOR(1.0f, 0.0f, 1.0f, 0.5f));
+		m_nExplosionIdx = m_nExplosionNum;
+		m_nExplosionNum++;
+		break;
+	case CUBETYPE_NORMAL:
 		SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.5f));
+		break;
+	case CUBETYPE_BREAK:
+		SetColor(D3DXCOLOR(0.8f, 0.3f, 0.0f, 0.5f));
+		break;
+	}
+}
+
+//====================================================================
+//処理
+//====================================================================
+void CCubeDamage::ExplosionSet(void)
+{
+	CCubeDamage* pCubeDamage = CCubeDamage::Create();
+	pCubeDamage->SetUseSpin(true);
+	pCubeDamage->SetSpinPos(m_pos);
+	pCubeDamage->SetMove(m_Move);
+	pCubeDamage->SetSpinCount(m_fSpinCount);
+	pCubeDamage->SetSpinSpeedX(m_fSpinSpeed.x);
+	pCubeDamage->SetSpinSpeedY(m_fSpinSpeed.y);
+	pCubeDamage->SetSpinSpeedZ(m_fSpinSpeed.z);
+	pCubeDamage->SetSpinDistance(m_fSpinDistance);
+	pCubeDamage->SetCubeType(CUBETYPE_BREAK);
+	pCubeDamage->SetLife(m_nLife);
+	pCubeDamage->SetSpinDisMove(m_fSpinDisMove);
+	pCubeDamage->SetSize(GetSize());
+	pCubeDamage->SetDamage(m_fDamage);
+}
+
+//====================================================================
+//爆発キューブの起動
+//====================================================================
+void CCubeDamage::UninitExplosion(void)
+{
+	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	{
+		//オブジェクトを取得
+		CObject* pObj = CObject::GetTop(nCntPriority);
+
+		while (pObj != NULL)
+		{
+			CObject* pObjNext = pObj->GetNext();
+
+			CObject::TYPE type = pObj->GetType();			//種類を取得
+
+			if (type == TYPE_CUBEDAMEGE)
+			{//種類がブロックの時
+				CCubeDamage* pBlock = (CCubeDamage*)pObj;
+
+				if (pBlock->GetCubeType() == CUBETYPE_EXPLOSION)
+				{
+					pBlock->Uninit();
+				}
+			}
+
+			pObj = pObjNext;
+		}
 	}
 }
 
@@ -187,7 +289,7 @@ bool CCubeDamage::CollisionDamageBlock(D3DXVECTOR3 pPos, D3DXVECTOR3 Size, float
 	{
 		*Damage = m_fDamage;
 
-		if (m_bBreak == true)
+		if (m_CubeType == CUBETYPE_BREAK)
 		{
 			Uninit();
 		}

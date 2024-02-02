@@ -27,6 +27,7 @@ CEffect::CEffect(int nPriority) : CObjectBillboard(nPriority)
 	m_nLifeMax = m_nLife;
 	m_fDel = SMALLER;
 	m_cTexName = "";
+	m_nIdxTexture  = -1;
 }
 
 //====================================================================
