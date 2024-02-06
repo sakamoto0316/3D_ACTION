@@ -36,9 +36,9 @@ CCamera::CCamera()
 	m_bBib = false;
 	m_fBibPowor = 0.0f;
 	m_move = D3DXVECTOR3(10.0f, 0.0f, 0.0f);
-	m_posV = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_posV = INITVECTOR3;
+	m_posR = INITVECTOR3;
+	m_rot = INITVECTOR3;
 	m_PlayerPos = INITVECTOR3;
 	m_DelCameraPos = INITVECTOR3;
 	ResetCamera();
@@ -466,23 +466,45 @@ void CCamera::EventBossCamera(void)
 	//ボスの取得
 	CBoss* pBoss = CGame::GetBoss();
 
-	m_rot.y = 0.0f;
+	m_rot = INITVECTOR3;
 
 	m_posRDest.x = m_posV.x + sinf(m_rot.y) * cosf(m_rot.x) * CAMERA_DISTANCE_EVENT;
 	m_posRDest.z = m_posV.z + cosf(m_rot.y) * cosf(m_rot.x) * CAMERA_DISTANCE_EVENT;
 	m_posRDest.y = m_posV.y + sinf(m_rot.x) * CAMERA_DISTANCE_EVENT;
 
-	m_posVDest.x = pBoss->GetPos().x - 50.0f + sinf(-pBoss->GetRot().y) * MODEL_DISTANCE + sinf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE_EVENT;
-	m_posVDest.z = pBoss->GetPos().z + cosf(-pBoss->GetRot().y) * MODEL_DISTANCE + cosf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE_EVENT;
-	m_posVDest.y = pBoss->GetPos().y + sinf(-m_rot.x) * CAMERA_DISTANCE_EVENT;
+	m_posVDest.x = CGame::GetEventPos().x - 50.0f + sinf(-pBoss->GetRot().y) * MODEL_DISTANCE + sinf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE_EVENT;
+	m_posVDest.z = CGame::GetEventPos().z + cosf(-pBoss->GetRot().y) * MODEL_DISTANCE + cosf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE_EVENT;
+	m_posVDest.y = CGame::GetEventPos().y + sinf(-m_rot.x) * CAMERA_DISTANCE_EVENT;
 
-	m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING;
-	m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
-	m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 5.0f;
-	m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 5.0f;
+	if (m_bBib == true)
+	{
+		m_fBibPowor += 0.4f;
 
-	m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 5.0f;
-	m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 5.0f;
+		//m_posR.y += (int)(sin(D3DX_PI * m_fBibPowor) * 10.0f);
+
+		////視点の情報を出力する
+		//m_posV.x = m_posR.x + sinf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
+		//m_posV.y = m_posR.y + sinf(-m_rot.x) * m_CameraDistance + (int)(sin(D3DX_PI * m_fBibPowor) * 10.0f);
+		//m_posV.z = m_posR.z + cosf(m_rot.y) * -cosf(m_rot.x) * m_CameraDistance;
+
+		m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING;
+		m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 5.0f;
+		m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
+
+		m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 5.0f;
+		m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 5.0f + (int)(sin(D3DX_PI * m_fBibPowor) * 10.0f);
+		m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 5.0f;
+	}
+	else
+	{
+		m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING;
+		m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 5.0f;
+		m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
+
+		m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 5.0f;
+		m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 5.0f;
+		m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 5.0f;
+	}
 }
 
 //====================================================================

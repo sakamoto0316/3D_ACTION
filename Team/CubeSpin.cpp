@@ -83,6 +83,7 @@ HRESULT CCubeSpin::Init(void)
 		{
 			m_apCubeDamage[nCnt] = CCubeDamage::Create();
 			m_apCubeDamage[nCnt]->SetUseSpin(true);
+			m_apCubeDamage[nCnt]->SetSize(D3DXVECTOR3(10.0f, 10.0f, 10.0f));
 			m_apCubeDamage[nCnt]->SetSpinPos(m_pos);
 			m_apCubeDamage[nCnt]->SetSpinDistance(350.0f);
 			m_apCubeDamage[nCnt]->SetSpinSpeedY(0.05f);

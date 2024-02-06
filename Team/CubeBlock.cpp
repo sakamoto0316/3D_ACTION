@@ -262,3 +262,153 @@ bool CCubeBlock::CollisionBlock(D3DXVECTOR3* pPos, D3DXVECTOR3 pPosOld, D3DXVECT
 
 	return false;
 }
+
+//====================================================================
+//ÉuÉçÉbÉNÇÃìñÇΩÇËîªíË
+//====================================================================
+bool CCubeBlock::CollisionBlockUp(D3DXVECTOR3* pPos, D3DXVECTOR3 pPosOld, D3DXVECTOR3* pMove, D3DXVECTOR3* pObjMove, D3DXVECTOR3 Size, bool* bJump, COLLISION XYZ)
+{
+	D3DXVECTOR3 MyPos = GetPos();
+	D3DXVECTOR3 MyPosOld = GetPosOld();
+	D3DXVECTOR3 MySize = GetSize();
+	D3DXVECTOR3 MyMove = GetMove();
+
+	switch (XYZ)
+	{
+	case CObject::COLLISION_X:	// Xé≤
+
+		//Å{Ç©ÇÁÅ|ÇÃñ 
+		if (MyPos.x + MySize.x > pPos->x - Size.x &&
+			(MyPosOld.x + MySize.x <= pPos->x - Size.x ||
+				MyPos.x + MySize.x <= pPosOld.x - Size.x ||
+				(MyPos.x + MySize.x >= pPosOld.x - Size.x &&
+					MyPosOld.x + MySize.x <= pPosOld.x - Size.x &&
+					MyPosOld.x + MySize.x >= pPos->x - Size.x)) &&
+			MyPos.z + MySize.z > pPos->z - Size.z &&
+			MyPos.z - MySize.z < pPos->z + Size.z &&
+			MyPos.y + MySize.y > pPos->y &&
+			MyPos.y - MySize.y < pPos->y + Size.y
+			)
+		{
+			if (MyMove.x >= 0.0f)
+			{
+				pPos->x = pPosOld.x - Size.x + Size.x + MyMove.x;
+			}
+			else
+			{
+				pPos->x = MyPos.x + MySize.x + Size.x + MyMove.x;
+			}
+			pMove->x = 0.0f;
+		}
+
+		//Å|Ç©ÇÁÅ{ÇÃñ 
+		if (MyPos.x - MySize.x < pPos->x + Size.x &&
+			(MyPosOld.x - MySize.x >= pPos->x + Size.x ||
+				MyPos.x - MySize.x >= pPosOld.x + Size.x ||
+				(MyPos.x - MySize.x <= pPosOld.x + Size.x &&
+					MyPosOld.x - MySize.x >= pPosOld.x + Size.x &&
+					MyPosOld.x - MySize.x <= pPos->x + Size.x)) &&
+			MyPos.z + MySize.z > pPos->z - Size.z &&
+			MyPos.z - MySize.z < pPos->z + Size.z &&
+			MyPos.y + MySize.y > pPos->y &&
+			MyPos.y - MySize.y < pPos->y + Size.y
+			)
+		{
+			if (MyMove.x <= 0.0f)
+			{
+				pPos->x = pPosOld.x + Size.x - Size.x + MyMove.x;
+			}
+			else
+			{
+				pPos->x = MyPos.x - MySize.x - Size.x + MyMove.x;
+			}
+			pMove->x = 0.0f;
+		}
+
+		break;
+	case CObject::COLLISION_Y:
+
+		//Å{Ç©ÇÁÅ|ÇÃñ 
+		if (MyPos.y + MySize.y > pPos->y &&
+			(MyPosOld.y + MySize.y <= pPos->y ||
+				MyPos.y + MySize.y <= pPosOld.y ||
+				(MyPos.y + MySize.y >= pPosOld.y &&
+					MyPosOld.y + MySize.y <= pPosOld.y &&
+					MyPosOld.y + MySize.y >= pPos->y)) &&
+			MyPos.z + MySize.z > pPos->z - Size.z &&
+			MyPos.z - MySize.z < pPos->z + Size.z &&
+			MyPos.x + MySize.x > pPos->x - Size.x &&
+			MyPos.x - MySize.x < pPos->x + Size.x
+			)
+		{
+			if (MyMove.y >= 0.0f)
+			{
+				pPos->y = pPosOld.y + MyMove.y;
+			}
+			else
+			{
+				pPos->y = MyPos.y + MySize.y + MyMove.y;
+			}
+			pMove->y = 0.0f;
+			*bJump = false;
+			pObjMove->x = MyMove.x;
+			pObjMove->y = MyMove.y;
+			pObjMove->z = MyMove.z;
+		}
+
+		break;
+	case CObject::COLLISION_Z:
+
+		//Å{Ç©ÇÁÅ|ÇÃñ 
+		if (MyPos.z + MySize.z > pPos->z - Size.z &&
+			(MyPosOld.z + MySize.z <= pPos->z - Size.z ||
+				MyPos.z + MySize.z <= pPosOld.z - Size.z ||
+				(MyPos.z + MySize.z >= pPosOld.z - Size.z &&
+					MyPosOld.z + MySize.z <= pPosOld.z - Size.z &&
+					MyPosOld.z + MySize.z >= pPos->z - Size.z)) &&
+			MyPos.x + MySize.x > pPos->x - Size.x &&
+			MyPos.x - MySize.x < pPos->x + Size.x &&
+			MyPos.y + MySize.y > pPos->y &&
+			MyPos.y - MySize.y < pPos->y + Size.y
+			)
+		{
+			if (MyMove.z >= 0.0f)
+			{
+				pPos->z = pPosOld.z - Size.z + Size.z + MyMove.z;
+			}
+			else
+			{
+				pPos->z = MyPos.z + MySize.z + Size.z + MyMove.z;
+			}
+			pMove->z = 0.0f;
+		}
+
+		//Å|Ç©ÇÁÅ{ÇÃñ 
+		if (MyPos.z - MySize.z < pPos->z + Size.z &&
+			(MyPosOld.z - MySize.z >= pPos->z + Size.z ||
+				MyPos.z - MySize.z >= pPosOld.z + Size.z ||
+				(MyPos.z - MySize.z <= pPosOld.z + Size.z &&
+					MyPosOld.z - MySize.z >= pPosOld.z + Size.z &&
+					MyPosOld.z - MySize.z <= pPos->z + Size.z)) &&
+			MyPos.x + MySize.x > pPos->x - Size.x &&
+			MyPos.x - MySize.x < pPos->x + Size.x &&
+			MyPos.y + MySize.y > pPos->y &&
+			MyPos.y - MySize.y < pPos->y + Size.y
+			)
+		{
+			if (MyMove.z <= 0.0f)
+			{
+				pPos->z = pPosOld.z + Size.z - Size.z + MyMove.z;
+			}
+			else
+			{
+				pPos->z = MyPos.z - MySize.z - Size.z + MyMove.z;
+			}
+			pMove->z = 0.0f;
+		}
+
+		break;
+	}
+
+	return false;
+}

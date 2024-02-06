@@ -249,8 +249,6 @@ void CPlayer::Update(void)
 //====================================================================
 void CPlayer::TitleUpdate(void)
 {
-
-
 	//モーションの更新
 	m_pMotion->Update();
 }
@@ -285,6 +283,8 @@ void CPlayer::GameUpdate(void)
 
 		if (CManager::GetInstance()->GetCamera()->GetCameraMode() == CCamera::CAMERAMODE_SIDEVIEW)
 		{
+			m_pos.z = 0.0f;
+
 			//移動処理
 			Move2D();
 
@@ -1206,6 +1206,17 @@ void CPlayer::HitDamage(float Damage)
 		m_nAttackCount = 0;
 		m_pMotion->Set(ACTION_WAIT, 5);
 		m_fLife -= Damage;
+
+		if (m_fLife > 0)
+		{
+			//ゲームのSEを再生する
+			CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_DAMAGE_PLAYER);
+		}
+		else
+		{
+			m_fLife = 0.0f;
+		}
+
 		SetLifeUI();
 
 		for (int nCnt = 0; nCnt < m_nNumModel; nCnt++)
@@ -1286,7 +1297,7 @@ void CPlayer::CameraDiff(void)
 }
 
 //====================================================================
-//オブジェクトとの当たり判定処理
+//キューブブロックとの当たり判定処理
 //====================================================================
 bool CPlayer::CollisionBlock(D3DXVECTOR3* pos, COLLISION XYZ)
 {
@@ -1330,7 +1341,7 @@ bool CPlayer::CollisionBlock(D3DXVECTOR3* pos, COLLISION XYZ)
 }
 
 //====================================================================
-//オブジェクトとの当たり判定処理
+//キューブダメージとの当たり判定処理
 //====================================================================
 bool CPlayer::CollisionDamageCube(D3DXVECTOR3 pos)
 {
@@ -1440,35 +1451,11 @@ void CPlayer::CollisionBoss(void)
 //====================================================================
 void CPlayer::CollisionBossEvent(void)
 {
-	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	if (CGame::GetEvent() == false && CGame::GetEventEnd() == false)
 	{
-		//オブジェクトを取得
-		CObject* pObj = CObject::GetTop(nCntPriority);
-
-		while (pObj != NULL)
+		if (CollisionCircle(m_pos, CGame::GetEventPos(), 300.0f) == true)
 		{
-			CObject* pObjNext = pObj->GetNext();
-
-			CObject::TYPE type = pObj->GetType();			//種類を取得
-
-			if (type == TYPE_BOSS)
-			{//種類がブロックの時
-
-				CBoss* pBoss = (CBoss*)pObj;
-
-				D3DXVECTOR3 ObjPos = pBoss->GetPos();
-				float ObjWight = pBoss->GetWight();
-
-				if (pBoss->GetAction() == CBoss::ACTION_EVENT)
-				{
-					if (CollisionCircle(m_pos, ObjPos, 300.0f) == true)
-					{
-						CGame::EventStart();
-					}
-				}
-			}
-
-			pObj = pObjNext;
+			CGame::EventStart();
 		}
 	}
 }

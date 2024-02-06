@@ -1,0 +1,1282 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [
+        {
+          "ruleId": "C26812",
+          "message": {
+            "text": "列挙型 'CObject::TYPE' は対象範囲外です。'enum' (Enum.3) より 'enum class' を優先します。"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/object.h"
+                },
+                "region": {
+                  "startLine": 94,
+                  "startColumn": 7,
+                  "endLine": 94,
+                  "endColumn": 7
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?SetType@CObject@@QAEXW4TYPE@1@@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C26812",
+          "message": {
+            "text": "列挙型 'CObject::COLLISION' は対象範囲外です。'enum' (Enum.3) より 'enum class' を優先します。"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/object.h"
+                },
+                "region": {
+                  "startLine": 107,
+                  "startColumn": 15,
+                  "endLine": 107,
+                  "endColumn": 15
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?CollisionBlock@CObject@@UAE_NPAUD3DXVECTOR3@@U2@001PA_NW4COLLISION@1@@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "変数 'CMotion::m_aInfo' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 10,
+                  "endLine": 14,
+                  "endColumn": 10
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0CMotion@@QAE@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "CMotion::m_aInfo"
+          }
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "変数 'CMotion::m_nNumAll' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 10,
+                  "endLine": 14,
+                  "endColumn": 10
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0CMotion@@QAE@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "CMotion::m_nNumAll"
+          }
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "変数 'CMotion::m_nNumKey' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 10,
+                  "endLine": 14,
+                  "endColumn": 10
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0CMotion@@QAE@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "CMotion::m_nNumKey"
+          }
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "変数 'CMotion::m_nBlendType' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 10,
+                  "endLine": 14,
+                  "endColumn": 10
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0CMotion@@QAE@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "CMotion::m_nBlendType"
+          }
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "変数 'CMotion::m_nBlendKey' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 10,
+                  "endLine": 14,
+                  "endColumn": 10
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0CMotion@@QAE@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "CMotion::m_nBlendKey"
+          }
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "変数 'CMotion::m_nBlendCounter' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 10,
+                  "endLine": 14,
+                  "endColumn": 10
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0CMotion@@QAE@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "CMotion::m_nBlendCounter"
+          }
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "変数 'CMotion::m_nBlendTime' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 10,
+                  "endLine": 14,
+                  "endColumn": 10
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0CMotion@@QAE@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "CMotion::m_nBlendTime"
+          }
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "変数 'CMotion::m_nBlendTimeMax' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 10,
+                  "endLine": 14,
+                  "endColumn": 10
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0CMotion@@QAE@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "CMotion::m_nBlendTimeMax"
+          }
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "変数 'CMotion::m_nNumModel' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 10,
+                  "endLine": 14,
+                  "endColumn": 10
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0CMotion@@QAE@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "CMotion::m_nNumModel"
+          }
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 223,
+                  "startColumn": 4,
+                  "endLine": 223,
+                  "endColumn": 35
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 229,
+                  "startColumn": 6,
+                  "endLine": 229,
+                  "endColumn": 37
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 234,
+                  "startColumn": 8,
+                  "endLine": 234,
+                  "endColumn": 39
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 237,
+                  "startColumn": 9,
+                  "endLine": 237,
+                  "endColumn": 39
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 238,
+                  "startColumn": 9,
+                  "endLine": 238,
+                  "endColumn": 37
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 243,
+                  "startColumn": 9,
+                  "endLine": 243,
+                  "endColumn": 39
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 244,
+                  "startColumn": 9,
+                  "endLine": 244,
+                  "endColumn": 49
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 252,
+                  "startColumn": 8,
+                  "endLine": 252,
+                  "endColumn": 39
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 257,
+                  "startColumn": 10,
+                  "endLine": 257,
+                  "endColumn": 41
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 260,
+                  "startColumn": 11,
+                  "endLine": 260,
+                  "endColumn": 41
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 261,
+                  "startColumn": 11,
+                  "endLine": 261,
+                  "endColumn": 72
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 268,
+                  "startColumn": 10,
+                  "endLine": 268,
+                  "endColumn": 41
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 273,
+                  "startColumn": 12,
+                  "endLine": 273,
+                  "endColumn": 43
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 276,
+                  "startColumn": 13,
+                  "endLine": 276,
+                  "endColumn": 43
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 277,
+                  "startColumn": 13,
+                  "endLine": 277,
+                  "endColumn": 88
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 278,
+                  "startColumn": 13,
+                  "endLine": 278,
+                  "endColumn": 88
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 279,
+                  "startColumn": 13,
+                  "endLine": 279,
+                  "endColumn": 88
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 283,
+                  "startColumn": 13,
+                  "endLine": 283,
+                  "endColumn": 43
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 284,
+                  "startColumn": 13,
+                  "endLine": 284,
+                  "endColumn": 88
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 285,
+                  "startColumn": 13,
+                  "endLine": 285,
+                  "endColumn": 88
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6031",
+          "message": {
+            "text": "戻り値が無視されました: 'fscanf'"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+                },
+                "region": {
+                  "startLine": 286,
+                  "startColumn": 13,
+                  "endLine": 286,
+                  "endColumn": 88
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?LoadData@CMotion@@QAEXPBD@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.29.30153.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "commandLine": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX86\\x86\\c1xx.dll\" -ACf{1F7B090C-16DB-4822-966A-A93D26ED4681} -ACpmspft140.dll -Alint -D_PREFAST_ -D_AST_FE_ -Analyze -zm0x0032D1C0 -allChunksReserved -il C:\\Users\\student\\AppData\\Local\\Temp\\_CL_8272b9ecast -typedil -f motion.cpp -Ze -D_MSC_EXTENSIONS -Zp8 -Gs -pc \\:/ -D_MSC_VER=1929 -D_MSC_FULL_VER=192930153 -D_MSC_BUILD=0 -D_WIN32 -D_M_IX86=600 -D_M_IX86_FP=2 -GR -D_CPPRTTI -nologo -W 3 -diagnostics:column -D_GUARDOVERFLOW_CRT_ALLOCATORS=1 -GF -Og -Ot -Oi -ltcg -DCODE_ANALYSIS -DWIN32 -DNDEBUG -D_WINDOWS -D_CRT_SECURE_NO_WARNINGS -D_MBCS -EHs -D_CPPUNWIND -EHc -MD -D_MT -D_DLL -GS -D_M_FP_PRECISE -Zc:wchar_t -Zc:forScope -Yuprecompile.h -FpRelease\\Team.pch -FoRelease\\motion.obj -FdRelease\\vc142.pdb -external:W 3 -Gd -FI precompile.h -analyze:projectdirectory C:\\Users\\student\\Desktop\\3D_ACTIONGAME\\3D_ACTION\\Team -analyze:rulesetdirectory ;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\Team Tools\\Static Analysis Tools\\\\Rule Sets; -analyze:ruleset C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\Team Tools\\Static Analysis Tools\\Rule Sets\\NativeRecommendedRules.ruleset -analyze:quiet -analyze:plugin C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX86\\x86\\EspXEngine.dll -FC -errorreport:prompt -I C:\\Program Files (x86)\\Microsoft DirectX SDK (June 2010)\\Include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\atlmfc\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\VS\\include -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\VS\\UnitTest\\include -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -I C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\Include\\um -external:I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\include -external:I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\atlmfc\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\atlmfc\\include -external:I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\VS\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\VS\\include -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -external:I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\VS\\UnitTest\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\VS\\UnitTest\\include -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -external:I C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\Include\\um -I C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\Include\\um",
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/object.h"
+          },
+          "roles": [
+            "resultFile"
+          ],
+          "hashes": {
+            "md5": "34207783fee71d699cc9c95903bf7d8d"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/manager.h"
+          },
+          "roles": [
+            "resultFile"
+          ],
+          "hashes": {
+            "md5": "b081162c2ed512f1d4cafbcf48645932"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/object2D.cpp"
+          },
+          "roles": [
+            "analysisTarget",
+            "resultFile"
+          ],
+          "hashes": {
+            "md5": "be598a630fe1c3991432637c6d521e75"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/precompile.h"
+          },
+          "hashes": {
+            "md5": "5353967f7d8c3bd4393d6f8d27609c65"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/rpcsal.h"
+          },
+          "hashes": {
+            "md5": "fec1415e1273d783e79090571a83934e"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3dx9.h"
+          },
+          "hashes": {
+            "md5": "d296189c1d761aa0e1c2daf3b8b592b9"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3d9.h"
+          },
+          "hashes": {
+            "md5": "05da735f3db2fe7524da8988539ced99"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3d9types.h"
+          },
+          "hashes": {
+            "md5": "8e48f8449e75f4f6035595516c31ec58"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3d9caps.h"
+          },
+          "hashes": {
+            "md5": "2cf8710501d6c3aed8ebf7042df8bb21"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3dx9math.h"
+          },
+          "hashes": {
+            "md5": "deec5e74fb66ffca6cb49f5e225983bb"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3dx9math.inl"
+          },
+          "hashes": {
+            "md5": "ca4ba28fa34ec97fd50fc5b184687363"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3dx9core.h"
+          },
+          "hashes": {
+            "md5": "39a4bd98e0e9d22ba9d51dac286662b9"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3dx9xof.h"
+          },
+          "hashes": {
+            "md5": "b338de250ff8747b0fac4a0f567a7d3c"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3dx9mesh.h"
+          },
+          "hashes": {
+            "md5": "2de6f4320e7eb78f536e29bf27bc3445"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3dx9shader.h"
+          },
+          "hashes": {
+            "md5": "fc510418305749392ea05d614300b074"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3dx9effect.h"
+          },
+          "hashes": {
+            "md5": "d23677a843bbc1588ee1da62b56a5ccc"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3dx9tex.h"
+          },
+          "hashes": {
+            "md5": "cbf7dc6a3522b1509ade6278f8ff00c5"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3dx9shape.h"
+          },
+          "hashes": {
+            "md5": "de5f515b74b8472c5283d840c8327143"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/d3dx9anim.h"
+          },
+          "hashes": {
+            "md5": "3c2501eaff09346d6c30086d8eb2c6c9"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/dinput.h"
+          },
+          "hashes": {
+            "md5": "0dc2c3292f622f1ff6952a163ed336cc"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/xaudio2.h"
+          },
+          "hashes": {
+            "md5": "4deebda0b9b93a82c3261ddcb05ca3d0"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/comdecl.h"
+          },
+          "hashes": {
+            "md5": "271986a1edef3caf60e11421084ad7e4"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/audiodefs.h"
+          },
+          "hashes": {
+            "md5": "b1193233b8a749ef595068db46c36597"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/xma2defs.h"
+          },
+          "hashes": {
+            "md5": "ac52f34c6881192422740d08358ca636"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/object2d.h"
+          },
+          "hashes": {
+            "md5": "67b746c9133d60a22f9ac73f63294dfe"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/main.h"
+          },
+          "hashes": {
+            "md5": "7347557390d4402f11028a4f9a14e0d1"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/renderer.h"
+          },
+          "hashes": {
+            "md5": "626bbe9ab16b3c66c12f3e67e59742a7"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/texture.h"
+          },
+          "hashes": {
+            "md5": "15fe00123b3e0c4591493a16d7ea0361"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/object.cpp"
+          },
+          "roles": [
+            "analysisTarget",
+            "resultFile"
+          ],
+          "hashes": {
+            "md5": "30fa5e0007ba1685334bbfa7bd72960a"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/debugproc.h"
+          },
+          "hashes": {
+            "md5": "3f60f7ab6991e001f1451fcbace9af56"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/numberfall.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "md5": "660f98b37b56b940d312f8c36025ec4c"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/numberfall.h"
+          },
+          "hashes": {
+            "md5": "ed123d95b9650eaa451409d4519a2054"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/numberbillboard.h"
+          },
+          "hashes": {
+            "md5": "0b7e7ddd98a23040cb77d6491df877c7"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/objectbillboard.h"
+          },
+          "hashes": {
+            "md5": "799d55fb42878f0655bd83e09fabe585"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/input.h"
+          },
+          "hashes": {
+            "md5": "63d80152aaec01d5095dea5d8125cfa1"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/program files (x86)/microsoft directx sdk (june 2010)/include/xinput.h"
+          },
+          "hashes": {
+            "md5": "5eec771aadf59d7166e9795821eaab10"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/numberBillboard.cpp"
+          },
+          "roles": [
+            "analysisTarget",
+            "resultFile"
+          ],
+          "hashes": {
+            "md5": "e5d98150e5a7d732a5116f3020ccc3dd"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/number.cpp"
+          },
+          "roles": [
+            "analysisTarget",
+            "resultFile"
+          ],
+          "hashes": {
+            "md5": "5e978d96fb7e84f68d34fd7c33441ee8"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/number.h"
+          },
+          "hashes": {
+            "md5": "6af17264e423c8aac7bebe3b70806129"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///C:/Users/student/Desktop/3D_ACTIONGAME/3D_ACTION/Team/motion.cpp"
+          },
+          "roles": [
+            "analysisTarget",
+            "resultFile"
+          ],
+          "hashes": {
+            "md5": "167a95e96ce256b50e30a96f4921a434"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/motion.h"
+          },
+          "hashes": {
+            "md5": "74ac310257f13b4ad68476a1082612e2"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/student/desktop/3d_actiongame/3d_action/team/model.h"
+          },
+          "hashes": {
+            "md5": "d5c88db1f50f23fec221f97417902cbe"
+          }
+        }
+      ]
+    }
+  ]
+}

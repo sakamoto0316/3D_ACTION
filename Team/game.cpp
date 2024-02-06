@@ -46,7 +46,8 @@ CObject2D *CGame::m_p2DUI_Dodge = NULL;			//回避の2DUI
 CObject2D* CGame::m_p2DUI_Attention = NULL;		//注目の2DUI
 CObject2D *CGame::m_p2DUI_AttentionOK = NULL;	//注目の2DUI
 CObject3D* CGame::m_p3DSample = NULL;
-CObject3D *CGame::m_p3DEventBG = NULL;			//イベント時の3D背景
+CObject3D* CGame::m_p3DEventBG = NULL;			//イベント時の3D背景
+CObject2D *CGame::m_p2DBossName = NULL;
 CObjectBillboard* CGame::m_pBillboardSample = NULL;
 CObjectX* CGame::m_pXModelSample = NULL;
 CObjmeshField* CGame::m_pMeshFieldSample = NULL;
@@ -61,6 +62,8 @@ bool CGame::m_bEvent = false;
 bool CGame::m_bEventEnd = false;
 int CGame::m_nEventCount = 0;
 float CGame::m_EventHeight = 0.0f;
+float CGame::m_NameColorA = 0.0f;
+D3DXVECTOR3 CGame::m_EventPos = D3DXVECTOR3(0.0f, 300.0f, 0.0f);
 
 //====================================================================
 //コンストラクタ
@@ -87,9 +90,6 @@ CGame::~CGame()
 //====================================================================
 HRESULT CGame::Init(void)
 {
-	//ゲームのBGMを再生する
-	CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_BGM_BOSS);
-
 	//m_p2DSample = CObject2D::Create();
 	//m_p2DSample->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
 	//m_p2DSample->SetWight(100.0f);
@@ -142,7 +142,7 @@ HRESULT CGame::Init(void)
 	m_pPlayer->SetPos(D3DXVECTOR3(0.0f, 150.0f, -400.0f));
 
 	m_pBoss = CBoss::Create("data\\MODEL\\boss.x");
-	m_pBoss->SetPos(D3DXVECTOR3(0.0f, 300.0f, 0.0f));
+	m_pBoss->SetPos(D3DXVECTOR3(0.0f, 5000.0f, 0.0f));
 
 	for (int nCnt = 0; nCnt < 2; nCnt++)
 	{
@@ -330,31 +330,110 @@ void CGame::EventUpdate(void)
 		m_EventHeight += 5.0f;
 	}
 
+	//各種オブジェクトの生成と初期化
 	if (m_nEventCount == 0)
 	{
-		m_p3DEventBG = CObject3D::Create();
-		m_p3DEventBG->SetWight(450.0f);
-		m_p3DEventBG->SetHeight(200.0f);
-		m_p3DEventBG->SetTexture("data\\TEXTURE\\BG_BOSS00.png");
-	}
-	if (m_p3DEventBG != nullptr)
-	{
-		if (m_nEventCount < 30)
+		CCubeBlock* pBlock;
+
+		for (int nCnt = 0; nCnt < 50; nCnt++)
 		{
-			m_p3DEventBG->SetPos(D3DXVECTOR3(m_pBoss->GetPos().x - 50.0f - ((float)30 - (float)m_nEventCount) * 50.0f, m_pBoss->GetPos().y, m_pBoss->GetPos().z));
+			float randX = (float)(rand() % 751);
+			float randY = (float)(rand() % 201);
+
+			pBlock = CCubeBlock::Create();
+			pBlock->SetPos(D3DXVECTOR3(m_EventPos.x - 750.0f + randX - 250.0f, m_EventPos.y + randY - 100.0f, m_EventPos.z - 100.0f));
+			pBlock->SetMove(D3DXVECTOR3(15.0f, 0.0f, 0.0f));
+			pBlock->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+			pBlock->SetSize(D3DXVECTOR3(50.0f, 50.0f, 25.0f));
+			pBlock->SetLife(120);
 		}
-		else
+	}
+	else if (m_nEventCount == 30)
+	{
+		if (m_p3DEventBG == nullptr)
 		{
-			m_p3DEventBG->SetPos(D3DXVECTOR3(m_pBoss->GetPos().x - 50.0f, m_pBoss->GetPos().y, m_pBoss->GetPos().z));
+			m_p3DEventBG = CObject3D::Create();
+			m_p3DEventBG->SetWight(450.0f);
+			m_p3DEventBG->SetHeight(200.0f);
+			m_p3DEventBG->SetTexture("data\\TEXTURE\\BG_BOSS00.png");
+		}
+
+		if (m_p2DBossName == nullptr)
+		{
+			m_p2DBossName = CObject2D::Create();
+			m_p2DBossName->SetPos(D3DXVECTOR3(640.0f, 600.0f, 0.0f));
+			m_p2DBossName->SetWight(500.0f);
+			m_p2DBossName->SetHeight(500.0f);
+			m_p2DBossName->SetTexture("data\\TEXTURE\\BossName.png");
+			m_NameColorA = 0.0f;
+			m_p2DBossName->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_NameColorA));
+		}
+
+		if (m_pBoss != nullptr)
+		{
+			m_pBoss->SetPos(D3DXVECTOR3(0.0f, 300.0f, 0.0f));
 		}
 	}
 
+	//ボスの動き管理
+	if (m_pBoss != nullptr)
+	{
+
+	}
+
+	//カメラ振動の管理
+	if (m_nEventCount == 120)
+	{
+		//カメラのバイブレーションをオンにする
+		CManager::GetInstance()->GetCamera()->SetBib(true);
+	}
+	else if (m_nEventCount == 240)
+	{
+		//カメラのバイブレーションをオフにする
+		CManager::GetInstance()->GetCamera()->SetBib(false);
+	}
+
+	//イベント背景の更新
+	if (m_p3DEventBG != nullptr)
+	{
+		if (m_nEventCount < 60)
+		{
+			m_p3DEventBG->SetPos(D3DXVECTOR3(m_EventPos.x - 50.0f - ((float)60 - (float)m_nEventCount) * 50.0f, m_EventPos.y, m_EventPos.z));
+		}
+		else
+		{
+			m_p3DEventBG->SetPos(D3DXVECTOR3(m_EventPos.x - 50.0f, m_EventPos.y, m_EventPos.z));
+		}
+	}
+
+	//イベントボスネームの更新
+	if (m_p2DBossName != nullptr)
+	{
+		if (m_nEventCount >= 240)
+		{
+			m_NameColorA -= 0.02f;
+			m_p2DBossName->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_NameColorA));
+		}
+		else if (m_nEventCount > 60)
+		{
+			m_NameColorA += 0.02f;
+
+			if (m_NameColorA > 1.0f)
+			{
+				m_NameColorA = 1.0f;
+			}
+
+			m_p2DBossName->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_NameColorA));
+		}
+	}
+
+	//イベント終了までのカウント
 	if (m_nEventCount < 300)
 	{
 		m_nEventCount++;
 	}
 	else
-	{
+	{//イベント終了時
 		CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_FOLLOW);
 		m_bEvent = false;
 		m_bEventEnd = true;
@@ -362,12 +441,22 @@ void CGame::EventUpdate(void)
 		if (m_p3DEventBG != nullptr)
 		{
 			m_p3DEventBG->SetDeathFlag(true);
+			m_p3DEventBG = nullptr;
+		}
+
+		if (m_p2DBossName != nullptr)
+		{
+			m_p2DBossName->SetDeathFlag(true);
+			m_p2DBossName = nullptr;
 		}
 
 		if (m_pBoss != nullptr)
 		{
 			m_pBoss->SetAction(CBoss::ACTION_NORMAL);
 		}
+
+		//ゲームのBGMを再生する
+		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_BGM_BOSS);
 	}
 }
 

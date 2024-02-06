@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Users\student\Desktop\3D_ACTIONGAME\3D_ACTION\Team\</FILEPATH>
+      <FILENAME>object.h</FILENAME>
+      <LINE>94</LINE>
+      <COLUMN>6</COLUMN>
+    </SFA>
+    <DEFECTCODE>26812</DEFECTCODE>
+    <DESCRIPTION>列挙型 'CObject::TYPE' は対象範囲外です。'enum' (Enum.3) より 'enum class' を優先します。</DESCRIPTION>
+    <FUNCTION>CObject::SetType</FUNCTION>
+    <DECORATED>?SetType@CObject@@QAEXW4TYPE@1@@Z</DECORATED>
+    <FUNCLINE>94</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Users\student\Desktop\3D_ACTIONGAME\3D_ACTION\Team\</FILEPATH>
+      <FILENAME>object.h</FILENAME>
+      <LINE>107</LINE>
+      <COLUMN>14</COLUMN>
+    </SFA>
+    <DEFECTCODE>26812</DEFECTCODE>
+    <DESCRIPTION>列挙型 'CObject::COLLISION' は対象範囲外です。'enum' (Enum.3) より 'enum class' を優先します。</DESCRIPTION>
+    <FUNCTION>CObject::CollisionBlock</FUNCTION>
+    <DECORATED>?CollisionBlock@CObject@@UAE_NPAUD3DXVECTOR3@@U2@001PA_NW4COLLISION@1@@Z</DECORATED>
+    <FUNCLINE>107</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Users\student\Desktop\3D_ACTIONGAME\3D_ACTION\Team\</FILEPATH>
+      <FILENAME>manager.h</FILENAME>
+      <LINE>48</LINE>
+      <COLUMN>29</COLUMN>
+    </SFA>
+    <DEFECTCODE>26812</DEFECTCODE>
+    <DESCRIPTION>列挙型 'CScene::MODE' は対象範囲外です。'enum' (Enum.3) より 'enum class' を優先します。</DESCRIPTION>
+    <FUNCTION>CScene::GetMode</FUNCTION>
+    <DECORATED>?GetMode@CScene@@SA?AW4MODE@1@XZ</DECORATED>
+    <FUNCLINE>48</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Users\student\Desktop\3D_ACTIONGAME\3D_ACTION\Team\</FILEPATH>
+      <FILENAME>objmeshDome.cpp</FILENAME>
+      <LINE>24</LINE>
+      <COLUMN>14</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'CObjmeshDome::m_nIdxTexture' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>CObjmeshDome::{ctor}</FUNCTION>
+    <DECORATED>??0CObjmeshDome@@QAE@H@Z</DECORATED>
+    <FUNCLINE>24</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>CObjmeshDome::m_nIdxTexture</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>

@@ -14,6 +14,7 @@
 class CObjGauge2D;
 class CNumber;
 class CCubeSpin;
+class CObject2D;
 
 //オブジェクトプレイヤークラス
 class CBoss : public CObjectX
@@ -54,6 +55,7 @@ public:
 		ATTACK_SPINPILLAR,	//ブロックの柱
 		ATTACK_RAIN,		//ブロックの雨
 		ATTACK_REVIVAL,		//復活
+		ATTACK_2D_BLOCKWALL,//[2D]ブロックウォール
 		ATTACK_MAX,
 
 	};
@@ -86,6 +88,7 @@ private:
 	void AttackBlockRun(D3DXVECTOR3* pos);	//攻撃パターンブロックラン
 	void AttackSpinPillar(D3DXVECTOR3* pos);//攻撃パターン回転する柱
 	void AttackRain(D3DXVECTOR3* pos);		//攻撃パターン雨
+	void AttackBlockWall(D3DXVECTOR3* pos);	//攻撃パターンブロックウォール
 	void AttackRevival(D3DXVECTOR3* pos);	//攻撃パターン復活
 
 	int m_nIdxXModel;				//Xモデルの番号
@@ -118,5 +121,7 @@ private:
 	CNumber* m_pLifeNumber[5];		//ライフ用UI
 	CCubeSpin* m_CubeSpin;			//回転用のキューブ
 	CCubeSpin* m_CubeSpinTitle;		//回転用のキューブ(タイトル演出用)
+	CObject2D* m_pRevivalFG;		//蘇生時の前面ポリゴン
+	float m_fRevivalColorA;			//前面ポリゴンの不透明度
 };
 #endif

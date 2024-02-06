@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>59</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXFLOAT16::value' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXFLOAT16::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXFLOAT16@@QAE@XZ</DECORATED>
+    <FUNCLINE>59</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXFLOAT16::value</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>91</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXVECTOR2::y' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXVECTOR2::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXVECTOR2@@QAE@XZ</DECORATED>
+    <FUNCLINE>91</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXVECTOR2::y</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>91</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXVECTOR2::x' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXVECTOR2::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXVECTOR2@@QAE@XZ</DECORATED>
+    <FUNCLINE>91</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXVECTOR2::x</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>240</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXVECTOR4::y' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXVECTOR4::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXVECTOR4@@QAE@XZ</DECORATED>
+    <FUNCLINE>240</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXVECTOR4::y</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>240</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXVECTOR4::w' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXVECTOR4::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXVECTOR4@@QAE@XZ</DECORATED>
+    <FUNCLINE>240</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXVECTOR4::w</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>240</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXVECTOR4::z' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXVECTOR4::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXVECTOR4@@QAE@XZ</DECORATED>
+    <FUNCLINE>240</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXVECTOR4::z</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>240</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXVECTOR4::x' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXVECTOR4::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXVECTOR4@@QAE@XZ</DECORATED>
+    <FUNCLINE>240</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXVECTOR4::x</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>429</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXQUATERNION::w' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXQUATERNION::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXQUATERNION@@QAE@XZ</DECORATED>
+    <FUNCLINE>429</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXQUATERNION::w</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>429</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXQUATERNION::y' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXQUATERNION::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXQUATERNION@@QAE@XZ</DECORATED>
+    <FUNCLINE>429</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXQUATERNION::y</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>429</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXQUATERNION::z' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXQUATERNION::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXQUATERNION@@QAE@XZ</DECORATED>
+    <FUNCLINE>429</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXQUATERNION::z</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>429</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXQUATERNION::x' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXQUATERNION::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXQUATERNION@@QAE@XZ</DECORATED>
+    <FUNCLINE>429</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXQUATERNION::x</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>475</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXPLANE::d' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXPLANE::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXPLANE@@QAE@XZ</DECORATED>
+    <FUNCLINE>475</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXPLANE::d</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>475</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXPLANE::b' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXPLANE::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXPLANE@@QAE@XZ</DECORATED>
+    <FUNCLINE>475</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXPLANE::b</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>475</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXPLANE::c' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXPLANE::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXPLANE@@QAE@XZ</DECORATED>
+    <FUNCLINE>475</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXPLANE::c</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>475</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXPLANE::a' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXPLANE::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXPLANE@@QAE@XZ</DECORATED>
+    <FUNCLINE>475</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXPLANE::a</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>516</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXCOLOR::a' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXCOLOR::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXCOLOR@@QAE@XZ</DECORATED>
+    <FUNCLINE>516</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXCOLOR::a</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>516</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXCOLOR::g' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXCOLOR::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXCOLOR@@QAE@XZ</DECORATED>
+    <FUNCLINE>516</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXCOLOR::g</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>516</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXCOLOR::b' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXCOLOR::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXCOLOR@@QAE@XZ</DECORATED>
+    <FUNCLINE>516</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXCOLOR::b</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.h</FILENAME>
+      <LINE>516</LINE>
+      <COLUMN>4</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXCOLOR::r' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXCOLOR::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXCOLOR@@QAE@XZ</DECORATED>
+    <FUNCLINE>516</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXCOLOR::r</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>26</LINE>
+      <COLUMN>13</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXFLOAT16::value' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXFLOAT16::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXFLOAT16@@QAE@M@Z</DECORATED>
+    <FUNCLINE>26</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXFLOAT16::value</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>77</LINE>
+      <COLUMN>13</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXVECTOR2::y' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXVECTOR2::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXVECTOR2@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>77</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXVECTOR2::y</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>517</LINE>
+      <COLUMN>13</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXVECTOR4::y' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXVECTOR4::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXVECTOR4@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>517</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXVECTOR4::y</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>517</LINE>
+      <COLUMN>13</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXVECTOR4::w' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXVECTOR4::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXVECTOR4@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>517</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXVECTOR4::w</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>517</LINE>
+      <COLUMN>13</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXVECTOR4::z' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXVECTOR4::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXVECTOR4@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>517</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXVECTOR4::z</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>1068</LINE>
+      <COLUMN>16</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXQUATERNION::w' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXQUATERNION::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXQUATERNION@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>1068</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXQUATERNION::w</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>1068</LINE>
+      <COLUMN>16</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXQUATERNION::y' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXQUATERNION::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXQUATERNION@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>1068</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXQUATERNION::y</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>1068</LINE>
+      <COLUMN>16</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXQUATERNION::z' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXQUATERNION::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXQUATERNION@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>1068</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXQUATERNION::z</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>1241</LINE>
+      <COLUMN>11</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXPLANE::d' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXPLANE::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXPLANE@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>1241</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXPLANE::d</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>1241</LINE>
+      <COLUMN>11</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXPLANE::b' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXPLANE::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXPLANE@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>1241</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXPLANE::b</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>1241</LINE>
+      <COLUMN>11</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXPLANE::c' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXPLANE::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXPLANE@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>1241</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXPLANE::c</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>1376</LINE>
+      <COLUMN>11</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXCOLOR::a' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXCOLOR::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXCOLOR@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>1376</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXCOLOR::a</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>1376</LINE>
+      <COLUMN>11</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXCOLOR::g' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXCOLOR::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXCOLOR@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>1376</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXCOLOR::g</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>d3dx9math.inl</FILENAME>
+      <LINE>1376</LINE>
+      <COLUMN>11</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>変数 'D3DXCOLOR::b' が初期化されていません。メンバー変数は必ず初期化してください (type.6)。</DESCRIPTION>
+    <FUNCTION>D3DXCOLOR::{ctor}</FUNCTION>
+    <DECORATED>??0D3DXCOLOR@@QAE@PBUD3DXFLOAT16@@@Z</DECORATED>
+    <FUNCLINE>1376</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>D3DXCOLOR::b</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>dinput.h</FILENAME>
+      <LINE>4321</LINE>
+      <COLUMN>25</COLUMN>
+    </SFA>
+    <DEFECTCODE>28251</DEFECTCODE>
+    <DESCRIPTION>'joyConfigChanged' に対する整合性のない注釈: このインスタンスには 注釈なし が含まれます。c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\joystickapi.h(431) を参照してください。</DESCRIPTION>
+    <FUNCTION>joyConfigChanged</FUNCTION>
+    <DECORATED>joyConfigChanged@4</DECORATED>
+    <FUNCLINE>4321</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\</FILEPATH>
+      <FILENAME>xaudio2.h</FILENAME>
+      <LINE>1228</LINE>
+      <COLUMN>17</COLUMN>
+    </SFA>
+    <DEFECTCODE>26812</DEFECTCODE>
+    <DESCRIPTION>列挙型 'XAUDIO2_WINDOWS_PROCESSOR_SPECIFIER' は対象範囲外です。'enum' (Enum.3) より 'enum class' を優先します。</DESCRIPTION>
+    <FUNCTION>XAudio2Create</FUNCTION>
+    <DECORATED>?XAudio2Create@@YAJPAPAUIXAudio2@@IW4XAUDIO2_WINDOWS_PROCESSOR_SPECIFIER@@@Z</DECORATED>
+    <FUNCLINE>1228</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>

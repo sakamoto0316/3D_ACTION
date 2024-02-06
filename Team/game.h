@@ -54,6 +54,7 @@ public:
 	static void SetEvent(bool Set) { m_bEvent = Set; }
 	static bool GetEvent(void) { return m_bEvent; }
 	static bool GetEventEnd(void) { return m_bEventEnd; }
+	static D3DXVECTOR3 GetEventPos(void) { return m_EventPos; }
 
 private:
 	static void EventUpdate();				//イベントの更新
@@ -63,6 +64,8 @@ private:
 	static bool m_bEventEnd;				//イベントが終わったかどうか
 	static int m_nEventCount;				//イベント時間
 	static float m_EventHeight;				//イベント用ポリゴンの高さ
+	static float m_NameColorA;				//イベント用の名前表示の不透明度
+	static D3DXVECTOR3 m_EventPos;			//イベント開始座標
 	static CTutorialUI *m_pTutorialUI;		//チュートリアルUIのポインタ
 	static CPlayer *m_pPlayer;				//プレイヤーのポインタ
 	static CEdit *m_pEdit;					//エディットモードのポインタ
@@ -77,7 +80,8 @@ private:
 	static CObject2D* m_p2DUI_Attention;	//注目の2DUI
 	static CObject2D *m_p2DUI_AttentionOK;	//注目の2DUI
 	static CObject3D* m_p3DSample;			//3Dポリゴンのサンプル
-	static CObject3D *m_p3DEventBG;			//イベント時の背景
+	static CObject3D* m_p3DEventBG;			//イベント時の背景
+	static CObject2D *m_p2DBossName;		//ボスの名前表示
 	static CObjectBillboard* m_pBillboardSample; //Billboardポリゴンのサンプル
 	static CObjectX* m_pXModelSample;		//Xモデルのサンプル
 	static CObjmeshField* m_pMeshFieldSample;//メッシュフィールドのサンプル
