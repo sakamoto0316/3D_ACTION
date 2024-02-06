@@ -21,6 +21,7 @@
 #include "CubeSpin.h"
 #include "camera.h"
 #include "fade.h"
+#include "objmeshRing.h"
 
 //マクロ定義
 #define BLOCK_WIGHT (300.0f)		//横幅
@@ -81,6 +82,11 @@ CBoss::CBoss(int nPriority) : CObjectX(nPriority)
 	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
 		m_pLifeNumber[nCnt] = nullptr;
+	}
+
+	for (int nCnt = 0; nCnt < 9; nCnt++)
+	{
+		m_bBreak[nCnt] = false;
 	}
 }
 
@@ -285,7 +291,7 @@ void CBoss::GameUpdate(void)
 	}
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_7) == true)
 	{
-		Warp(ATTACK_RUSH);
+		Warp(ATTACK_DOWN_BREAK);
 	}
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_8) == true)
 	{
@@ -586,6 +592,9 @@ void CBoss::AttackUpdate(D3DXVECTOR3* pos)
 		break;
 	case ATTACK_2D_BLOCKWALL:
 		AttackBlockWall(pos);
+		break;
+	case ATTACK_DOWN_BREAK:
+		AttackMapBreak(pos);
 		break;
 	}
 }
@@ -1254,12 +1263,12 @@ void CBoss::AttackBlockWall(D3DXVECTOR3* pos)
 
 			pCubeBlockFoot = CCubeBlock::Create();
 			pCubeBlockFoot->SetPos(D3DXVECTOR3(300.0f, 300.0f, 0.0f));
-			pCubeBlockFoot->SetSize(D3DXVECTOR3(50.0f, 10.0f, 50.0f));
+			pCubeBlockFoot->SetSize(D3DXVECTOR3(75.0f, 10.0f, 50.0f));
 			pCubeBlockFoot->SetLife(500);
 
 			pCubeBlockFoot = CCubeBlock::Create();
 			pCubeBlockFoot->SetPos(D3DXVECTOR3(-300.0f, 300.0f, 0.0f));
-			pCubeBlockFoot->SetSize(D3DXVECTOR3(50.0f, 10.0f, 50.0f));
+			pCubeBlockFoot->SetSize(D3DXVECTOR3(75.0f, 10.0f, 50.0f));
 			pCubeBlockFoot->SetLife(500);
 
 			CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_SIDEVIEW);
@@ -1381,6 +1390,220 @@ void CBoss::AttackBlockWall(D3DXVECTOR3* pos)
 		Warp(ATTACK_NOT);
 		SetDefColor();
 		m_AttackCoolTime = COOLTIME_RAIN;
+		break;
+	}
+}
+
+//====================================================================
+//[見下ろし]攻撃(マップ破壊)
+//====================================================================
+void CBoss::AttackMapBreak(D3DXVECTOR3* pos)
+{
+	CPlayer* pPlayer = CGame::GetPlayer();
+	CCubeDamage* pCubeDamage = nullptr;
+	CCubeBlock* pCubeBlock = nullptr;
+	CCubeBlock* pCubeBlockFoot = nullptr;
+	int nRandX = 0;
+	int nRandZ = 0;
+
+	switch (m_AttackWave)
+	{
+	case 0:
+
+		m_move = INITVECTOR3;
+
+		m_Scaling -= 0.01f;
+
+		if (m_Scaling <= 0.0f)
+		{
+			m_Scaling = 1.0f;
+			*pos = D3DXVECTOR3(0.0f, 10000.0f, 0.0f);
+			m_AttackWave++;
+
+			if (m_pRevivalFG == nullptr)
+			{
+				m_pRevivalFG = CObject2D::Create();
+				m_pRevivalFG->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
+				m_pRevivalFG->SetWight(1280.0f);
+				m_pRevivalFG->SetHeight(720.0f);
+			}
+
+			CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_DOWNVIEW);
+		}
+		break;
+
+	case 1:
+		//上下にふわふわする
+		m_MoveCount += 0.04f;
+		m_move.y = sinf(m_MoveCount) * 2.0f;
+
+		//前面ポリゴンを透明にしていく
+		m_fRevivalColorA -= 0.1f;
+
+		if (m_pRevivalFG != nullptr)
+		{
+			m_pRevivalFG->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fRevivalColorA));
+		}
+
+		//前面ポリゴン出現時間の設定
+		if (m_fRevivalColorA <= 0.0f)
+		{
+			if (m_pRevivalFG != nullptr)
+			{
+				m_pRevivalFG->Uninit();
+				m_pRevivalFG = nullptr;
+			}
+			m_fRevivalColorA = 1.0f;
+		}
+
+		if (m_AttackCount == 0)
+		{
+			CGame::GetCubeBlock()->Uninit();
+
+			for (int nCntX = -1; nCntX < 2; nCntX++)
+			{
+				for (int nCntZ = -1; nCntZ < 2; nCntZ++)
+				{
+					pCubeBlock = CCubeBlock::Create();
+					pCubeBlock->SetPos(D3DXVECTOR3(-333.0f * nCntX, 100.0f, -333.0f * nCntZ));
+					pCubeBlock->SetSize(D3DXVECTOR3(166.5f, 10.0f, 166.5f));
+					pCubeBlock->SetMove(D3DXVECTOR3(-10.0f * nCntX, 1.0f, -10.0f * nCntZ));
+					pCubeBlock->SetLife(10);
+				}
+			}
+		}
+
+		if (m_AttackCount > 10)
+		{
+			m_AttackWave++;
+		}
+		m_AttackCount++;
+		break;
+
+	case 2:
+
+		for (int nCntX = -1; nCntX < 2; nCntX++)
+		{
+			for (int nCntZ = -1; nCntZ < 2; nCntZ++)
+			{
+				pCubeBlock = CCubeBlock::Create();
+				pCubeBlock->SetPos(D3DXVECTOR3((-333.0f - 100.0f) * nCntX, 100.0f, (-333.0f - 100.0f) * nCntZ));
+				pCubeBlock->SetSize(D3DXVECTOR3(166.5f, 10.0f, 166.5f));
+				pCubeBlock->SetLife(710);
+			}
+		}
+
+		m_AttackWave++;
+		break;
+
+	case 3:
+
+		if (m_AttackCount % 100 == 0)
+		{
+			//ランダム処理
+			while (1)
+			{
+				nRandX = (rand() % 3) - 1;
+				nRandZ = (rand() % 3) - 1;
+
+				if (m_bBreak[((nRandX + 1) + ((nRandZ + 1) * 3))] == true || (nRandX + nRandZ) == 0)
+				{
+					continue;
+				}
+				else
+				{
+					m_bBreak[((nRandX + 1) + ((nRandZ + 1) * 3))] = true;
+					break;
+				}
+			}
+
+			*pos = D3DXVECTOR3((-333.0f - 100.0f) * nRandX, 3000.0f, (-333.0f - 100.0f) * nRandZ);
+		}
+		m_move = D3DXVECTOR3(0.0f, -30.0f, 0.0f);
+
+		//ブロックとの当たり判定
+		CollisionBlock(pos);
+
+		if (m_AttackCount >= 500)
+		{
+			m_AttackWave++;
+		}
+		else
+		{
+			m_AttackCount++;
+		}
+
+		break;
+
+	case 4:
+		m_move = INITVECTOR3;
+
+		m_Scaling -= 0.005f;
+
+		if (m_Scaling <= 0.0f)
+		{
+			m_Scaling = 1.0f;
+			m_AttackWave++;
+
+			if (m_pRevivalFG == nullptr)
+			{
+				m_pRevivalFG = CObject2D::Create();
+				m_pRevivalFG->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
+				m_pRevivalFG->SetWight(1280.0f);
+				m_pRevivalFG->SetHeight(720.0f);
+			}
+
+			CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_FOLLOW);
+		}
+		break;
+
+	case 5:
+
+		m_fRevivalColorA -= 0.1f;
+
+		//蘇生ポリゴンカラー設定
+		if (m_pRevivalFG != nullptr)
+		{
+			m_pRevivalFG->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fRevivalColorA));
+		}
+
+		//蘇生ポリゴン出現時間の設定
+		if (m_fRevivalColorA <= 0.0f)
+		{
+			if (m_pRevivalFG != nullptr)
+			{
+				m_pRevivalFG->Uninit();
+				m_pRevivalFG = nullptr;
+			}
+			m_fRevivalColorA = 1.0f;
+			m_AttackWave++;
+		}
+
+		for (int nCntX = -1; nCntX < 2; nCntX++)
+		{
+			for (int nCntZ = -1; nCntZ < 2; nCntZ++)
+			{
+				pCubeBlock = CCubeBlock::Create();
+				pCubeBlock->SetPos(D3DXVECTOR3((-333.0f - 100.0f) * nCntX, 100.0f, (-333.0f - 100.0f) * nCntZ));
+				pCubeBlock->SetSize(D3DXVECTOR3(166.5f, 10.0f, 166.5f));
+				pCubeBlock->SetMove(D3DXVECTOR3(10.0f * nCntX, 1.0f, 10.0f * nCntZ));
+				pCubeBlock->SetLife(10);
+			}
+		}
+
+		break;
+
+	default:
+		m_move = INITVECTOR3;
+		Warp(ATTACK_NOT);
+		SetDefColor();
+		m_AttackCoolTime = COOLTIME_RAIN;
+		CGame::SetStageBlock();
+
+		for (int nCnt = 0; nCnt < 9; nCnt++)
+		{
+			m_bBreak[nCnt] = false;
+		}
 		break;
 	}
 }
@@ -1688,4 +1911,68 @@ bool CBoss::Collision(D3DXVECTOR3* pPos, D3DXVECTOR3 pPosOld, D3DXVECTOR3* pMove
 	}
 
 	return bOn;
+}
+
+//====================================================================
+//キューブブロックとの当たり判定処理
+//====================================================================
+bool CBoss::CollisionBlock(D3DXVECTOR3* pos)
+{
+	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	{
+		//オブジェクトを取得
+		CObject* pObj = CObject::GetTop(nCntPriority);
+
+		while (pObj != NULL)
+		{
+			CObject* pObjNext = pObj->GetNext();
+
+			CObject::TYPE type = pObj->GetType();			//種類を取得
+
+			if (m_State != STATE_DEATH)
+			{
+				if (type == TYPE_CUBEBLOCK)
+				{//種類がブロックの時
+
+					D3DXVECTOR3 ObjPos = pObj->GetPos();
+					float ObjWight = pObj->GetSize().x;
+
+					if (CollisionCircle(*pos, ObjPos, COLLISION_SIZE.x + ObjWight) == true)
+					{
+						CObjmeshRing* pRing = CObjmeshRing::Create();
+						pRing->SetPos(D3DXVECTOR3(ObjPos.x, ObjPos.y + 15.0f, ObjPos.z));
+						pRing->SetRadiusMove(5.0f);
+						pRing->SetLife(300);
+						pRing->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.5f));
+
+						pObj->Uninit();
+					}
+				}
+			}
+
+			pObj = pObjNext;
+		}
+	}
+
+	return false;
+}
+
+//====================================================================
+//円の当たり判定
+//====================================================================
+bool CBoss::CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut)
+{
+	bool nHit = false;
+
+	if (sqrtf((pos1.x - pos2.x) * (pos1.x - pos2.x)
+		+ (pos1.y - pos2.y) * (pos1.y - pos2.y)) <= nRadiusOut)
+	{//円の判定が当たった
+		if (sqrtf((pos1.x - pos2.x) * (pos1.x - pos2.x)
+			+ (pos1.z - pos2.z) * (pos1.z - pos2.z)) <= nRadiusOut)
+		{//円の判定が当たった
+			nHit = true;
+		}
+	}
+
+	return nHit;
 }

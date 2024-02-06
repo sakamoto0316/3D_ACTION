@@ -48,14 +48,16 @@ public:
 	static CPause *GetPause(void) { return m_pPause; }
 	static CScore *GetScore(void) { return m_pScore; }
 	static CEdit *GetEdit(void) { return m_pEdit; }
-	static CTime *GetTime(void) { return m_pTime; }
+	static CTime* GetTime(void) { return m_pTime; }
+	static void SetCubeBlock(CCubeBlock *pBlock) { m_pCubeBlock = pBlock; }
+	static CCubeBlock*GetCubeBlock(void) { return m_pCubeBlock; }
 	static void DeleteTutorial(void);
 	static void EventStart(void);
 	static void SetEvent(bool Set) { m_bEvent = Set; }
 	static bool GetEvent(void) { return m_bEvent; }
 	static bool GetEventEnd(void) { return m_bEventEnd; }
 	static D3DXVECTOR3 GetEventPos(void) { return m_EventPos; }
-
+	static void SetStageBlock(void);
 private:
 	static void EventUpdate();				//イベントの更新
 
@@ -66,6 +68,7 @@ private:
 	static float m_EventHeight;				//イベント用ポリゴンの高さ
 	static float m_NameColorA;				//イベント用の名前表示の不透明度
 	static D3DXVECTOR3 m_EventPos;			//イベント開始座標
+	static D3DXVECTOR3 m_BGRot;				//背景の回転向き
 	static CTutorialUI *m_pTutorialUI;		//チュートリアルUIのポインタ
 	static CPlayer *m_pPlayer;				//プレイヤーのポインタ
 	static CEdit *m_pEdit;					//エディットモードのポインタ
@@ -87,7 +90,8 @@ private:
 	static CObjmeshField* m_pMeshFieldSample;//メッシュフィールドのサンプル
 	static CObjmeshWall* m_pMeshWallSample;	//メッシュウォールのサンプル
 	static CObjmeshCylinder* m_pMeshCylinderSample;//メッシュシリンダーのサンプル
-	static CObjmeshDome* m_pMeshDome;		//メッシュドーム
+	static CObjmeshDome* m_pMeshDomeUp;		//メッシュドーム
+	static CObjmeshDome* m_pMeshDomeDown;	//メッシュドーム
 	static CCubeBlock* m_pCubeBlock;		//キューブブロック
 	static CBoss* m_pBoss;					//ボス
 };

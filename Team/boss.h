@@ -56,6 +56,7 @@ public:
 		ATTACK_RAIN,		//ブロックの雨
 		ATTACK_REVIVAL,		//復活
 		ATTACK_2D_BLOCKWALL,//[2D]ブロックウォール
+		ATTACK_DOWN_BREAK,	//[見下ろし]マップ破壊攻撃
 		ATTACK_MAX,
 
 	};
@@ -76,6 +77,7 @@ public:
 	void SetLifeUI(void);
 	void SetAction(ACTION Action) { m_Action = Action; }
 	ACTION GetAction(void) { return m_Action; }
+	int GetBossForm(void) { return m_nForm; }
 
 private:
 	void StateManager(void);				//状態管理
@@ -88,8 +90,11 @@ private:
 	void AttackBlockRun(D3DXVECTOR3* pos);	//攻撃パターンブロックラン
 	void AttackSpinPillar(D3DXVECTOR3* pos);//攻撃パターン回転する柱
 	void AttackRain(D3DXVECTOR3* pos);		//攻撃パターン雨
-	void AttackBlockWall(D3DXVECTOR3* pos);	//攻撃パターンブロックウォール
+	void AttackBlockWall(D3DXVECTOR3* pos);	//攻撃パターンブロックウォール[2D]
+	void AttackMapBreak(D3DXVECTOR3* pos);	//攻撃パターンマップブレイク[見下ろし]
 	void AttackRevival(D3DXVECTOR3* pos);	//攻撃パターン復活
+	bool CollisionBlock(D3DXVECTOR3* pos);	//オブジェクトとの当たり判定
+	bool CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut);	//円の当たり判定
 
 	int m_nIdxXModel;				//Xモデルの番号
 	D3DXVECTOR3 m_CollisionPos;		//当たり判定用の座標
@@ -123,5 +128,6 @@ private:
 	CCubeSpin* m_CubeSpinTitle;		//回転用のキューブ(タイトル演出用)
 	CObject2D* m_pRevivalFG;		//蘇生時の前面ポリゴン
 	float m_fRevivalColorA;			//前面ポリゴンの不透明度
+	bool m_bBreak[9];					//マップ破壊攻撃の時に破壊されている位置かどうかの判断をする変数
 };
 #endif

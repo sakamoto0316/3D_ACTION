@@ -20,7 +20,7 @@
 #include "Pause.h"
 #include "sound.h"
 
-#define SET_MODE (CScene::MODE_TITLE)
+#define SET_MODE (CScene::MODE_GAME)
 
 //Ã“Iƒƒ“ƒo•Ï”éŒ¾
 CManager *CManager::pManager = NULL;

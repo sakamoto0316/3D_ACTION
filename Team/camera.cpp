@@ -23,7 +23,7 @@
 #define CAMERA_PAD_VR_SPEED (0.05f)	//カメラのパッドの視点スピード
 #define CAMERA_HOMING (0.2f)		//カメラの追従スピード
 #define POS_HOMING (0.9f)			//位置への追従スピード
-#define DOWNVIEW_POSV (D3DXVECTOR3(0.0f, 1000.0f, -5.0f))	//見下ろしの視点
+#define DOWNVIEW_POSV (D3DXVECTOR3(0.0f, 1500.0f, -5.0f))	//見下ろしの視点
 #define DOWNVIEW_POSR (D3DXVECTOR3(0.0f, 0.0f, 0.0f))		//見下ろしの注視点
 #define SIDEVIEW_POSV (D3DXVECTOR3(0.0f, 200.0f, -1000.0f))	//2Dの視点
 #define SIDEVIEW_POSR (D3DXVECTOR3(0.0f, 200.0f, 0.0f))		//2Dの注視点
@@ -497,13 +497,13 @@ void CCamera::EventBossCamera(void)
 	}
 	else
 	{
-		m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING;
-		m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 5.0f;
-		m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
+		m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING * 0.3f;
+		m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 0.3f;
+		m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING * 0.3f;
 
-		m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 5.0f;
-		m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 5.0f;
-		m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 5.0f;
+		m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 0.3f;
+		m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 0.3f;
+		m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 0.3f;
 	}
 }
 

@@ -31,6 +31,7 @@
 #include "texture.h"
 #include "numberBillboard.h"
 #include "numberFall.h"
+#include "enemy.h"
 
 //静的メンバ変数宣言
 CTutorialUI *CGame::m_pTutorialUI = NULL;
@@ -53,7 +54,8 @@ CObjectX* CGame::m_pXModelSample = NULL;
 CObjmeshField* CGame::m_pMeshFieldSample = NULL;
 CObjmeshWall* CGame::m_pMeshWallSample = NULL;
 CObjmeshCylinder* CGame::m_pMeshCylinderSample = NULL;
-CObjmeshDome* CGame::m_pMeshDome = NULL;
+CObjmeshDome* CGame::m_pMeshDomeUp = NULL;
+CObjmeshDome* CGame::m_pMeshDomeDown = NULL;
 CCubeBlock* CGame::m_pCubeBlock = NULL;
 CPlayer* CGame::m_pPlayer = NULL;
 CBoss*CGame::m_pBoss = NULL;
@@ -64,6 +66,7 @@ int CGame::m_nEventCount = 0;
 float CGame::m_EventHeight = 0.0f;
 float CGame::m_NameColorA = 0.0f;
 D3DXVECTOR3 CGame::m_EventPos = D3DXVECTOR3(0.0f, 300.0f, 0.0f);
+D3DXVECTOR3 CGame::m_BGRot = INITVECTOR3;
 
 //====================================================================
 //コンストラクタ
@@ -116,17 +119,17 @@ HRESULT CGame::Init(void)
 
 	//m_pMeshCylinderSample = CObjmeshCylinder::Create();
 
-	m_pMeshDome = CObjmeshDome::Create();
-	m_pMeshDome->SetTexture("data\\TEXTURE\\SkyBG.jpg");
+	m_pMeshDomeUp = CObjmeshDome::Create();
+	m_pMeshDomeUp->SetTexture("data\\TEXTURE\\SkyBG.jpg");
 
-	m_pMeshDome = CObjmeshDome::Create();
-	m_pMeshDome->SetTexture("data\\TEXTURE\\SkyBG.jpg");
-	m_pMeshDome->SetRot(D3DXVECTOR3(D3DX_PI, D3DX_PI * 0.9f, 0.0f));
+	m_pMeshDomeDown = CObjmeshDome::Create();
+	m_pMeshDomeDown->SetTexture("data\\TEXTURE\\SkyBG.jpg");
+	m_pMeshDomeDown->SetRot(D3DXVECTOR3(D3DX_PI, 0.0f, 0.0f));
 
-	m_pCubeBlock = CCubeBlock::Create();
-	m_pCubeBlock->SetPos(D3DXVECTOR3(0.0f, 100.0f, 0.0f));
-	m_pCubeBlock->SetSize(D3DXVECTOR3(500.0f, 10.0f, 500.0f));
-	m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	SetStageBlock();
+
+	CEnemy* pEnemy = CEnemy::Create("data\\MODEL\\enemy.x");
+	pEnemy->SetPos(D3DXVECTOR3(0.0f, 150.0f, 0.0f));
 
 	//m_pCubeBlock = CCubeBlock::Create();
 	//m_pCubeBlock->SetPos(D3DXVECTOR3(150.0f, 250.0f, -150.0f));
@@ -279,6 +282,39 @@ void CGame::Update(void)
 
 #endif
 
+	if (m_pBoss != nullptr)
+	{
+		if (m_pBoss->GetBossForm() == 0)
+		{
+			m_BGRot.y += 0.0005f;
+
+			if (m_pMeshDomeUp != nullptr)
+			{
+				m_pMeshDomeUp->SetRot(D3DXVECTOR3(m_BGRot.x, m_BGRot.y, m_BGRot.z));
+			}
+			if (m_pMeshDomeDown != nullptr)
+			{
+				m_pMeshDomeDown->SetRot(D3DXVECTOR3(D3DX_PI + m_BGRot.x, m_BGRot.y, -m_BGRot.z));
+			}
+		}
+		else if(m_pBoss->GetBossForm() == 1)
+		{
+			m_BGRot.x += 0.00f;
+			m_BGRot.y += 0.01f;
+			m_BGRot.z = D3DX_PI * 0.5f;
+
+			if (m_pMeshDomeUp != nullptr)
+			{
+				m_pMeshDomeUp->SetRot(D3DXVECTOR3(m_BGRot.x, m_BGRot.y, m_BGRot.z));
+				m_pMeshDomeUp->SetScroll(D3DXVECTOR2(m_BGRot.y, m_BGRot.y));
+			}
+			if (m_pMeshDomeDown != nullptr)
+			{
+				m_pMeshDomeDown->SetRot(D3DXVECTOR3(D3DX_PI + m_BGRot.x, m_BGRot.y, -m_BGRot.z));
+				m_pMeshDomeDown->SetScroll(D3DXVECTOR2(m_BGRot.y, m_BGRot.y));
+			}
+		}
+	}
 
 	//注目の切り替え
 	if (pInputKeyboard->GetTrigger(DIK_LSHIFT) == true ||
@@ -458,6 +494,17 @@ void CGame::EventUpdate(void)
 		//ゲームのBGMを再生する
 		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_BGM_BOSS);
 	}
+}
+
+//====================================================================
+//ステージのブロック配置
+//====================================================================
+void CGame::SetStageBlock(void)
+{
+	m_pCubeBlock = CCubeBlock::Create();
+	m_pCubeBlock->SetPos(D3DXVECTOR3(0.0f, 100.0f, 0.0f));
+	m_pCubeBlock->SetSize(D3DXVECTOR3(500.0f, 10.0f, 500.0f));
+	m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 }
 
 //====================================================================

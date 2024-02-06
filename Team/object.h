@@ -100,6 +100,7 @@ public:
 	virtual int GetLife(void) { return 0; }
 	virtual float GetWight(void) { return 0.0f; }
 	virtual float GetHeight(void) { return 0.0f; }
+	virtual D3DXVECTOR3 GetSize(void) { return INITVECTOR3; }
 	static void SetLevelStop(bool Set) { m_bLevelStop = Set; }
 	virtual void SetLevelUI(bool Set) { m_bLevelUI = Set; }
 	void SetAppear(bool Set) { m_Appear = Set; }

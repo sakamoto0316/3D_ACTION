@@ -25,6 +25,7 @@
 #include "camera.h"
 #include "object3D.h"
 #include "CubeBlock.h"
+#include "enemy.h"
 
 #define PLAYER_LIFE (2000.0f)		//プレイヤーの初期ライフ
 #define PLAYER_ROT_SPEED (0.2f)		//プレイヤーの回転スピード
@@ -42,6 +43,7 @@
 #define DODGE_EFFECTINTERVAL (3)	//回避の残像間隔
 #define DODGE_SPEED (55.0f)			//回避の移動速度
 #define BOSS_DAMAGE (60.0f)			//ボスに被弾した際のダメージ
+#define ENEMY_DAMAGE (30.0f)		//敵に被弾した際のダメージ
 #define FALL_DAMAGE (100.0f)		//落下した際のダメージ
 #define WAIT_TIME (60)				//無敵時間
 #define DAMAGE_TIME (10)			//ダメージのリアクション時間
@@ -1129,9 +1131,6 @@ void CPlayer::AttackCollision(void)
 
 						for (int nCnt = 0; nCnt < 3; nCnt++)
 						{
-							float x = atan2f(pObj->GetPos().x, CManager::GetInstance()->GetCamera()->GetPosV().x);
-							float z = atan2f(pObj->GetPos().z, CManager::GetInstance()->GetCamera()->GetPosV().z);
-
 							CNumberFall* pNumber = CNumberFall::Create();
 							pNumber->SetDigit(nCnt);
 							pNumber->SetPos(D3DXVECTOR3(
@@ -1151,6 +1150,14 @@ void CPlayer::AttackCollision(void)
 								break;
 							}
 						}
+					}
+				}
+				else if (type == TYPE_ENEMY3D)
+				{//種類がボスの時
+
+					if (CollisionCircle(m_AtkPos, pObj->GetPos(), 100.0f) == true)
+					{
+						pObj->HitDamage(m_nAttackDamage);
 					}
 				}
 
@@ -1317,13 +1324,27 @@ bool CPlayer::CollisionBlock(D3DXVECTOR3* pos, COLLISION XYZ)
 				if (type == TYPE_CUBEBLOCK)
 				{//種類がブロックの時
 
-					if (pObj->CollisionBlock(pos, m_posOld, &m_move, &m_Objmove, COLLISION_SIZE * 0.5f, &m_bJump, XYZ) == true)
+					if (pObj->GetSize().y >= 20.0f)
 					{
-						m_bJump = false;
-						m_bAirAttack = false;
-						m_move.y = 0.0f;
+						if (pObj->CollisionBlock(pos, m_posOld, &m_move, &m_Objmove, COLLISION_SIZE * 0.5f, &m_bJump, XYZ) == true)
+						{
+							m_bJump = false;
+							m_bAirAttack = false;
+							m_move.y = 0.0f;
 
-						return true;
+							return true;
+						}
+					}
+					else
+					{
+						if (pObj->CollisionBlockUp(pos, m_posOld, &m_move, &m_Objmove, COLLISION_SIZE * 0.5f, &m_bJump, XYZ) == true)
+						{
+							m_bJump = false;
+							m_bAirAttack = false;
+							m_move.y = 0.0f;
+
+							return true;
+						}
 					}
 
 					if (m_bHit == true)
@@ -1440,6 +1461,22 @@ void CPlayer::CollisionBoss(void)
 					}
 				}
 			}
+			else if (type == TYPE_ENEMY3D)
+			{//種類がブロックの時
+
+				CEnemy* pEnemy = (CEnemy*)pObj;
+
+				D3DXVECTOR3 ObjPos = pEnemy->GetPos();
+				float ObjWight = pEnemy->GetWight();
+
+				if (pEnemy->GetAction() == CBoss::ACTION_ATTACK)
+				{
+					if (CollisionCircle(m_pos, ObjPos, COLLISION_SIZE.x + ObjWight) == true)
+					{
+						HitDamage(ENEMY_DAMAGE);
+					}
+				}
+			}
 
 			pObj = pObjNext;
 		}
@@ -1447,7 +1484,7 @@ void CPlayer::CollisionBoss(void)
 }
 
 //====================================================================
-//ボスとの当たり判定処理
+//ボス戦イベント開始判定処理
 //====================================================================
 void CPlayer::CollisionBossEvent(void)
 {
