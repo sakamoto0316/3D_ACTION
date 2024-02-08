@@ -17,11 +17,15 @@
 #include "input.h"
 #include "CubeBlock.h"
 #include "CubeDamage.h"
+#include "CubeEffect.h"
 #include "sound.h"
 #include "CubeSpin.h"
 #include "camera.h"
 #include "fade.h"
 #include "objmeshRing.h"
+#include "object3D.h"
+#include "enemy.h"
+#include "effect.h"
 
 //マクロ定義
 #define BLOCK_WIGHT (300.0f)		//横幅
@@ -36,7 +40,7 @@
 #define BULLET_LIFE (600)			//弾の寿命
 #define BLOCKRUN_TIME (600)			//ブロックランの時間
 #define BLOCKRUN_SPEED (5.0f)		//ブロックランの速度
-#define BLOCKWALL_HEIGHT (500.0f)	//ブロックウォールの通る幅
+#define BLOCKWALL_HEIGHT (1100.0f)	//ブロックウォールの通る幅
 #define BULLET_DAMAGE (50.0f)		//弾のダメージ量
 #define RUSH_DAMAGE (90.0f)			//突進攻撃のダメージ
 #define BLOCKRUN_DAMAGE (60.0f)		//ブロックランのダメージ
@@ -44,7 +48,8 @@
 #define COOLTIME_BULLET (240)		//弾攻撃のクールタイム
 #define COOLTIME_RUSH (180)			//突進攻撃のクールタイム
 #define COOLTIME_BLOCKRUN (300)		//ブロックランのクールタイム
-#define COOLTIME_SPINPILLAR (30)	//回転柱のクールタイム
+#define COOLTIME_SPINPILLAR_FORM1 (30)	//回転柱のクールタイム
+#define COOLTIME_SPINPILLAR_FORM2 (300)	//回転柱のクールタイム
 #define COOLTIME_RAIN (240)			//雨攻撃のクールタイム
 
 //====================================================================
@@ -78,6 +83,7 @@ CBoss::CBoss(int nPriority) : CObjectX(nPriority)
 	m_nWarpOK = false;
 	m_pRevivalFG = nullptr;
 	m_fRevivalColorA = 1.0f;
+	m_pShadow = nullptr;
 
 	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
@@ -165,6 +171,18 @@ HRESULT CBoss::Init(char* pModelName)
 			m_pLifeNumber[nCnt]->SetWight(20.0f);
 			m_pLifeNumber[nCnt]->SetHeight(20.0f);
 		}
+
+		//影の生成
+		if (m_pShadow == nullptr)
+		{
+			m_pShadow = CObject3D::Create();
+			m_pShadow->SetPos(GetPos());
+			m_pShadow->SetRot(D3DXVECTOR3(D3DX_PI * 0.5f, m_rot.y, 0.0f));
+			m_pShadow->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+			m_pShadow->SetTexture("data\\TEXTURE\\Effect000.jpg");
+			m_pShadow->SetAddDorw(true);
+		}
+
 		SetLifeUI();
 		break;
 
@@ -279,6 +297,9 @@ void CBoss::GameUpdate(void)
 		break;
 	}
 
+	//影の当たり判定
+	CollisionShadow();
+
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_6) == true)
 	{
 		D3DXVECTOR3 RandPos;
@@ -295,28 +316,11 @@ void CBoss::GameUpdate(void)
 	}
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_8) == true)
 	{
-		Warp(ATTACK_RAIN);
+		Warp(ATTACK_SPAWNENEMY);
 	}
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_9) == true)
 	{
 		Warp(ATTACK_2D_BLOCKWALL);
-	}
-
-	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_0) == true)
-	{
-		for (int nCnt = 0; nCnt < 4; nCnt++)
-		{
-			CCubeDamage* pCubeDamage = CCubeDamage::Create();
-			pCubeDamage->SetUseSpin(true);
-			pCubeDamage->SetSpinPos(pos);
-			pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f, m_SpinCount + nCnt * D3DX_PI * 0.5f));
-			pCubeDamage->SetSpinSpeedY(0.05f);
-			pCubeDamage->SetSpinDistance(150.0f);
-			pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_BREAK);
-			pCubeDamage->SetLife(600);
-			pCubeDamage->SetMove(D3DXVECTOR3(0.0f, 0.0f, -10.0f));
-			pCubeDamage->SetSpinDisMove(5.0f);
-		}
 	}
 
 	if (m_nForm == 1)
@@ -510,21 +514,21 @@ void CBoss::Warp(ATTACK Pattern)
 		case 0:
 			m_rot.y = 0.0f;
 			m_WarpPos.x = pPlayer->GetPos().x;
-			m_WarpPos.z = 550.0f;
+			m_WarpPos.z = 600.0f;
 			break;
 		case 1:
 			m_rot.y = D3DX_PI;
 			m_WarpPos.x = pPlayer->GetPos().x;
-			m_WarpPos.z = -550.0f;
+			m_WarpPos.z = -600.0f;
 			break;
 		case 2:
 			m_rot.y = D3DX_PI * 0.5f;
-			m_WarpPos.x = 550.0f;
+			m_WarpPos.x = 600.0f;
 			m_WarpPos.z = pPlayer->GetPos().z;
 			break;
 		case 3:
 			m_rot.y = D3DX_PI * -0.5f;
-			m_WarpPos.x = -550.0f;
+			m_WarpPos.x = -600.0f;
 			m_WarpPos.z = pPlayer->GetPos().z;
 			break;
 		}
@@ -553,6 +557,14 @@ void CBoss::Warp(ATTACK Pattern)
 		m_WarpPos.x = 0.0f;
 		m_WarpPos.y = 500.0f;
 		m_WarpPos.z = 0.0f;
+
+		break;
+
+	case ATTACK_SPAWNENEMY:
+
+		m_WarpPos.x = 0.0f;
+		m_WarpPos.y = 500.0f;
+		m_WarpPos.z = 500.0f;
 
 		break;
 
@@ -589,6 +601,9 @@ void CBoss::AttackUpdate(D3DXVECTOR3* pos)
 		break;
 	case ATTACK_RAIN:
 		AttackRain(pos);
+		break;
+	case ATTACK_SPAWNENEMY:
+		AttackSpawnEnemy(pos);
 		break;
 	case ATTACK_2D_BLOCKWALL:
 		AttackBlockWall(pos);
@@ -635,29 +650,37 @@ void CBoss::AttackSelect(void)
 	}
 	else
 	{
-		if (RandAttack <= 10)
+		if (CCubeDamage::GetExplosionNum() >= 1 && CCubeDamage::GetExplosionNum() <= 16)
 		{
-			Warp(ATTACK_BULLET);
-		}
-		else if (RandAttack <= 30)
-		{
-			Warp(ATTACK_RUSH);
-		}
-		else if (RandAttack <= 35)
-		{
-			Warp(ATTACK_BLOCKRUN);
-		}
-		else if (RandAttack <= 60)
-		{
+			//柱攻撃だけは三回連続で選択するように設定
 			Warp(ATTACK_SPINPILLAR);
 		}
-		else if (RandAttack <= 80)
+		else
 		{
-			Warp(ATTACK_2D_BLOCKWALL);
-		}
-		else if (RandAttack <= 200)
-		{
-			Warp(ATTACK_NOT);
+			if (RandAttack <= 10)
+			{
+				Warp(ATTACK_BULLET);
+			}
+			else if (RandAttack <= 30)
+			{
+				Warp(ATTACK_RUSH);
+			}
+			else if (RandAttack <= 35)
+			{
+				Warp(ATTACK_BLOCKRUN);
+			}
+			else if (RandAttack <= 60)
+			{
+				Warp(ATTACK_SPINPILLAR);
+			}
+			else if (RandAttack <= 80)
+			{
+				Warp(ATTACK_2D_BLOCKWALL);
+			}
+			else if (RandAttack <= 200)
+			{
+				Warp(ATTACK_NOT);
+			}
 		}
 	}
 }
@@ -852,9 +875,9 @@ void CBoss::AttackRush(D3DXVECTOR3* pos)
 		//ゲームのSEを再生する
 		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_BOSS_RUSH);
 
-		m_move.x = -sinf(m_rot.y) * 2.0f;
+		m_move.x = -sinf(m_rot.y) * 1.0f;
 		m_move.y = -10.0f;
-		m_move.z = -cosf(m_rot.y) * 2.0f;
+		m_move.z = -cosf(m_rot.y) * 1.0f;
 
 		if (pos->y < pPlayer->GetPos().y)
 		{
@@ -912,16 +935,16 @@ void CBoss::AttackRush(D3DXVECTOR3* pos)
 		else if (m_nForm == 1)
 		{
 			pCubeDamage->SetSize(D3DXVECTOR3(10.0f, 200.0f + sinf(m_AttackCount * 0.2f) * 100.0f, 10.0f));
-			pCubeDamage->SetLife(50);
+			pCubeDamage->SetLife(100);
 			pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_EXPLOSION);
 			pCubeDamage->SetExplosionCount(30);
 		}
 		pCubeDamage->SetDamage(RUSH_DAMAGE);
 
-		if (pos->x > 500.0f ||
-			pos->x < -500.0f ||
-			pos->z > 500.0f ||
-			pos->z < -500.0f)
+		if (pos->x > 600.0f ||
+			pos->x < -600.0f ||
+			pos->z > 600.0f ||
+			pos->z < -600.0f)
 		{
 			m_AttackWave++;
 		}
@@ -1155,7 +1178,15 @@ void CBoss::AttackSpinPillar(D3DXVECTOR3* pos)
 		m_move = INITVECTOR3;
 		Warp(ATTACK_NOT);
 		SetDefColor();
-		m_AttackCoolTime = COOLTIME_SPINPILLAR;
+
+		if (CCubeDamage::GetExplosionNum() > 16)
+		{
+			m_AttackCoolTime = COOLTIME_SPINPILLAR_FORM2;
+		}
+		else
+		{
+			m_AttackCoolTime = COOLTIME_SPINPILLAR_FORM1;
+		}
 		break;
 	}
 }
@@ -1211,12 +1242,96 @@ void CBoss::AttackRain(D3DXVECTOR3* pos)
 			pCubeDamage->SetLife(BULLET_LIFE);
 		}
 
-		if (m_AttackCount > 600)
+		if (m_AttackCount > 300)
 		{
 			m_AttackWave++;
 		}
 
 		m_AttackCount++;
+		break;
+
+	default:
+		m_move = INITVECTOR3;
+		Warp(ATTACK_NOT);
+		SetDefColor();
+		m_AttackCoolTime = COOLTIME_RAIN;
+		break;
+	}
+}
+
+//====================================================================
+//攻撃(敵の生成)
+//====================================================================
+void CBoss::AttackSpawnEnemy(D3DXVECTOR3* pos)
+{
+	CPlayer* pPlayer = CGame::GetPlayer();
+	CEnemy* pEnemy[2] = { nullptr };
+	CCubeDamage* pCubeDamage = nullptr;
+
+	int nRand = rand() % 6;
+	m_MoveCount += 0.04f;
+	m_move.y = sinf(m_MoveCount) * 2.0f;
+
+	switch (m_AttackWave)
+	{
+	case 0:
+
+		if (m_AttackCount > 300)
+		{
+			CManager::GetInstance()->GetCamera()->SetBib(false);
+			m_AttackWave++;
+		}
+		else if (m_AttackCount == 0)
+		{
+			CManager::GetInstance()->GetCamera()->SetBib(true);
+		}
+
+		m_AttackCount++;
+
+		if (m_AttackCount % 5 == 0)
+		{
+			CEffect* pEffect = CEffect::Create();
+			pEffect->SetTexName("data\\TEXTURE\\RingEffect.png");
+			pEffect->SetPos(D3DXVECTOR3(*pos));
+			pEffect->SetDel(-40.0f);
+			pEffect->SetLife(60);
+			pEffect->SetRadius(0.0f);
+			pEffect->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+		}
+
+		if (m_AttackCount % 90 == 0)
+		{
+			pEnemy[0] = CEnemy::Create("data\\MODEL\\enemy.x");
+			pEnemy[1] = CEnemy::Create("data\\MODEL\\enemy.x");
+
+			switch (nRand)
+			{
+			case 0:
+				pEnemy[0]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
+				pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
+				break;
+			case 1:
+				pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
+				pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
+				break;
+			case 2:
+				pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
+				pEnemy[1]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
+				break;
+			case 3:
+				pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
+				pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
+				break;
+			case 4:
+				pEnemy[0]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
+				pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
+				break;
+			case 5:
+				pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
+				pEnemy[1]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
+				break;
+			}
+		}
 		break;
 
 	default:
@@ -1308,29 +1423,31 @@ void CBoss::AttackBlockWall(D3DXVECTOR3* pos)
 			switch (nRand)
 			{
 			case 0:
-				pCubeBlockUp->SetPos(D3DXVECTOR3(500.0f, 800.0f, 0.0f));
+				pCubeBlockUp->SetPos(D3DXVECTOR3(500.0f, 1100.0f, 0.0f));
 				pCubeBlockDown->SetPos(D3DXVECTOR3(500.0f, pCubeBlockUp->GetPos().y - BLOCKWALL_HEIGHT, 0.0f));
 				break;
 			case 1:
-				pCubeBlockUp->SetPos(D3DXVECTOR3(500.0f, 600.0f, 0.0f));
+				pCubeBlockUp->SetPos(D3DXVECTOR3(500.0f, 900.0f, 0.0f));
 				pCubeBlockDown->SetPos(D3DXVECTOR3(500.0f, pCubeBlockUp->GetPos().y - BLOCKWALL_HEIGHT, 0.0f));
 				break;
 			case 2:
-				pCubeBlockUp->SetPos(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
+				pCubeBlockUp->SetPos(D3DXVECTOR3(500.0f, 700.0f, 0.0f));
 				pCubeBlockDown->SetPos(D3DXVECTOR3(500.0f, pCubeBlockUp->GetPos().y - BLOCKWALL_HEIGHT, 0.0f));
 				break;
 			}
-			pCubeBlockUp->SetSize(D3DXVECTOR3(25.0f, 200.0f, 50.0f));
+			pCubeBlockUp->SetSize(D3DXVECTOR3(25.0f, 500.0f, 50.0f));
 			pCubeBlockUp->SetMove(D3DXVECTOR3(-BLOCKRUN_SPEED, 0.0f, 0.0f));
 			pCubeBlockUp->SetUninitPos(D3DXVECTOR3(-500.0f, pCubeBlockUp->GetPos().y, pCubeBlockDown->GetPos().z));
 			pCubeBlockUp->SetBoolLife(true);
 			pCubeBlockUp->SetPlusMove(false);
+			pCubeBlockUp->SetColorA(1.0f);
 
-			pCubeBlockDown->SetSize(D3DXVECTOR3(25.0f, 200.0f, 50.0f));
+			pCubeBlockDown->SetSize(D3DXVECTOR3(25.0f, 500.0f, 50.0f));
 			pCubeBlockDown->SetMove(D3DXVECTOR3(-BLOCKRUN_SPEED, 0.0f, 0.0f));
 			pCubeBlockDown->SetUninitPos(D3DXVECTOR3(-500.0f, pCubeBlockDown->GetPos().y, pCubeBlockDown->GetPos().z));
 			pCubeBlockDown->SetBoolLife(true);
 			pCubeBlockDown->SetPlusMove(false);
+			pCubeBlockDown->SetColorA(1.0f);
 		}
 
 		if (m_AttackCount > 400)
@@ -1797,6 +1914,7 @@ void CBoss::HitDamage(float Damage)
 		m_fLife -= Damage;
 		if (m_fLife < 0.0f)
 		{
+			CManager::GetInstance()->GetCamera()->SetAttention(false);
 			m_fLife = 0.0f;
 
 			if (m_nForm == 0)
@@ -1939,11 +2057,24 @@ bool CBoss::CollisionBlock(D3DXVECTOR3* pos)
 
 					if (CollisionCircle(*pos, ObjPos, COLLISION_SIZE.x + ObjWight) == true)
 					{
+						//リングの生成
 						CObjmeshRing* pRing = CObjmeshRing::Create();
 						pRing->SetPos(D3DXVECTOR3(ObjPos.x, ObjPos.y + 15.0f, ObjPos.z));
 						pRing->SetRadiusMove(5.0f);
 						pRing->SetLife(300);
 						pRing->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.5f));
+
+						for (int nCntX = -1; nCntX <= 1; nCntX++)
+						{
+							for (int nCntZ = -1; nCntZ <= 1; nCntZ++)
+							{
+								CCubeEffect* pCEffect = CCubeEffect::Create();
+								pCEffect->SetPos(D3DXVECTOR3(ObjPos.x + (111.0f * nCntX), ObjPos.y, ObjPos.z + (111.0f * nCntZ)));
+								pCEffect->SetMove(D3DXVECTOR3((5.0f * nCntX), 20.0f, (5.0f * nCntZ)));
+								pCEffect->SetSize(D3DXVECTOR3(55.5f, 10.0f, 55.5f));
+								pCEffect->SetColor(D3DXCOLOR(0.5f, 0.5f, 0.0f, 0.5f));
+							}
+						}
 
 						pObj->Uninit();
 					}
@@ -1952,6 +2083,80 @@ bool CBoss::CollisionBlock(D3DXVECTOR3* pos)
 
 			pObj = pObjNext;
 		}
+	}
+
+	return false;
+}
+
+//====================================================================
+//影の当たり判定処理
+//====================================================================
+bool CBoss::CollisionShadow(void)
+{
+	float BlockPosY = -10000.0f;
+	bool bShadow = false;;
+
+	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	{
+		//オブジェクトを取得
+		CObject* pObj = CObject::GetTop(nCntPriority);
+
+		while (pObj != NULL)
+		{
+			CObject* pObjNext = pObj->GetNext();
+
+			CObject::TYPE type = pObj->GetType();			//種類を取得
+
+			if (type == TYPE_CUBEBLOCK)
+			{//種類がブロックの時
+				CCubeBlock* pBlock = (CCubeBlock*)pObj;
+
+				D3DXVECTOR3 MyPos = GetPos();
+				D3DXVECTOR3 MySize = COLLISION_SIZE * 2.0f;
+				D3DXVECTOR3 BlockPos = pBlock->GetPos();
+				D3DXVECTOR3 BlockSize = pBlock->GetSize();
+				D3DXVECTOR3 BlockMove = pBlock->GetMove();
+
+				if (BlockPos.y + BlockSize.y > BlockPosY)
+				{
+					if (BlockPos.x + BlockSize.x > MyPos.x &&
+						BlockPos.x - BlockSize.x < MyPos.x &&
+						BlockPos.z + BlockSize.z > MyPos.z &&
+						BlockPos.z - BlockSize.z < MyPos.z &&
+						BlockPos.y - BlockSize.y < MyPos.y)
+					{
+						float ColorA = (MyPos.y - BlockPos.y) * 0.0005f;
+						m_pShadow->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f - ColorA));
+						m_pShadow->SetPos(D3DXVECTOR3(
+							MyPos.x,
+							BlockPos.y + BlockSize.y + BlockMove.y,
+							MyPos.z));
+
+						if (CManager::GetInstance()->GetCamera()->GetCameraMode() == CCamera::CAMERAMODE_DOWNVIEW)
+						{
+							m_pShadow->SetWight(MySize.x * 2.5f);
+							m_pShadow->SetHeight(MySize.z * 2.5f);
+						}
+						else
+						{
+							m_pShadow->SetWight(MySize.x);
+							m_pShadow->SetHeight(MySize.z);
+						}
+
+						BlockPosY = BlockPos.y + BlockSize.y;
+						bShadow = true;
+					}
+				}
+			}
+
+			pObj = pObjNext;
+		}
+	}
+
+	if (bShadow == false)
+	{
+		m_pShadow->SetWight(0.0f);
+		m_pShadow->SetHeight(0.0f);
 	}
 
 	return false;

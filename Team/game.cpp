@@ -32,6 +32,7 @@
 #include "numberBillboard.h"
 #include "numberFall.h"
 #include "enemy.h"
+#include "effect.h"
 
 //静的メンバ変数宣言
 CTutorialUI *CGame::m_pTutorialUI = NULL;
@@ -127,9 +128,6 @@ HRESULT CGame::Init(void)
 	m_pMeshDomeDown->SetRot(D3DXVECTOR3(D3DX_PI, 0.0f, 0.0f));
 
 	SetStageBlock();
-
-	CEnemy* pEnemy = CEnemy::Create("data\\MODEL\\enemy.x");
-	pEnemy->SetPos(D3DXVECTOR3(0.0f, 150.0f, 0.0f));
 
 	//m_pCubeBlock = CCubeBlock::Create();
 	//m_pCubeBlock->SetPos(D3DXVECTOR3(150.0f, 250.0f, -150.0f));
@@ -243,10 +241,8 @@ void CGame::Update(void)
 
 	if (pInputKeyboard->GetTrigger(DIK_1) == true)
 	{
-		m_pCubeBlock = CCubeBlock::Create();
-		m_pCubeBlock->SetPos(D3DXVECTOR3(-100.0f, -60.0f, 0.0f));
-		m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
-		m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 5.0f, 0.0f));
+		CEnemy* pEnemy = CEnemy::Create("data\\MODEL\\enemy.x");
+		pEnemy->SetPos(D3DXVECTOR3(0.0f, 150.0f, 0.0f));
 	}
 	if (pInputKeyboard->GetTrigger(DIK_2) == true)
 	{
@@ -286,7 +282,9 @@ void CGame::Update(void)
 	{
 		if (m_pBoss->GetBossForm() == 0)
 		{
+			m_BGRot.x += 0.00f;
 			m_BGRot.y += 0.0005f;
+			m_BGRot.z = 0.0f;
 
 			if (m_pMeshDomeUp != nullptr)
 			{
@@ -317,10 +315,9 @@ void CGame::Update(void)
 	}
 
 	//注目の切り替え
-	if (pInputKeyboard->GetTrigger(DIK_LSHIFT) == true ||
-		pInputJoypad->GetTrigger(CInputJoypad::BUTTON_L, 0) == true)
+	if (CManager::GetInstance()->GetCamera()->GetCameraMode() == CCamera::CAMERAMODE_FOLLOW)
 	{
-		if (CManager::GetInstance()->GetCamera()->GetAttention() == false)
+		if (CManager::GetInstance()->GetCamera()->GetAttention() == true)
 		{
 			m_p2DUI_AttentionOK->SetTexture("data\\TEXTURE\\UI_AttentionON.png");
 		}
@@ -389,8 +386,8 @@ void CGame::EventUpdate(void)
 		if (m_p3DEventBG == nullptr)
 		{
 			m_p3DEventBG = CObject3D::Create();
-			m_p3DEventBG->SetWight(450.0f);
-			m_p3DEventBG->SetHeight(200.0f);
+			m_p3DEventBG->SetWight(500.0f);
+			m_p3DEventBG->SetHeight(250.0f);
 			m_p3DEventBG->SetTexture("data\\TEXTURE\\BG_BOSS00.png");
 		}
 
@@ -427,6 +424,20 @@ void CGame::EventUpdate(void)
 	{
 		//カメラのバイブレーションをオフにする
 		CManager::GetInstance()->GetCamera()->SetBib(false);
+	}
+
+	if (m_nEventCount >= 120 && m_nEventCount < 240)
+	{
+		if (m_nEventCount % 5 == 0)
+		{
+			CEffect* pEffect = CEffect::Create();
+			pEffect->SetTexName("data\\TEXTURE\\RingEffect.png");
+			pEffect->SetPos(D3DXVECTOR3(m_pBoss->GetPos().x, m_pBoss->GetPos().y, m_pBoss->GetPos().x - 50.0f));
+			pEffect->SetDel(-40.0f);
+			pEffect->SetLife(60);
+			pEffect->SetRadius(0.0f);
+			pEffect->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+		}
 	}
 
 	//イベント背景の更新

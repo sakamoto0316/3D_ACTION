@@ -10,6 +10,7 @@
 #include "manager.h"
 #include "game.h"
 #include "texture.h"
+#include "player.h"
 
 #define WAIGHT_SIZE (17)			//横の頂点数(９or１７or３３)
 #define HEIGHT_SIZE (2)				//縦の頂点数
@@ -201,13 +202,16 @@ void CObjmeshRing::Update(void)
 {
 	m_Radius += m_RadiusMove;
 
-	//Player* pPlayer = GetPlayer();
+	CPlayer *pPlayer = CGame::GetPlayer();
 
-	////ダメージウェーブとプレイヤーの当たり判定
-	//if (CollisionCircle(pPlayer->pos, g_DamageWave[nCntDWave].pos, g_DamageWave[nCntDWave].nRadius + 15.0f, g_DamageWave[nCntDWave].nRadius - g_DamageWave[nCntDWave].nRadius * 0.1f, pPlayer->vtxMin.y, pPlayer->vtxMax.y) == true)
-	//{
-	//	PlayerHit();
-	//}
+	if (pPlayer->GetDodgeCount() <= 0)
+	{
+		//ダメージウェーブとプレイヤーの当たり判定
+		if (CollisionRing(pPlayer->GetPos(), m_pos, m_Radius + 15.0f, m_Radius - m_Radius * 0.1f, 0.0f, pPlayer->GetHeight()) == true)
+		{
+			pPlayer->HitDamage(50.0f);
+		}
+	}
 
 	VERTEX_3D* pVtx;	//頂点ポインタを所得
 
@@ -231,6 +235,26 @@ void CObjmeshRing::Update(void)
 	{
 		Uninit();
 	}
+}
+
+//====================================================================
+//ダメージウェーブの当たり判定
+//====================================================================
+bool CObjmeshRing::CollisionRing(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut, float nRadiusIn, float MinY, float MaxY)
+{
+	bool nHit = false;
+
+	if (sqrtf((pos1.x - pos2.x) * (pos1.x - pos2.x)
+		+ (pos1.z - pos2.z) * (pos1.z - pos2.z)) <= nRadiusOut
+		&& sqrtf((pos1.x - pos2.x) * (pos1.x - pos2.x)
+			+ (pos1.z - pos2.z) * (pos1.z - pos2.z)) >= nRadiusIn
+		&& pos1.y + MinY < pos2.y
+		&& pos1.y + MaxY > pos2.y)
+	{//円の判定が当たった
+		nHit = true;
+	}
+
+	return nHit;
 }
 
 //====================================================================

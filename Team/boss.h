@@ -15,6 +15,7 @@ class CObjGauge2D;
 class CNumber;
 class CCubeSpin;
 class CObject2D;
+class CObject3D;
 
 //オブジェクトプレイヤークラス
 class CBoss : public CObjectX
@@ -54,6 +55,7 @@ public:
 		ATTACK_BLOCKRUN,	//ブロックラン
 		ATTACK_SPINPILLAR,	//ブロックの柱
 		ATTACK_RAIN,		//ブロックの雨
+		ATTACK_SPAWNENEMY,	//敵の生成
 		ATTACK_REVIVAL,		//復活
 		ATTACK_2D_BLOCKWALL,//[2D]ブロックウォール
 		ATTACK_DOWN_BREAK,	//[見下ろし]マップ破壊攻撃
@@ -90,11 +92,13 @@ private:
 	void AttackBlockRun(D3DXVECTOR3* pos);	//攻撃パターンブロックラン
 	void AttackSpinPillar(D3DXVECTOR3* pos);//攻撃パターン回転する柱
 	void AttackRain(D3DXVECTOR3* pos);		//攻撃パターン雨
+	void AttackSpawnEnemy(D3DXVECTOR3* pos);//攻撃パターン敵生成
 	void AttackBlockWall(D3DXVECTOR3* pos);	//攻撃パターンブロックウォール[2D]
 	void AttackMapBreak(D3DXVECTOR3* pos);	//攻撃パターンマップブレイク[見下ろし]
 	void AttackRevival(D3DXVECTOR3* pos);	//攻撃パターン復活
 	bool CollisionBlock(D3DXVECTOR3* pos);	//オブジェクトとの当たり判定
 	bool CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut);	//円の当たり判定
+	bool CollisionShadow(void);	//オブジェクトとの当たり判定
 
 	int m_nIdxXModel;				//Xモデルの番号
 	D3DXVECTOR3 m_CollisionPos;		//当たり判定用の座標
@@ -129,5 +133,6 @@ private:
 	CObject2D* m_pRevivalFG;		//蘇生時の前面ポリゴン
 	float m_fRevivalColorA;			//前面ポリゴンの不透明度
 	bool m_bBreak[9];					//マップ破壊攻撃の時に破壊されている位置かどうかの判断をする変数
+	CObject3D* m_pShadow;		//影
 };
 #endif

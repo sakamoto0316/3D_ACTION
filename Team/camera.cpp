@@ -478,7 +478,7 @@ void CCamera::EventBossCamera(void)
 
 	if (m_bBib == true)
 	{
-		m_fBibPowor += 0.4f;
+		m_fBibPowor += 0.8f;
 
 		//m_posR.y += (int)(sin(D3DX_PI * m_fBibPowor) * 10.0f);
 
@@ -491,9 +491,9 @@ void CCamera::EventBossCamera(void)
 		m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 5.0f;
 		m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
 
-		m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 5.0f;
+		m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 5.0f + (int)(sin(D3DX_PI * m_fBibPowor) * 10.0f);
 		m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 5.0f + (int)(sin(D3DX_PI * m_fBibPowor) * 10.0f);
-		m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 5.0f;
+		m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 5.0f + (int)(sin(D3DX_PI * m_fBibPowor) * 10.0f);
 	}
 	else
 	{

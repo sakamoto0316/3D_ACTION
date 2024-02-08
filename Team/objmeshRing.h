@@ -43,6 +43,7 @@ public:
 	void SetRadius(float Radius) { m_Radius = Radius; }
 	void SetRadiusMove(float move) { m_RadiusMove = move; }
 	void SetLife(int Life) { m_nlife = Life; }
+	bool CollisionRing(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut, float nRadiusIn, float MinY, float MaxY);
 
 protected:
 	LPDIRECT3DTEXTURE9 m_pTexture;			//テクスチャへのポインタ

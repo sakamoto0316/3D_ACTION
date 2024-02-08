@@ -15,6 +15,8 @@
 #include "CubeBlock.h"
 #include "sound.h"
 #include "modelEffect.h"
+#include "CubeEffect.h"
+#include "camera.h"
 
 //マクロ定義
 #define COLLISION_SIZE (D3DXVECTOR3(20.0f,20.0f,20.0f))		//当たり判定
@@ -102,6 +104,20 @@ HRESULT CEnemy::Init(char* pModelName)
 //====================================================================
 void CEnemy::Uninit(void)
 {
+	for (int nCntX = -1; nCntX <= 1; nCntX++)
+	{
+		for (int nCntY = -1; nCntY <= 1; nCntY++)
+		{
+			for (int nCntZ = -1; nCntZ <= 1; nCntZ++)
+			{
+				CCubeEffect* pCEffect = CCubeEffect::Create();
+				pCEffect->SetPos(D3DXVECTOR3(GetPos().x + (10.0f * nCntX) , GetPos().y + (10.0f * nCntY), GetPos().z + (10.0f * nCntZ)));
+				pCEffect->SetMove(D3DXVECTOR3((1.0f * nCntX), (1.0f * nCntY) + 10.0f, (1.0f * nCntZ)));
+				pCEffect->SetSize(D3DXVECTOR3(10.0f, 10.0f, 10.0f));
+			}
+		}
+	}
+
 	CObjectX::Uninit();
 }
 
@@ -204,6 +220,11 @@ void CEnemy::GameUpdate(void)
 		{
 			m_Objmove.z = 0.0f;
 		}
+	}
+
+	if (CManager::GetInstance()->GetCamera()->GetCameraMode() == CCamera::CAMERAMODE_SIDEVIEW)
+	{
+		m_pos.z = 0.0f;
 	}
 
 	//Y軸の位置更新

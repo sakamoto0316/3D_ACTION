@@ -77,6 +77,7 @@ public:
 	STATE GetState(void) { return m_State; }
 	bool GetJump(void) { return m_bJump; }
 	bool GetCameraDiff(void) { return CameraDiffMove; }
+	int GetDodgeCount(void) { return m_nDodgeCount; }
 	void HitDamage(float Damage);								//UŒ‚‚ğó‚¯‚½‚Ìˆ—
 
 private:

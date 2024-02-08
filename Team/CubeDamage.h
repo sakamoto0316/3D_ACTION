@@ -58,6 +58,7 @@ public:
 	void SetSpinDisMove(float Move) { m_fSpinDisMove = Move; }
 	float GetSpinDisMove(void) { return m_fSpinDisMove; }
 	static void SetExplosionCount(int Count) { m_nExplosionCount = Count; }
+	static int GetExplosionNum(void) { return m_nExplosionNum; }
 	void SetLife(int Life) { m_nLife = Life; }
 	int GetLife(void) { return m_nLife; }
 protected:
