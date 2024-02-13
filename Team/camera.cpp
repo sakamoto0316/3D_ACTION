@@ -15,15 +15,15 @@
 #include "sound.h"
 
 //マクロ定義
-#define CAMERA_DISTANCE (550.0f)		//視点と注視点の距離
-#define CAMERA_DISTANCE_EVENT (300.0f)	//イベント時の視点と注視点の距離
-#define MODEL_DISTANCE (10.0f)		//モデルと注視点の距離
-#define CAMERA_SPEED (3.0f)			//カメラの移動スピード
-#define CAMERA_VR_SPEED (0.03f)		//カメラの視点スピード
-#define CAMERA_PAD_VR_SPEED (0.05f)	//カメラのパッドの視点スピード
-#define CAMERA_HOMING (0.2f)		//カメラの追従スピード
-#define POS_HOMING (0.9f)			//位置への追従スピード
-#define DOWNVIEW_POSV (D3DXVECTOR3(0.0f, 1500.0f, -50.0f))	//見下ろしの視点
+#define CAMERA_DISTANCE (550.0f)							//視点と注視点の距離
+#define CAMERA_DISTANCE_EVENT (300.0f)						//イベント時の視点と注視点の距離
+#define MODEL_DISTANCE (10.0f)								//モデルと注視点の距離
+#define CAMERA_SPEED (3.0f)									//カメラの移動スピード
+#define CAMERA_VR_SPEED (0.015f)							//カメラの視点スピード
+#define CAMERA_PAD_VR_SPEED (0.015f)						//カメラのパッドの視点スピード
+#define CAMERA_HOMING (0.2f)								//カメラの追従スピード
+#define POS_HOMING (0.9f)									//位置への追従スピード
+#define DOWNVIEW_POSV (D3DXVECTOR3(0.0f, 1500.0f, -200.0f))	//見下ろしの視点
 #define DOWNVIEW_POSR (D3DXVECTOR3(0.0f, 0.0f, 0.0f))		//見下ろしの注視点
 #define SIDEVIEW_POSV (D3DXVECTOR3(0.0f, 200.0f, -1000.0f))	//2Dの視点
 #define SIDEVIEW_POSR (D3DXVECTOR3(0.0f, 200.0f, 0.0f))		//2Dの注視点
@@ -46,6 +46,7 @@ CCamera::CCamera()
 	m_FollowTime = 0;
 	m_bFollowY = false;
 	m_bAttention = false;
+	m_fRotMove = INITVECTOR3;
 }
 
 //====================================================================
@@ -297,6 +298,8 @@ void CCamera::FollowCamera(void)
 	//ボスの取得
 	CBoss* pBoss = CGame::GetBoss();
 
+	m_fRotMove = m_fRotMove * 0.5f;
+
 	if (pPlayer->GetJump() == false)
 	{
 		if (m_rot.x <= D3DX_PI * 0.5f && m_rot.x >= -(D3DX_PI * 0.5f))
@@ -306,17 +309,19 @@ void CCamera::FollowCamera(void)
 			//キーボード
 			if (pInputKeyboard->GetPress(DIK_I) == true)
 			{
-				m_rot.x += CAMERA_VR_SPEED;
+				m_fRotMove.x += CAMERA_VR_SPEED;
 			}
 			if (pInputKeyboard->GetPress(DIK_K) == true)
 			{
-				m_rot.x -= CAMERA_VR_SPEED;
+				m_fRotMove.x -= CAMERA_VR_SPEED;
 			}
 
 			//右スティックの上下視点移動入力
-			m_rot.x += pInputJoypad->Get_Stick_Right(0).y * CAMERA_VR_SPEED;
+			m_fRotMove.x += pInputJoypad->Get_Stick_Right(0).y * CAMERA_PAD_VR_SPEED;
 
-			m_rot.x -= pInputMouse->GetMouseMove().y * CAMERA_VR_SPEED;
+			m_fRotMove.x -= pInputMouse->GetMouseMove().y * CAMERA_VR_SPEED;
+
+			m_rot.x += m_fRotMove.x;
 		}
 	}
 
@@ -328,19 +333,20 @@ void CCamera::FollowCamera(void)
 	//キーボード
 	if (pInputKeyboard->GetPress(DIK_J) == true)
 	{
-		m_rot.y -= CAMERA_VR_SPEED;
+		m_fRotMove.y -= CAMERA_VR_SPEED;
 
 	}
 	if (pInputKeyboard->GetPress(DIK_L) == true)
 	{
-		m_rot.y += CAMERA_VR_SPEED;
+		m_fRotMove.y += CAMERA_VR_SPEED;
 	}
 
 	//右スティックの左右視点移動入力
-	m_rot.y += pInputJoypad->Get_Stick_Right(0).x * CAMERA_PAD_VR_SPEED;
+	m_fRotMove.y += pInputJoypad->Get_Stick_Right(0).x * CAMERA_PAD_VR_SPEED;
 
-	m_rot.y += pInputMouse->GetMouseMove().x * CAMERA_VR_SPEED;
+	m_fRotMove.y += pInputMouse->GetMouseMove().x * CAMERA_VR_SPEED;
 
+	m_rot.y += m_fRotMove.y;
 
 	//一周した時の向きの補正
 	if (m_rot.y > D3DX_PI * 1.0f)
@@ -360,22 +366,48 @@ void CCamera::FollowCamera(void)
 	m_posVDest.z = pPlayer->GetCameraPos().z + cosf(-pPlayer->GetRot().y) * MODEL_DISTANCE + cosf(m_rot.y) * -cosf(m_rot.x) * CAMERA_DISTANCE;
 	m_posVDest.y = pPlayer->GetCameraPos().y + 175.0f + sinf(-m_rot.x) * CAMERA_DISTANCE;
 
-	m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING;
-	m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
-	m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 5.0f;
-	m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 5.0f;
-
-	if (pPlayer->GetJump() == false)
+	if (m_bBib == true)
 	{
-		if (pPlayer->GetCameraDiff() == true)
+		m_fBibPowor += 0.4f;
+
+		m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING;
+		m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
+		m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 5.0f + (int)(sin(D3DX_PI * m_fBibPowor) * 5.0f);
+		m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 5.0f + (int)(sin(D3DX_PI * m_fBibPowor) * 5.0f);
+
+		if (pPlayer->GetJump() == false)
 		{
-			m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 0.5f;
-			m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 0.5f;
+			if (pPlayer->GetCameraDiff() == true)
+			{
+				m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 0.5f;
+				m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 0.5f + (int)(sin(D3DX_PI * m_fBibPowor) * 20.0f);
+			}
+			else
+			{
+				m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING;
+				m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING + (int)(sin(D3DX_PI * m_fBibPowor) * 20.0f);
+			}
 		}
-		else
+	}
+	else
+	{
+		m_posR.x += (m_posRDest.x - m_posR.x) * CAMERA_HOMING;
+		m_posR.z += (m_posRDest.z - m_posR.z) * CAMERA_HOMING;
+		m_posV.x += (m_posVDest.x - m_posV.x) * CAMERA_HOMING * 5.0f;
+		m_posV.z += (m_posVDest.z - m_posV.z) * CAMERA_HOMING * 5.0f;
+
+		if (pPlayer->GetJump() == false)
 		{
-			m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING;
-			m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING;
+			if (pPlayer->GetCameraDiff() == true)
+			{
+				m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 0.5f;
+				m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 0.5f;
+			}
+			else
+			{
+				m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING;
+				m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING;
+			}
 		}
 	}
 
@@ -416,7 +448,7 @@ void CCamera::FollowCamera(void)
 			fRotDiff += D3DX_PI * 2.0f;
 		}
 
-		fRotMove += fRotDiff * 0.1f;
+		fRotMove += fRotDiff * 0.075f;
 
 		if (fRotMove > D3DX_PI * 1.0f)
 		{

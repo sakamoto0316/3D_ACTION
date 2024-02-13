@@ -26,6 +26,7 @@
 #include "object3D.h"
 #include "enemy.h"
 #include "effect.h"
+#include "modelEffect.h"
 
 //マクロ定義
 #define BLOCK_WIGHT (300.0f)		//横幅
@@ -147,7 +148,7 @@ HRESULT CBoss::Init(char* pModelName)
 	case CScene::MODE_TITLE:
 		if (m_CubeSpin == nullptr)
 		{
-			m_CubeSpin = CCubeSpin::Create(4);
+			m_CubeSpin = CCubeSpin::Create(7);
 			m_CubeSpin->SetPos(D3DXVECTOR3(500.0f, 300.0f, 1000.0f));
 			m_CubeSpin->SetSpinDistance(150.0f);
 			m_CubeSpin->SetSpinSpeedY(0.01f);
@@ -155,7 +156,7 @@ HRESULT CBoss::Init(char* pModelName)
 		}
 		if (m_CubeSpinTitle == nullptr)
 		{
-			m_CubeSpinTitle = CCubeSpin::Create(8);
+			m_CubeSpinTitle = CCubeSpin::Create(15);
 			m_CubeSpinTitle->SetPos(D3DXVECTOR3(500.0f, 300.0f, 1000.0f));
 			m_CubeSpinTitle->SetSpinDistance(250.0f);
 			m_CubeSpinTitle->SetSpinSpeedY(-0.02f);
@@ -545,7 +546,7 @@ void CBoss::Warp(ATTACK Pattern)
 	case ATTACK_NOT:
 
 		m_WarpPos.x = (float)(rand() % 1001) - 500.0f;
-		m_WarpPos.y = (float)(rand() % 101) + 250.0f;
+		m_WarpPos.y = (float)(rand() % 101) + 200.0f;
 		m_WarpPos.z = (float)(rand() % 1001) - 500.0f;
 		m_AttackCoolTime = 5;
 		break;
@@ -687,13 +688,17 @@ void CBoss::AttackSelect(void)
 		{
 			Warp(ATTACK_BULLET);
 		}
-		else if (RandAttack <= 40)
+		else if (RandAttack <= 30)
 		{
 			Warp(ATTACK_RUSH);
 		}
-		else if (RandAttack <= 50)
+		else if (RandAttack <= 40)
 		{
 			Warp(ATTACK_BLOCKRUN);
+		}
+		else if (RandAttack <= 55)
+		{
+			Warp(ATTACK_SPAWNENEMY);
 		}
 		else if (RandAttack <= 85)
 		{
@@ -1260,6 +1265,9 @@ void CBoss::AttackRain(D3DXVECTOR3* pos)
 		if (pos->y < 200.0f)
 		{
 			m_AttackWave++;
+
+			//カメラを振動させる
+			CManager::GetInstance()->GetCamera()->SetBib(true);
 		}
 		break;
 
@@ -1292,6 +1300,12 @@ void CBoss::AttackRain(D3DXVECTOR3* pos)
 			pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_BREAK);
 			pCubeDamage->SetDamage(BULLET_DAMAGE);
 			pCubeDamage->SetLife(BULLET_LIFE);
+		}
+
+		if (m_AttackCount > 30)
+		{
+			//カメラの振動を止める
+			CManager::GetInstance()->GetCamera()->SetBib(false);
 		}
 
 		if (m_AttackCount > 300)
@@ -1351,37 +1365,76 @@ void CBoss::AttackSpawnEnemy(D3DXVECTOR3* pos)
 			pEffect->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 		}
 
-		if (m_AttackCount % 90 == 0)
+		if (m_nForm == 0)
 		{
-			pEnemy[0] = CEnemy::Create("data\\MODEL\\enemy.x");
-			pEnemy[1] = CEnemy::Create("data\\MODEL\\enemy.x");
-
-			switch (nRand)
+			if (m_AttackCount % 110 == 0)
 			{
-			case 0:
-				pEnemy[0]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
-				pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
-				break;
-			case 1:
-				pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
-				pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
-				break;
-			case 2:
-				pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
-				pEnemy[1]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
-				break;
-			case 3:
-				pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
-				pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
-				break;
-			case 4:
-				pEnemy[0]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
-				pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
-				break;
-			case 5:
-				pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
-				pEnemy[1]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
-				break;
+				pEnemy[0] = CEnemy::Create("data\\MODEL\\enemy.x");
+				pEnemy[1] = CEnemy::Create("data\\MODEL\\enemy.x");
+
+				switch (nRand)
+				{
+				case 0:
+					pEnemy[0]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
+					pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
+					break;
+				case 1:
+					pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
+					pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
+					break;
+				case 2:
+					pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
+					pEnemy[1]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
+					break;
+				case 3:
+					pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
+					pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
+					break;
+				case 4:
+					pEnemy[0]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
+					pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
+					break;
+				case 5:
+					pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
+					pEnemy[1]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
+					break;
+				}
+			}
+		}
+		else if (m_nForm == 1)
+		{
+			if (m_AttackCount % 70 == 0)
+			{
+				pEnemy[0] = CEnemy::Create("data\\MODEL\\enemy.x");
+				pEnemy[1] = CEnemy::Create("data\\MODEL\\enemy.x");
+
+				switch (nRand)
+				{
+				case 0:
+					pEnemy[0]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
+					pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
+					break;
+				case 1:
+					pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
+					pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
+					break;
+				case 2:
+					pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
+					pEnemy[1]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
+					break;
+				case 3:
+					pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, 400.0f));
+					pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
+					break;
+				case 4:
+					pEnemy[0]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
+					pEnemy[1]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
+					break;
+				case 5:
+					pEnemy[0]->SetPos(D3DXVECTOR3(400.0f, 500.0f, -400.0f));
+					pEnemy[1]->SetPos(D3DXVECTOR3(-400.0f, 500.0f, 400.0f));
+					break;
+				}
 			}
 		}
 		break;
@@ -1841,6 +1894,12 @@ void CBoss::AttackRevival(D3DXVECTOR3* pos)
 		{
 			for (int nCnt = 0; nCnt < 8; nCnt++)
 			{
+				//モデルエフェクトの生成
+				CModelEffect* pMEffect = CModelEffect::Create("data\\MODEL\\boss.x");
+				pMEffect->SetPos(*pos);
+				pMEffect->SetRot(m_rot);
+				pMEffect->SetColor(D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f));
+
 				CCubeDamage* pCubeDamage = CCubeDamage::Create();
 				pCubeDamage->SetUseSpin(true);
 				pCubeDamage->SetSpinPos(*pos);
@@ -1983,6 +2042,9 @@ void CBoss::AttackDeath(D3DXVECTOR3* pos)
 	switch (m_AttackWave)
 	{
 	case 0:	//
+		//カメラのバイブレーションをオンにする
+		CManager::GetInstance()->GetCamera()->SetBib(true);
+
 		m_move = INITVECTOR3;
 
 		if (m_AttackCount % 5 == 0)
@@ -2011,6 +2073,9 @@ void CBoss::AttackDeath(D3DXVECTOR3* pos)
 		if (m_AttackCount % 60 == 0)
 		{
 			m_fRevivalColorA = 1.0f;
+
+			//ゲームのSEを再生する
+			CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_DAMAGE_BOSS);
 		}
 
 		m_AttackCount++;
@@ -2022,6 +2087,9 @@ void CBoss::AttackDeath(D3DXVECTOR3* pos)
 			m_AttackCount = 0;
 			m_fDeathColor = 1.0f;
 			SetMatColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+			//カメラのバイブレーションをオンにする
+			CManager::GetInstance()->GetCamera()->SetBib(false);
 		}
 		break;
 
@@ -2061,6 +2129,9 @@ void CBoss::AttackDeath(D3DXVECTOR3* pos)
 		m_move = INITVECTOR3;
 
 		m_AttackCount++;
+
+		//ゲームのSEを再生する
+		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_DEATHEXPLOSION);
 
 		DeathExplosion(pos, D3DXVECTOR3(DEATH_EXPLOSION_SPEED, 100.0f, 100.0f), 0);
 		DeathExplosion(pos, D3DXVECTOR3(DEATH_EXPLOSION_SPEED, 100.0f, 100.0f), 1);
@@ -2137,7 +2208,7 @@ void CBoss::AttackDeath(D3DXVECTOR3* pos)
 }
 
 //====================================================================
-//死亡時演出
+//爆発キューブの呼び出し
 //====================================================================
 void CBoss::DeathExplosion(D3DXVECTOR3* pos, D3DXVECTOR3 SpinMove, int Set)
 {
@@ -2188,6 +2259,9 @@ void CBoss::HitDamage(float Damage)
 			}
 			else if (m_nForm == 1)
 			{
+				//ゲームのSEを再生する
+				CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_GOGOGOGO);
+
 				m_State = STATE_DEATH;
 				m_Action = ACTION_DEATH;
 			}

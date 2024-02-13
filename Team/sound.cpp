@@ -19,6 +19,10 @@ CSound::SOUNDINFO CSound::m_aSoundInfo[SOUND_LABEL_MAX] =
 	{ "data/SE/Dodge.wav", 0 },					// プレイヤー回避音
 	{ "data/SE/PlayerJump.wav", 0 },			// プレイヤージャンプ音
 	{ "data/SE/Attention.wav", 0 },				// 注目切り替え音
+	{ "data/SE/Deathdamage.wav", 0 },			// 死亡ダメージ音
+	{ "data/SE/DeathExplosion.wav", 0 },		// 死亡爆発音
+	{ "data/SE/GOGOGO.wav", 0 },				// ゴゴゴゴゴゴゴ音
+	{ "data/SE/Howl.wav", 0 },					// 咆哮音
 }; 
 
 //=============================================================================

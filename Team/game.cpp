@@ -372,6 +372,9 @@ void CGame::EventUpdate(void)
 	{
 		CCubeBlock* pBlock;
 
+		//ゲームのSEを再生する
+		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_GOGOGOGO);
+
 		for (int nCnt = 0; nCnt < 50; nCnt++)
 		{
 			float randX = (float)(rand() % 751);
@@ -419,6 +422,11 @@ void CGame::EventUpdate(void)
 	}
 
 	//カメラ振動の管理
+	if (m_nEventCount == 60)
+	{
+		//ゲームのSEを再生する
+		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_HOWL);
+	}
 	if (m_nEventCount == 120)
 	{
 		//カメラのバイブレーションをオンにする
@@ -428,6 +436,9 @@ void CGame::EventUpdate(void)
 	{
 		//カメラのバイブレーションをオフにする
 		CManager::GetInstance()->GetCamera()->SetBib(false);
+
+		//ゲームのSEを停止する
+		CManager::GetInstance()->GetSound()->StopSound(CSound::SOUND_LABEL_SE_HOWL);
 	}
 
 	if (m_nEventCount >= 120 && m_nEventCount < 240)
@@ -505,6 +516,9 @@ void CGame::EventUpdate(void)
 		{
 			m_pBoss->SetAction(CBoss::ACTION_NORMAL);
 		}
+
+		//ゲームのSEを再生する
+		CManager::GetInstance()->GetSound()->StopSound(CSound::SOUND_LABEL_SE_GOGOGOGO);
 
 		//ゲームのBGMを再生する
 		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_BGM_BOSS);

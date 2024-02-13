@@ -31,6 +31,10 @@ public:
 		SOUND_LABEL_SE_DODGE,				// プレイヤー回避音
 		SOUND_LABEL_SE_JUMP,				// プレイヤージャンプ音
 		SOUND_LABEL_SE_ATTENTION,			// 注目切り替え音
+		SOUND_LABEL_SE_DEATHDAMAGE,			// 死亡ダメージ音
+		SOUND_LABEL_SE_DEATHEXPLOSION,		// 死亡爆発音
+		SOUND_LABEL_SE_GOGOGOGO,			// ゴゴゴゴゴゴゴ音
+		SOUND_LABEL_SE_HOWL,				// 咆哮音
 		SOUND_LABEL_MAX,
 	} SOUND_LABEL;
 

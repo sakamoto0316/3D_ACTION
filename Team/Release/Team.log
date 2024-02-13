@@ -1,9 +1,7 @@
-﻿  CubeDamage.cpp
-  boss.cpp
-  game.cpp
+﻿  camera.cpp
   コード生成しています。
-  2 of 669 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+  1 of 670 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    35 functions had inline decision re-evaluated but remain unchanged
+    11 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
   Team.vcxproj -> C:\Users\student\Desktop\3D_ACTIONGAME\3D_ACTION\Team\Team.exe

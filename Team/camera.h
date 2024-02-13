@@ -66,6 +66,7 @@ private:
 	D3DXVECTOR3 m_PlayerPos;	//プレイヤーの位置
 	D3DXVECTOR3 m_DelCameraPos;	//リスポーンカメラ位置
 	CAMERAMODE CameraMode;		//カメラの状態
+	D3DXVECTOR3 m_fRotMove;		//向きのカメラ移動速度
 	float m_CameraDistance;		//注視点とカメラの距離
 	float m_EventPosY;			//イベント時のカメラの高さ
 	bool m_bFollowY;			//カメラの上下追従をするかどうか

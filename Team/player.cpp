@@ -28,7 +28,7 @@
 #include "enemy.h"
 #include "fade.h"
 
-#define PLAYER_LIFE (1000.0f)		//プレイヤーの初期ライフ
+#define PLAYER_LIFE (1500.0f)		//プレイヤーの初期ライフ
 #define PLAYER_ROT_SPEED (0.2f)		//プレイヤーの回転スピード
 #define PLAYER_SPEED (10.0f)		//プレイヤーの速さ
 #define PLAYER_JAMPPOWER (15.0f)	//プレイヤーのジャンプ力

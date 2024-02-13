@@ -49,6 +49,6 @@ private:
 	float m_fSpinDistance;		//回転の中心からの距離
 	float m_fSpinDisMove;		//回転の中心からの距離の移動量
 	D3DXVECTOR3 m_fSpinSpeed;	//回転速度
-	CCubeDamage* m_apCubeDamage[32];	//キューブダメージのポインタ
+	CCubeDamage* m_apCubeDamage[128];	//キューブダメージのポインタ
 };
 #endif
