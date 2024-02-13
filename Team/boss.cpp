@@ -31,7 +31,7 @@
 #define BLOCK_WIGHT (300.0f)		//横幅
 #define BLOCK_HEIGHT (300.0f)		//縦幅
 #define WALL_UPEND (20.0f)			//上昇位置
-#define BOSS_LIFE (3000.0f)			//ボスの体力
+#define BOSS_LIFE (4000.0f)			//ボスの体力
 #define BOSS_LIFESPEED_PLUS (128.0f)//体力増の移動量
 #define BOSS_LIFESPEED_DEL (64.0f)	//体力減の移動量
 #define BULLET_INTERVAL_FORM1 (20)	//弾の発射感覚(進化前)
@@ -41,6 +41,8 @@
 #define BLOCKRUN_TIME (600)			//ブロックランの時間
 #define BLOCKRUN_SPEED (5.0f)		//ブロックランの速度
 #define BLOCKWALL_HEIGHT (1100.0f)	//ブロックウォールの通る幅
+#define BULLET_SPEED_FORM1 (0.01f)		//弾の速度(進化前)
+#define BULLET_SPEED_FORM2 (0.015f)		//弾の速度(進化後)
 #define BULLET_DAMAGE (50.0f)		//弾のダメージ量
 #define RUSH_DAMAGE (90.0f)			//突進攻撃のダメージ
 #define BLOCKRUN_DAMAGE (60.0f)		//ブロックランのダメージ
@@ -51,6 +53,8 @@
 #define COOLTIME_SPINPILLAR_FORM1 (30)	//回転柱のクールタイム
 #define COOLTIME_SPINPILLAR_FORM2 (300)	//回転柱のクールタイム
 #define COOLTIME_RAIN (240)			//雨攻撃のクールタイム
+#define DEATH_EXPLOSION (32)			//死亡時の爆発キューブの総数(数値*6)
+#define DEATH_EXPLOSION_SPEED (0.03f)	//死亡時の爆発キューブの速度
 
 //====================================================================
 //コンストラクタ
@@ -84,6 +88,9 @@ CBoss::CBoss(int nPriority) : CObjectX(nPriority)
 	m_pRevivalFG = nullptr;
 	m_fRevivalColorA = 1.0f;
 	m_pShadow = nullptr;
+	m_bDeathColorSwich = false;
+	m_fDeathColor = 1.0f;
+	m_fDeathExplojsionDis = 0.0f;
 
 	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
@@ -157,33 +164,7 @@ HRESULT CBoss::Init(char* pModelName)
 		break;
 
 	case CScene::MODE_GAME:
-		m_pLifeGauge = CObjGauge2D::Create();
-		m_pLifeGauge->SetPos(D3DXVECTOR3(240.0f, 20.0f, 0.0f));
-		m_pLifeGauge->SetWight(800.0f);
-		m_pLifeGauge->SetHeight(10.0f);
-		m_pLifeGauge->SetColor(D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f));
-		m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fMoveLife);
 
-		for (int nCnt = 0; nCnt < 5; nCnt++)
-		{
-			m_pLifeNumber[nCnt] = CNumber::Create();
-			m_pLifeNumber[nCnt]->SetPos(D3DXVECTOR3(1000.0f + nCnt * 15.0f, 50.0f, 0.0f));
-			m_pLifeNumber[nCnt]->SetWight(20.0f);
-			m_pLifeNumber[nCnt]->SetHeight(20.0f);
-		}
-
-		//影の生成
-		if (m_pShadow == nullptr)
-		{
-			m_pShadow = CObject3D::Create();
-			m_pShadow->SetPos(GetPos());
-			m_pShadow->SetRot(D3DXVECTOR3(D3DX_PI * 0.5f, m_rot.y, 0.0f));
-			m_pShadow->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-			m_pShadow->SetTexture("data\\TEXTURE\\Effect000.jpg");
-			m_pShadow->SetAddDorw(true);
-		}
-
-		SetLifeUI();
 		break;
 
 	case CScene::MODE_RESULT:
@@ -289,6 +270,10 @@ void CBoss::GameUpdate(void)
 		//蘇生処理
 		AttackRevival(&pos);
 		break;
+	case CBoss::ACTION_DEATH:
+		//死亡処理
+		AttackDeath(&pos);
+		break;
 
 	case CBoss::ACTION_EVENT:
 		break;
@@ -300,27 +285,37 @@ void CBoss::GameUpdate(void)
 	//影の当たり判定
 	CollisionShadow();
 
+	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_2) == true)
+	{
+		Warp(ATTACK_BULLET);
+	}
+	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_3) == true)
+	{
+		Warp(ATTACK_RUSH);
+	}
+	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_4) == true)
+	{
+		Warp(ATTACK_BLOCKRUN);
+	}
+	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_5) == true)
+	{
+		Warp(ATTACK_SPINPILLAR);
+	}
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_6) == true)
 	{
-		D3DXVECTOR3 RandPos;
-		RandPos.x = (float)(rand() % 1001) - 500.0f;
-		RandPos.y = (float)(rand() % 201) + 250.0f;
-		RandPos.z = (float)(rand() % 1001) - 500.0f;
-
-		m_Action = ACTION_WARP;
-		m_WarpPos = RandPos;
+		Warp(ATTACK_RAIN);
 	}
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_7) == true)
 	{
-		Warp(ATTACK_DOWN_BREAK);
+		Warp(ATTACK_SPAWNENEMY);
 	}
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_8) == true)
 	{
-		Warp(ATTACK_SPAWNENEMY);
+		Warp(ATTACK_2D_BLOCKWALL);
 	}
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_9) == true)
 	{
-		Warp(ATTACK_2D_BLOCKWALL);
+		Warp(ATTACK_DOWN_BREAK);
 	}
 
 	if (m_nForm == 1)
@@ -392,6 +387,53 @@ void CBoss::Draw(void)
 //====================================================================
 //状態管理
 //====================================================================
+void CBoss::LifeGaugeCreate(void)
+{
+	if (m_pLifeGaugeBG == nullptr)
+	{
+		m_pLifeGaugeBG = CObjGauge2D::Create();
+		m_pLifeGaugeBG->SetPos(D3DXVECTOR3(240.0f, 20.0f, 0.0f));
+		m_pLifeGaugeBG->SetWight(800.0f);
+		m_pLifeGaugeBG->SetHeight(10.0f);
+		m_pLifeGaugeBG->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.5f));
+		m_pLifeGaugeBG->SetGaugeWight(m_fLifeMax, m_fLifeMax);
+	}
+
+	if (m_pLifeGauge == nullptr)
+	{
+		m_pLifeGauge = CObjGauge2D::Create();
+		m_pLifeGauge->SetPos(D3DXVECTOR3(240.0f, 20.0f, 0.0f));
+		m_pLifeGauge->SetWight(800.0f);
+		m_pLifeGauge->SetHeight(10.0f);
+		m_pLifeGauge->SetColor(D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f));
+		m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fMoveLife);
+	}
+
+	for (int nCnt = 0; nCnt < 5; nCnt++)
+	{
+		m_pLifeNumber[nCnt] = CNumber::Create();
+		m_pLifeNumber[nCnt]->SetPos(D3DXVECTOR3(1000.0f + nCnt * 15.0f, 50.0f, 0.0f));
+		m_pLifeNumber[nCnt]->SetWight(20.0f);
+		m_pLifeNumber[nCnt]->SetHeight(20.0f);
+	}
+
+	SetLifeUI();
+
+	//影の生成
+	if (m_pShadow == nullptr)
+	{
+		m_pShadow = CObject3D::Create();
+		m_pShadow->SetPos(GetPos());
+		m_pShadow->SetRot(D3DXVECTOR3(D3DX_PI * 0.5f, m_rot.y, 0.0f));
+		m_pShadow->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+		m_pShadow->SetTexture("data\\TEXTURE\\Effect000.jpg");
+		m_pShadow->SetAddDorw(true);
+	}
+}
+
+//====================================================================
+//状態管理
+//====================================================================
 void CBoss::StateManager(void)
 {
 	switch (m_State)
@@ -434,7 +476,14 @@ void CBoss::WarpUpdate(D3DXVECTOR3 *pos)
 {
 	if (m_nWarpOK == false)
 	{
-		m_ColorA -= 0.1f;
+		if (m_nForm == 0)
+		{
+			m_ColorA -= 0.05f;
+		}
+		else if (m_nForm == 1)
+		{
+			m_ColorA -= 0.1f;
+		}
 
 		if (m_ColorA <= 0)
 		{
@@ -445,7 +494,14 @@ void CBoss::WarpUpdate(D3DXVECTOR3 *pos)
 	}
 	else
 	{
-		m_ColorA += 0.1f;
+		if (m_nForm == 0)
+		{
+			m_ColorA += 0.025f;
+		}
+		else if (m_nForm == 1)
+		{
+			m_ColorA += 0.1f;
+		}
 
 		if (m_ColorA >= 1.0f)
 		{
@@ -562,6 +618,8 @@ void CBoss::Warp(ATTACK Pattern)
 
 	case ATTACK_SPAWNENEMY:
 
+		m_rot.y = 0.0f;
+
 		m_WarpPos.x = 0.0f;
 		m_WarpPos.y = 500.0f;
 		m_WarpPos.z = 500.0f;
@@ -569,6 +627,8 @@ void CBoss::Warp(ATTACK Pattern)
 		break;
 
 	case ATTACK_2D_BLOCKWALL:
+
+		m_rot.y = D3DX_PI * 0.5f;
 
 		m_WarpPos.x = 500.0f;
 		m_WarpPos.y = 400.0f;
@@ -619,7 +679,7 @@ void CBoss::AttackUpdate(D3DXVECTOR3* pos)
 //====================================================================
 void CBoss::AttackSelect(void)
 {
-	int RandAttack = rand() % 201;
+	int RandAttack = rand() % 151;
 
 	if (m_nForm == 0)
 	{
@@ -643,7 +703,7 @@ void CBoss::AttackSelect(void)
 		{
 			Warp(ATTACK_RAIN);
 		}
-		else if (RandAttack <= 200)
+		else if (RandAttack <= 150)
 		{
 			Warp(ATTACK_NOT);
 		}
@@ -661,23 +721,27 @@ void CBoss::AttackSelect(void)
 			{
 				Warp(ATTACK_BULLET);
 			}
-			else if (RandAttack <= 30)
+			else if (RandAttack <= 20)
 			{
 				Warp(ATTACK_RUSH);
 			}
-			else if (RandAttack <= 35)
+			else if (RandAttack <= 40)
 			{
-				Warp(ATTACK_BLOCKRUN);
+				Warp(ATTACK_SPINPILLAR);
 			}
 			else if (RandAttack <= 60)
 			{
-				Warp(ATTACK_SPINPILLAR);
+				Warp(ATTACK_SPAWNENEMY);
 			}
 			else if (RandAttack <= 80)
 			{
 				Warp(ATTACK_2D_BLOCKWALL);
 			}
-			else if (RandAttack <= 200)
+			else if (RandAttack <= 100)
+			{
+				Warp(ATTACK_DOWN_BREAK);
+			}
+			else if (RandAttack <= 150)
 			{
 				Warp(ATTACK_NOT);
 			}
@@ -718,57 +782,57 @@ void CBoss::AttackBullet(D3DXVECTOR3* pos)
 					{
 					case 0:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							(pPlayer->GetPos().x - pos->x) * 0.01f,
-							(pPlayer->GetPos().y - pos->y) * 0.01f,
-							(pPlayer->GetPos().z - pos->z) * 0.01f));
+							(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM1,
+							(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM1,
+							(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM1));
 						break;
 
 					case 1:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							-(pPlayer->GetPos().x - pos->x) * 0.01f,
-							(pPlayer->GetPos().y - pos->y) * 0.01f,
-							(pPlayer->GetPos().z - pos->z) * 0.01f));
+							-(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM1,
+							(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM1,
+							(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM1));
 						break;
 
 					case 2:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							(pPlayer->GetPos().x - pos->x) * 0.01f,
-							-(pPlayer->GetPos().y - pos->y) * 0.01f,
-							(pPlayer->GetPos().z - pos->z) * 0.01f));
+							(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM1,
+							-(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM1,
+							(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM1));
 						break;
 
 					case 3:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							(pPlayer->GetPos().x - pos->x) * 0.01f,
-							(pPlayer->GetPos().y - pos->y) * 0.01f,
-							-(pPlayer->GetPos().z - pos->z) * 0.01f));
+							(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM1,
+							(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM1,
+							-(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM1));
 						break;
 					case 4:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							-(pPlayer->GetPos().x - pos->x) * 0.01f,
-							-(pPlayer->GetPos().y - pos->y) * 0.01f,
-							(pPlayer->GetPos().z - pos->z) * 0.01f));
+							-(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM1,
+							-(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM1,
+							(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM1));
 						break;
 
 					case 5:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							(pPlayer->GetPos().x - pos->x) * 0.01f,
-							-(pPlayer->GetPos().y - pos->y) * 0.01f,
-							-(pPlayer->GetPos().z - pos->z) * 0.01f));
+							(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM1,
+							-(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM1,
+							-(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM1));
 						break;
 
 					case 6:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							-(pPlayer->GetPos().x - pos->x) * 0.01f,
-							(pPlayer->GetPos().y - pos->y) * 0.01f,
-							-(pPlayer->GetPos().z - pos->z) * 0.01f));
+							-(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM1,
+							(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM1,
+							-(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM1));
 						break;
 
 					case 7:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							-(pPlayer->GetPos().x - pos->x) * 0.01f,
-							-(pPlayer->GetPos().y - pos->y) * 0.01f,
-							-(pPlayer->GetPos().z - pos->z) * 0.01f));
+							-(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM1,
+							-(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM1,
+							-(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM1));
 						break;
 					}
 					pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_BREAK);
@@ -792,57 +856,57 @@ void CBoss::AttackBullet(D3DXVECTOR3* pos)
 					{
 					case 0:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							(pPlayer->GetPos().x - pos->x) * 0.01f,
-							(pPlayer->GetPos().y - pos->y) * 0.01f,
-							(pPlayer->GetPos().z - pos->z) * 0.01f));
+							(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM2,
+							(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM2,
+							(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM2));
 						break;
 
 					case 1:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							-(pPlayer->GetPos().x - pos->x) * 0.01f,
-							(pPlayer->GetPos().y - pos->y) * 0.01f,
-							(pPlayer->GetPos().z - pos->z) * 0.01f));
+							-(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM2,
+							(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM2,
+							(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM2));
 						break;
 
 					case 2:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							(pPlayer->GetPos().x - pos->x) * 0.01f,
-							-(pPlayer->GetPos().y - pos->y) * 0.01f,
-							(pPlayer->GetPos().z - pos->z) * 0.01f));
+							(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM2,
+							-(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM2,
+							(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM2));
 						break;
 
 					case 3:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							(pPlayer->GetPos().x - pos->x) * 0.01f,
-							(pPlayer->GetPos().y - pos->y) * 0.01f,
-							-(pPlayer->GetPos().z - pos->z) * 0.01f));
+							(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM2,
+							(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM2,
+							-(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM2));
 						break;
 					case 4:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							-(pPlayer->GetPos().x - pos->x) * 0.01f,
-							-(pPlayer->GetPos().y - pos->y) * 0.01f,
-							(pPlayer->GetPos().z - pos->z) * 0.01f));
+							-(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM2,
+							-(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM2,
+							(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM2));
 						break;
 
 					case 5:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							(pPlayer->GetPos().x - pos->x) * 0.01f,
-							-(pPlayer->GetPos().y - pos->y) * 0.01f,
-							-(pPlayer->GetPos().z - pos->z) * 0.01f));
+							(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM2,
+							-(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM2,
+							-(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM2));
 						break;
 
 					case 6:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							-(pPlayer->GetPos().x - pos->x) * 0.01f,
-							(pPlayer->GetPos().y - pos->y) * 0.01f,
-							-(pPlayer->GetPos().z - pos->z) * 0.01f));
+							-(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM2,
+							(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM2,
+							-(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM2));
 						break;
 
 					case 7:
 						pCubeDamage->SetMove(D3DXVECTOR3(
-							-(pPlayer->GetPos().x - pos->x) * 0.01f,
-							-(pPlayer->GetPos().y - pos->y) * 0.01f,
-							-(pPlayer->GetPos().z - pos->z) * 0.01f));
+							-(pPlayer->GetPos().x - pos->x) * BULLET_SPEED_FORM2,
+							-(pPlayer->GetPos().y - pos->y) * BULLET_SPEED_FORM2,
+							-(pPlayer->GetPos().z - pos->z) * BULLET_SPEED_FORM2));
 						break;
 					}
 					pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_BREAK);
@@ -1015,18 +1079,6 @@ void CBoss::AttackBlockRun(D3DXVECTOR3* pos)
 			pCubeBlock->SetUninitPos(D3DXVECTOR3(pCubeBlock->GetPos().x, pCubeBlock->GetPos().y, 1000.0f));
 			pCubeBlock->SetBoolLife(true);
 			pCubeBlock->SetPlusMove(true);
-
-			pCubeBlock = CCubeBlock::Create();
-			pCubeBlock->SetPos(D3DXVECTOR3(0.0f, 300.0f, 500.0f));
-			pCubeBlock->SetSize(D3DXVECTOR3(500.0f, 50.0f, 10.0f));
-			pCubeBlock->SetLife(BLOCKRUN_TIME);
-
-			pCubeDamage = CCubeDamage::Create();
-			pCubeDamage->SetPos(D3DXVECTOR3(0.0f, 400.0f, 490.0f));
-			pCubeDamage->SetSize(D3DXVECTOR3(500.0f, 300.0f, 10.0f));
-			pCubeDamage->SetLife(BLOCKRUN_TIME);
-			pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_NORMAL);
-			pCubeDamage->SetDamage(false);
 
 			pCubeDamage = CCubeDamage::Create();
 			pCubeDamage->SetPos(D3DXVECTOR3(0.0f, 120.0f, 0.0f));
@@ -1437,14 +1489,14 @@ void CBoss::AttackBlockWall(D3DXVECTOR3* pos)
 			}
 			pCubeBlockUp->SetSize(D3DXVECTOR3(25.0f, 500.0f, 50.0f));
 			pCubeBlockUp->SetMove(D3DXVECTOR3(-BLOCKRUN_SPEED, 0.0f, 0.0f));
-			pCubeBlockUp->SetUninitPos(D3DXVECTOR3(-500.0f, pCubeBlockUp->GetPos().y, pCubeBlockDown->GetPos().z));
+			pCubeBlockUp->SetUninitPos(D3DXVECTOR3(-900.0f, pCubeBlockUp->GetPos().y, pCubeBlockDown->GetPos().z));
 			pCubeBlockUp->SetBoolLife(true);
 			pCubeBlockUp->SetPlusMove(false);
 			pCubeBlockUp->SetColorA(1.0f);
 
 			pCubeBlockDown->SetSize(D3DXVECTOR3(25.0f, 500.0f, 50.0f));
 			pCubeBlockDown->SetMove(D3DXVECTOR3(-BLOCKRUN_SPEED, 0.0f, 0.0f));
-			pCubeBlockDown->SetUninitPos(D3DXVECTOR3(-500.0f, pCubeBlockDown->GetPos().y, pCubeBlockDown->GetPos().z));
+			pCubeBlockDown->SetUninitPos(D3DXVECTOR3(-900.0f, pCubeBlockDown->GetPos().y, pCubeBlockDown->GetPos().z));
 			pCubeBlockDown->SetBoolLife(true);
 			pCubeBlockDown->SetPlusMove(false);
 			pCubeBlockDown->SetColorA(1.0f);
@@ -1589,6 +1641,8 @@ void CBoss::AttackMapBreak(D3DXVECTOR3* pos)
 				}
 			}
 		}
+
+		CGame::GetPlayer()->SetMove(D3DXVECTOR3(0.0f, CGame::GetPlayer()->GetMove().y, 0.0f));
 
 		if (m_AttackCount > 10)
 		{
@@ -1898,9 +1952,215 @@ void CBoss::AttackRevival(D3DXVECTOR3* pos)
 		m_move = INITVECTOR3;
 		Warp(ATTACK_NOT);
 		SetDefColor();
-		m_AttackCoolTime = COOLTIME_RAIN;
 		m_State = STATE_NORMAL;
+		m_AttackCoolTime = 0;
 		break;
+	}
+}
+
+//====================================================================
+//死亡時演出
+//====================================================================
+void CBoss::AttackDeath(D3DXVECTOR3* pos)
+{
+	if (m_pRevivalFG == nullptr)
+	{
+		m_pRevivalFG = CObject2D::Create();
+		m_pRevivalFG->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
+		m_pRevivalFG->SetWight(1280.0f);
+		m_pRevivalFG->SetHeight(720.0f);
+	}
+	else
+	{
+		m_pRevivalFG->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fRevivalColorA));
+	}
+
+	if (m_fRevivalColorA > 0.0f)
+	{
+		m_fRevivalColorA -= 0.05f;
+	}
+
+	switch (m_AttackWave)
+	{
+	case 0:	//
+		m_move = INITVECTOR3;
+
+		if (m_AttackCount % 5 == 0)
+		{
+			m_bDeathColorSwich = m_bDeathColorSwich ? false : true;
+
+			if (m_bDeathColorSwich == true)
+			{
+				SetMatColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else
+			{
+				SetMatColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+			}
+		}
+
+		if (m_bDeathColorSwich == true)
+		{
+			m_Scaling += 0.06f;
+		}
+		else
+		{
+			m_Scaling -= 0.06f;
+		}
+
+		if (m_AttackCount % 60 == 0)
+		{
+			m_fRevivalColorA = 1.0f;
+		}
+
+		m_AttackCount++;
+
+		if (m_AttackCount > 120)
+		{
+			m_Scaling = 1.0f;
+			m_AttackWave++;
+			m_AttackCount = 0;
+			m_fDeathColor = 1.0f;
+			SetMatColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+		break;
+
+	case 1:	//
+		m_move = INITVECTOR3;
+
+		m_AttackCount++;
+
+		m_Scaling += 0.005f;
+		m_fDeathColor -= 0.005f;
+		SetMatColor(D3DXCOLOR(m_fDeathColor, m_fDeathColor, m_fDeathColor, 1.0f));
+		CGame::AddBGColorA(-0.005f);
+
+		if (m_AttackCount > 200)
+		{
+			m_AttackCount = 0;
+			m_AttackWave++;
+		}
+		break;
+
+	case 2:	//
+		m_move = INITVECTOR3;
+
+		m_AttackCount++;
+
+		m_Scaling -= 0.1f;
+
+		if (m_AttackCount > 20)
+		{
+			m_AttackCount = 0;
+			m_AttackWave++;
+			m_fDeathExplojsionDis = 75.0f;
+		}
+		break;
+
+	case 3:	//
+		m_move = INITVECTOR3;
+
+		m_AttackCount++;
+
+		DeathExplosion(pos, D3DXVECTOR3(DEATH_EXPLOSION_SPEED, 100.0f, 100.0f), 0);
+		DeathExplosion(pos, D3DXVECTOR3(DEATH_EXPLOSION_SPEED, 100.0f, 100.0f), 1);
+		DeathExplosion(pos, D3DXVECTOR3(DEATH_EXPLOSION_SPEED, 100.0f, 100.0f), 2);
+		DeathExplosion(pos, D3DXVECTOR3(100.0f, DEATH_EXPLOSION_SPEED, 100.0f), 0);
+		DeathExplosion(pos, D3DXVECTOR3(100.0f, DEATH_EXPLOSION_SPEED, 100.0f), 1);
+		DeathExplosion(pos, D3DXVECTOR3(100.0f, DEATH_EXPLOSION_SPEED, 100.0f), 2);
+		DeathExplosion(pos, D3DXVECTOR3(100.0f, 100.0f, DEATH_EXPLOSION_SPEED), 0);
+		DeathExplosion(pos, D3DXVECTOR3(100.0f, 100.0f, DEATH_EXPLOSION_SPEED), 1);
+		DeathExplosion(pos, D3DXVECTOR3(100.0f, 100.0f, DEATH_EXPLOSION_SPEED), 2);
+		DeathExplosion(pos, D3DXVECTOR3(DEATH_EXPLOSION_SPEED, DEATH_EXPLOSION_SPEED, 100.0f), 0);
+		DeathExplosion(pos, D3DXVECTOR3(DEATH_EXPLOSION_SPEED, DEATH_EXPLOSION_SPEED, 100.0f), 1);
+		DeathExplosion(pos, D3DXVECTOR3(DEATH_EXPLOSION_SPEED, DEATH_EXPLOSION_SPEED, 100.0f), 2);
+		DeathExplosion(pos, D3DXVECTOR3(100.0f, DEATH_EXPLOSION_SPEED, DEATH_EXPLOSION_SPEED), 0);
+		DeathExplosion(pos, D3DXVECTOR3(100.0f, DEATH_EXPLOSION_SPEED, DEATH_EXPLOSION_SPEED), 1);
+		DeathExplosion(pos, D3DXVECTOR3(100.0f, DEATH_EXPLOSION_SPEED, DEATH_EXPLOSION_SPEED), 2);
+		DeathExplosion(pos, D3DXVECTOR3(DEATH_EXPLOSION_SPEED, 100.0f, DEATH_EXPLOSION_SPEED), 0);
+		DeathExplosion(pos, D3DXVECTOR3(DEATH_EXPLOSION_SPEED, 100.0f, DEATH_EXPLOSION_SPEED), 1);
+		DeathExplosion(pos, D3DXVECTOR3(DEATH_EXPLOSION_SPEED, 100.0f, DEATH_EXPLOSION_SPEED), 2);
+
+		if (m_AttackCount > 0)
+		{
+			m_AttackCount = 0;
+			m_AttackWave++;
+		}
+		break;
+
+	case 4:	//
+		m_move = INITVECTOR3;
+
+		m_AttackCount++;
+
+		if (m_AttackCount < 10)
+		{
+			m_Scaling += 0.3f;
+		}
+
+		if (m_AttackCount == 10)
+		{
+			SetMatColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f));
+			m_Scaling = 0.0f;
+
+			if (m_pShadow != nullptr)
+			{
+				m_pShadow->Uninit();
+				m_pShadow = nullptr;
+			}
+			if (m_CubeSpin != nullptr)
+			{
+				m_CubeSpin->Uninit();
+				m_CubeSpin = nullptr;
+			}
+		}
+
+		if (m_AttackCount >= 70)
+		{
+			CGame::AddBGColorA(0.02f);
+		}
+
+		if (m_AttackCount > 120)
+		{
+			m_AttackCount = 0;
+			m_AttackWave++;
+		}
+		break;
+
+	default:
+		m_move = INITVECTOR3;
+		m_State = STATE_DEATH;
+		CManager::GetInstance()->SetGameClear(true);
+		CFade::SetFade(CScene::MODE_RESULT);
+		break;
+	}
+}
+
+//====================================================================
+//死亡時演出
+//====================================================================
+void CBoss::DeathExplosion(D3DXVECTOR3* pos, D3DXVECTOR3 SpinMove, int Set)
+{
+	CCubeDamage* pCubeDamage = nullptr;
+
+	for (int nCnt = 0; nCnt < DEATH_EXPLOSION; nCnt++)
+	{
+		pCubeDamage = CCubeDamage::Create();
+		pCubeDamage->SetUseSpin(true);
+		pCubeDamage->SetSpinPos(*pos);
+		pCubeDamage->SetSpinCount(D3DXVECTOR3(m_SpinCount + nCnt * D3DX_PI * 2.0f * (1.0f / DEATH_EXPLOSION), m_SpinCount + nCnt * D3DX_PI * 2.0f * (1.0f / DEATH_EXPLOSION), m_SpinCount + nCnt * D3DX_PI * 2.0f * (1.0f / DEATH_EXPLOSION)));
+		pCubeDamage->SetSpinSpeedX(-SpinMove.x);
+		pCubeDamage->SetSpinSpeedY(-SpinMove.y);
+		pCubeDamage->SetSpinSpeedZ(-SpinMove.z);
+		pCubeDamage->SetSpinDistance(10.0f);
+		pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_BREAK);
+		pCubeDamage->SetExplosionCount(101);
+		pCubeDamage->SetLife(120);
+		pCubeDamage->SetSpinDisMove(40.0f);
+		pCubeDamage->SetSize(D3DXVECTOR3(20.0f, 20.0f, 20.0f));
+		pCubeDamage->SetDamage(0.0f);
+		pCubeDamage->SetSpinSinCos(Set);
+		pCubeDamage->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 	}
 }
 
@@ -1914,8 +2174,12 @@ void CBoss::HitDamage(float Damage)
 		m_fLife -= Damage;
 		if (m_fLife < 0.0f)
 		{
+			CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_FOLLOW);
+
 			CManager::GetInstance()->GetCamera()->SetAttention(false);
 			m_fLife = 0.0f;
+			m_AttackCount = 0;
+			m_AttackWave = 0;
 
 			if (m_nForm == 0)
 			{
@@ -1924,7 +2188,8 @@ void CBoss::HitDamage(float Damage)
 			}
 			else if (m_nForm == 1)
 			{
-				CFade::SetFade(CScene::MODE_RESULT);
+				m_State = STATE_DEATH;
+				m_Action = ACTION_DEATH;
 			}
 		}
 		else
@@ -2093,72 +2358,74 @@ bool CBoss::CollisionBlock(D3DXVECTOR3* pos)
 //====================================================================
 bool CBoss::CollisionShadow(void)
 {
-	float BlockPosY = -10000.0f;
-	bool bShadow = false;;
-
-	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	if (m_pShadow != nullptr)
 	{
-		//オブジェクトを取得
-		CObject* pObj = CObject::GetTop(nCntPriority);
+		float BlockPosY = -10000.0f;
+		bool bShadow = false;;
 
-		while (pObj != NULL)
+		for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
 		{
-			CObject* pObjNext = pObj->GetNext();
+			//オブジェクトを取得
+			CObject* pObj = CObject::GetTop(nCntPriority);
 
-			CObject::TYPE type = pObj->GetType();			//種類を取得
+			while (pObj != NULL)
+			{
+				CObject* pObjNext = pObj->GetNext();
 
-			if (type == TYPE_CUBEBLOCK)
-			{//種類がブロックの時
-				CCubeBlock* pBlock = (CCubeBlock*)pObj;
+				CObject::TYPE type = pObj->GetType();			//種類を取得
 
-				D3DXVECTOR3 MyPos = GetPos();
-				D3DXVECTOR3 MySize = COLLISION_SIZE * 2.0f;
-				D3DXVECTOR3 BlockPos = pBlock->GetPos();
-				D3DXVECTOR3 BlockSize = pBlock->GetSize();
-				D3DXVECTOR3 BlockMove = pBlock->GetMove();
+				if (type == TYPE_CUBEBLOCK)
+				{//種類がブロックの時
+					CCubeBlock* pBlock = (CCubeBlock*)pObj;
 
-				if (BlockPos.y + BlockSize.y > BlockPosY)
-				{
-					if (BlockPos.x + BlockSize.x > MyPos.x &&
-						BlockPos.x - BlockSize.x < MyPos.x &&
-						BlockPos.z + BlockSize.z > MyPos.z &&
-						BlockPos.z - BlockSize.z < MyPos.z &&
-						BlockPos.y - BlockSize.y < MyPos.y)
+					D3DXVECTOR3 MyPos = GetPos();
+					D3DXVECTOR3 MySize = COLLISION_SIZE * 2.0f;
+					D3DXVECTOR3 BlockPos = pBlock->GetPos();
+					D3DXVECTOR3 BlockSize = pBlock->GetSize();
+					D3DXVECTOR3 BlockMove = pBlock->GetMove();
+
+					if (BlockPos.y + BlockSize.y > BlockPosY)
 					{
-						float ColorA = (MyPos.y - BlockPos.y) * 0.0005f;
-						m_pShadow->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f - ColorA));
-						m_pShadow->SetPos(D3DXVECTOR3(
-							MyPos.x,
-							BlockPos.y + BlockSize.y + BlockMove.y,
-							MyPos.z));
-
-						if (CManager::GetInstance()->GetCamera()->GetCameraMode() == CCamera::CAMERAMODE_DOWNVIEW)
+						if (BlockPos.x + BlockSize.x > MyPos.x &&
+							BlockPos.x - BlockSize.x < MyPos.x &&
+							BlockPos.z + BlockSize.z > MyPos.z &&
+							BlockPos.z - BlockSize.z < MyPos.z &&
+							BlockPos.y - BlockSize.y < MyPos.y)
 						{
-							m_pShadow->SetWight(MySize.x * 2.5f);
-							m_pShadow->SetHeight(MySize.z * 2.5f);
-						}
-						else
-						{
-							m_pShadow->SetWight(MySize.x);
-							m_pShadow->SetHeight(MySize.z);
-						}
+							float ColorA = (MyPos.y - BlockPos.y) * 0.0005f;
+							m_pShadow->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f - ColorA));
+							m_pShadow->SetPos(D3DXVECTOR3(
+								MyPos.x,
+								BlockPos.y + BlockSize.y + BlockMove.y,
+								MyPos.z));
 
-						BlockPosY = BlockPos.y + BlockSize.y;
-						bShadow = true;
+							if (CManager::GetInstance()->GetCamera()->GetCameraMode() == CCamera::CAMERAMODE_DOWNVIEW)
+							{
+								m_pShadow->SetWight(MySize.x * 2.5f);
+								m_pShadow->SetHeight(MySize.z * 2.5f);
+							}
+							else
+							{
+								m_pShadow->SetWight(MySize.x);
+								m_pShadow->SetHeight(MySize.z);
+							}
+
+							BlockPosY = BlockPos.y + BlockSize.y;
+							bShadow = true;
+						}
 					}
 				}
-			}
 
-			pObj = pObjNext;
+				pObj = pObjNext;
+			}
+		}
+
+		if (bShadow == false)
+		{
+			m_pShadow->SetWight(0.0f);
+			m_pShadow->SetHeight(0.0f);
 		}
 	}
-
-	if (bShadow == false)
-	{
-		m_pShadow->SetWight(0.0f);
-		m_pShadow->SetHeight(0.0f);
-	}
-
 	return false;
 }
 

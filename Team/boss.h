@@ -42,6 +42,7 @@ public:
 		ACTION_ATTACK,		//攻撃
 		ACTION_WARP,		//瞬間移動
 		ACTION_REVIVAL,		//復活
+		ACTION_DEATH,		//死亡
 		ACTION_EVENT,		//イベント時
 		ACTION_MAX,
 	};
@@ -59,6 +60,7 @@ public:
 		ATTACK_REVIVAL,		//復活
 		ATTACK_2D_BLOCKWALL,//[2D]ブロックウォール
 		ATTACK_DOWN_BREAK,	//[見下ろし]マップ破壊攻撃
+		ATTACK_DEATH,		//死亡
 		ATTACK_MAX,
 
 	};
@@ -80,6 +82,8 @@ public:
 	void SetAction(ACTION Action) { m_Action = Action; }
 	ACTION GetAction(void) { return m_Action; }
 	int GetBossForm(void) { return m_nForm; }
+	STATE GetState(void) { return m_State; }
+	void LifeGaugeCreate(void);				//ライフゲージ管理
 
 private:
 	void StateManager(void);				//状態管理
@@ -96,6 +100,8 @@ private:
 	void AttackBlockWall(D3DXVECTOR3* pos);	//攻撃パターンブロックウォール[2D]
 	void AttackMapBreak(D3DXVECTOR3* pos);	//攻撃パターンマップブレイク[見下ろし]
 	void AttackRevival(D3DXVECTOR3* pos);	//攻撃パターン復活
+	void AttackDeath(D3DXVECTOR3* pos);		//攻撃パターン死亡演出
+	void DeathExplosion(D3DXVECTOR3* pos, D3DXVECTOR3 SpinMove, int Set);	//死亡時の爆発
 	bool CollisionBlock(D3DXVECTOR3* pos);	//オブジェクトとの当たり判定
 	bool CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut);	//円の当たり判定
 	bool CollisionShadow(void);	//オブジェクトとの当たり判定
@@ -126,13 +132,17 @@ private:
 	float m_fMoveLife;				//演出用ライフ
 	bool m_bDelLife;				//ライフが減る状態になったら
 	float m_fLifeMax;				//ボスのライフの最大値
+	CObjGauge2D* m_pLifeGaugeBG;	//ライフゲージのポインタ
 	CObjGauge2D* m_pLifeGauge;		//ライフゲージのポインタ
 	CNumber* m_pLifeNumber[5];		//ライフ用UI
 	CCubeSpin* m_CubeSpin;			//回転用のキューブ
 	CCubeSpin* m_CubeSpinTitle;		//回転用のキューブ(タイトル演出用)
 	CObject2D* m_pRevivalFG;		//蘇生時の前面ポリゴン
 	float m_fRevivalColorA;			//前面ポリゴンの不透明度
-	bool m_bBreak[9];					//マップ破壊攻撃の時に破壊されている位置かどうかの判断をする変数
-	CObject3D* m_pShadow;		//影
+	bool m_bBreak[9];				//マップ破壊攻撃の時に破壊されている位置かどうかの判断をする変数
+	CObject3D* m_pShadow;			//影
+	bool m_bDeathColorSwich;		//死亡時の色変更
+	float m_fDeathColor;			//死亡時の色
+	float m_fDeathExplojsionDis;	//死亡時の爆発キューブの距離
 };
 #endif

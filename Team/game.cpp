@@ -66,6 +66,7 @@ bool CGame::m_bEventEnd = false;
 int CGame::m_nEventCount = 0;
 float CGame::m_EventHeight = 0.0f;
 float CGame::m_NameColorA = 0.0f;
+float CGame::m_BGColorA = 1.0f;
 D3DXVECTOR3 CGame::m_EventPos = D3DXVECTOR3(0.0f, 300.0f, 0.0f);
 D3DXVECTOR3 CGame::m_BGRot = INITVECTOR3;
 
@@ -79,6 +80,7 @@ CGame::CGame()
 	m_bEventEnd = false;
 	m_EventHeight = 0.0f;
 	m_nEventCount = 0;
+	m_BGColorA = 1.0f;
 }
 
 //====================================================================
@@ -228,53 +230,53 @@ void CGame::Update(void)
 	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
 
 #if _DEBUG
-	//リセット処理
-	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_R) == true)
-	{
-		ReSetGame();
-	}
+	////リセット処理
+	//if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_R) == true)
+	//{
+	//	ReSetGame();
+	//}
 
-	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_F1) == true)
-	{
-		CFade::SetFade(CScene::MODE_RESULT);
-	}
+	//if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_F1) == true)
+	//{
+	//	CFade::SetFade(CScene::MODE_RESULT);
+	//}
 
-	if (pInputKeyboard->GetTrigger(DIK_1) == true)
-	{
-		CEnemy* pEnemy = CEnemy::Create("data\\MODEL\\enemy.x");
-		pEnemy->SetPos(D3DXVECTOR3(0.0f, 150.0f, 0.0f));
-	}
-	if (pInputKeyboard->GetTrigger(DIK_2) == true)
-	{
-		m_pCubeBlock = CCubeBlock::Create();
-		m_pCubeBlock->SetPos(D3DXVECTOR3(100.0f, 500.0f, 0.0f));
-		m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
-		m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, -5.0f, 0.0f));
-	}
+	//if (pInputKeyboard->GetTrigger(DIK_1) == true)
+	//{
+	//	CEnemy* pEnemy = CEnemy::Create("data\\MODEL\\enemy.x");
+	//	pEnemy->SetPos(D3DXVECTOR3(0.0f, 150.0f, 0.0f));
+	//}
+	//if (pInputKeyboard->GetTrigger(DIK_2) == true)
+	//{
+	//	m_pCubeBlock = CCubeBlock::Create();
+	//	m_pCubeBlock->SetPos(D3DXVECTOR3(100.0f, 500.0f, 0.0f));
+	//	m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
+	//	m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, -5.0f, 0.0f));
+	//}
 
-	if (pInputKeyboard->GetTrigger(DIK_3) == true)
-	{
-		CCubeDamage *pCubeDamage = CCubeDamage::Create();
-		pCubeDamage->SetPos(D3DXVECTOR3(-300.0f, 150.0f, 0.0f));
-		pCubeDamage->SetSize(D3DXVECTOR3(50.0f, 50.0f, 50.0f));
-		pCubeDamage->SetMove(D3DXVECTOR3(20.0f, 0.0f, 0.0f));
-		pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_BREAK);
-	}
+	//if (pInputKeyboard->GetTrigger(DIK_3) == true)
+	//{
+	//	CCubeDamage *pCubeDamage = CCubeDamage::Create();
+	//	pCubeDamage->SetPos(D3DXVECTOR3(-300.0f, 150.0f, 0.0f));
+	//	pCubeDamage->SetSize(D3DXVECTOR3(50.0f, 50.0f, 50.0f));
+	//	pCubeDamage->SetMove(D3DXVECTOR3(20.0f, 0.0f, 0.0f));
+	//	pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_BREAK);
+	//}
 
-	if (pInputKeyboard->GetTrigger(DIK_4) == true)
-	{
-		CCubeDamage* pCubeDamage = CCubeDamage::Create();
-		pCubeDamage->SetPos(D3DXVECTOR3(-300.0f, 150.0f, 0.0f));
-		pCubeDamage->SetSize(D3DXVECTOR3(50.0f, 50.0f, 50.0f));
-		pCubeDamage->SetMove(D3DXVECTOR3(20.0f, 0.0f, 0.0f));
-		pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_EXPLOSION);
-		pCubeDamage->SetLife(60);
-	}
+	//if (pInputKeyboard->GetTrigger(DIK_4) == true)
+	//{
+	//	CCubeDamage* pCubeDamage = CCubeDamage::Create();
+	//	pCubeDamage->SetPos(D3DXVECTOR3(-300.0f, 150.0f, 0.0f));
+	//	pCubeDamage->SetSize(D3DXVECTOR3(50.0f, 50.0f, 50.0f));
+	//	pCubeDamage->SetMove(D3DXVECTOR3(20.0f, 0.0f, 0.0f));
+	//	pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_EXPLOSION);
+	//	pCubeDamage->SetLife(60);
+	//}
 
-	if (pInputKeyboard->GetTrigger(DIK_5) == true)
-	{
-		m_bEvent = !m_bEvent;
-	}
+	//if (pInputKeyboard->GetTrigger(DIK_5) == true)
+	//{
+	//	m_bEvent = !m_bEvent;
+	//}
 
 #endif
 
@@ -305,11 +307,13 @@ void CGame::Update(void)
 			{
 				m_pMeshDomeUp->SetRot(D3DXVECTOR3(m_BGRot.x, m_BGRot.y, m_BGRot.z));
 				m_pMeshDomeUp->SetScroll(D3DXVECTOR2(m_BGRot.y, m_BGRot.y));
+				m_pMeshDomeUp->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_BGColorA));
 			}
 			if (m_pMeshDomeDown != nullptr)
 			{
 				m_pMeshDomeDown->SetRot(D3DXVECTOR3(D3DX_PI + m_BGRot.x, m_BGRot.y, -m_BGRot.z));
 				m_pMeshDomeDown->SetScroll(D3DXVECTOR2(m_BGRot.y, m_BGRot.y));
+				m_pMeshDomeDown->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_BGColorA));
 			}
 		}
 	}
@@ -504,6 +508,8 @@ void CGame::EventUpdate(void)
 
 		//ゲームのBGMを再生する
 		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_BGM_BOSS);
+
+		m_pBoss->LifeGaugeCreate();
 	}
 }
 

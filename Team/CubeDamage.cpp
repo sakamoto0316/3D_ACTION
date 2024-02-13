@@ -42,6 +42,7 @@ CCubeDamage::CCubeDamage(int nPriority) :CObjmeshCube(nPriority)
 	m_nLife = -1;
 	m_nExplosionIdx = -1;
 	m_Move = INITVECTOR3;
+	SpinSinCos = 0;
 }
 
 //====================================================================
@@ -123,13 +124,14 @@ void CCubeDamage::Update(void)
 	m_pos = GetPos();
 
 	if (m_bSpin == true)
-	{
+	{//âÒì]à⁄ìÆÇä‹ÇﬂÇÈèÍçá
 		if (m_CubeType != CUBETYPE_EXPLOSION)
 		{
 			m_fSpinCount += m_fSpinSpeed;
 			m_fSpinDistance += m_fSpinDisMove;
 		}
 
+		//ë¨ìxÇâ¡Ç¶ÇƒÇ¢Ç»Ç¢èÍçáî{ó¶ÇÇ©ÇØÇ»Ç¢ÇÊÇ§Ç…Ç∑ÇÈ
 		if (m_fSpinSpeed.x > -100.0f)
 		{
 			m_fBOOLSpin.x = 1.0f;
@@ -143,9 +145,25 @@ void CCubeDamage::Update(void)
 			m_fBOOLSpin.z = 1.0f;
 		}
 
-		m_pos.x = SpinPos.x + (sinf(m_fSpinCount.y) * m_fSpinDistance * m_fBOOLSpin.y) + (sinf(m_fSpinCount.x) * m_fSpinDistance * m_fBOOLSpin.x);
-		m_pos.y = SpinPos.y + (cosf(m_fSpinCount.x) * m_fSpinDistance * m_fBOOLSpin.x) + (sinf(m_fSpinCount.z) * m_fSpinDistance * m_fBOOLSpin.z);
-		m_pos.z = SpinPos.z + (cosf(m_fSpinCount.y) * m_fSpinDistance * m_fBOOLSpin.y) + (cosf(m_fSpinCount.z) * m_fSpinDistance * m_fBOOLSpin.z);
+		//éwíËÇµÇΩéÌóﬁÇÃâÒì]à⁄ìÆÇçsÇ§
+		switch (SpinSinCos)
+		{
+		case 0:
+			m_pos.x = SpinPos.x + (sinf(m_fSpinCount.y) * m_fSpinDistance * m_fBOOLSpin.y) + (sinf(m_fSpinCount.x) * m_fSpinDistance * m_fBOOLSpin.x);
+			m_pos.y = SpinPos.y + (cosf(m_fSpinCount.x) * m_fSpinDistance * m_fBOOLSpin.x) + (sinf(m_fSpinCount.z) * m_fSpinDistance * m_fBOOLSpin.z);
+			m_pos.z = SpinPos.z + (cosf(m_fSpinCount.y) * m_fSpinDistance * m_fBOOLSpin.y) + (cosf(m_fSpinCount.z) * m_fSpinDistance * m_fBOOLSpin.z);
+			break;
+		case 1:
+			m_pos.x = SpinPos.x + (cosf(m_fSpinCount.y) * m_fSpinDistance * m_fBOOLSpin.y) + (cosf(m_fSpinCount.z) * m_fSpinDistance * m_fBOOLSpin.z);
+			m_pos.y = SpinPos.y + (sinf(m_fSpinCount.y) * m_fSpinDistance * m_fBOOLSpin.y) + (sinf(m_fSpinCount.x) * m_fSpinDistance * m_fBOOLSpin.x);
+			m_pos.z = SpinPos.z + (cosf(m_fSpinCount.x) * m_fSpinDistance * m_fBOOLSpin.x) + (sinf(m_fSpinCount.z) * m_fSpinDistance * m_fBOOLSpin.z);
+			break;
+		default:
+			m_pos.x = SpinPos.x + (cosf(m_fSpinCount.x) * m_fSpinDistance * m_fBOOLSpin.x) + (sinf(m_fSpinCount.z) * m_fSpinDistance * m_fBOOLSpin.z);
+			m_pos.y = SpinPos.y + (cosf(m_fSpinCount.y) * m_fSpinDistance * m_fBOOLSpin.y) + (cosf(m_fSpinCount.z) * m_fSpinDistance * m_fBOOLSpin.z);
+			m_pos.z = SpinPos.z + (sinf(m_fSpinCount.y) * m_fSpinDistance * m_fBOOLSpin.y) + (sinf(m_fSpinCount.x) * m_fSpinDistance * m_fBOOLSpin.x);
+			break;
+		}
 
 		SpinPos += m_Move;
 	}

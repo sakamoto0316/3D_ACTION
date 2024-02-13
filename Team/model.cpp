@@ -116,6 +116,20 @@ HRESULT CModel::Init(const char *pModelName)
 //====================================================================
 void CModel::Uninit(void)
 {
+	//バッファの破棄
+	if (m_pBuffMat != NULL)
+	{
+		m_pBuffMat->Release();
+		m_pBuffMat = NULL;
+	}
+
+	//メッシュの破棄
+	if (m_pMesh != NULL)
+	{
+		m_pMesh->Release();
+		m_pMesh = NULL;
+	}
+
 	//テクスチャの破棄
 	if (m_pTexture != NULL)
 	{

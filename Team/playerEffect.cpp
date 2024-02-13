@@ -17,7 +17,7 @@
 #include "time.h"
 #include "camera.h"
 
-#define PLAYER_ROT_SPEED (0.2f)			//プレイヤーの回転スピード
+#define PLAYER_ROT_SPEED (0.2f)		//プレイヤーの回転スピード
 #define PLAYER_SPEED (10.0f)		//プレイヤーの速さ
 #define PLAYER_JAMPPOWER (15.0f)	//プレイヤーのジャンプ力
 #define PLAYER_JAMPWALL (4.0f)		//ジャンプまでの力の振り幅
@@ -150,11 +150,7 @@ void CPlayerEffect::SetPose(int nType, int nKey, int nCounter, int nModelNumber)
 {
 	for (int nCntModel = 0; nCntModel < m_nNumModel; nCntModel++)
 	{
-		if (nCntModel == nModelNumber)
-		{
-
-		}
-		else
+		if (nCntModel != nModelNumber)
 		{
 			m_apModel[nCntModel]->SetDisp(false);
 		}

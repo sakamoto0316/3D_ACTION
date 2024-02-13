@@ -63,23 +63,30 @@ HRESULT CResult::Init(void)
 
 	//m_pRanking = CRanking::Create();
 
-	m_pResult = CObject2D::Create();
-	m_pResult->SetPos(D3DXVECTOR3(640.0f, 50.0f, 0.0f));
-	m_pResult->SetWight(250.0f);
-	m_pResult->SetHeight(150.0f);
-	m_pResult->SetTexture("data\\TEXTURE\\RESULT_TEXT.png");
+	//m_pResult = CObject2D::Create();
+	//m_pResult->SetPos(D3DXVECTOR3(640.0f, 50.0f, 0.0f));
+	//m_pResult->SetWight(250.0f);
+	//m_pResult->SetHeight(150.0f);
+	//m_pResult->SetTexture("data\\TEXTURE\\RESULT_TEXT.png");
 
 	m_ClearText = CObject2D::Create();
 	m_ClearText->SetPos(D3DXVECTOR3(640.0f, 200.0f, 0.0f));
 	m_ClearText->SetWight(1000.0f);
 	m_ClearText->SetHeight(400.0f);
-	m_ClearText->SetTexture("data\\TEXTURE\\STAGECLEAR.png");
+	if (CManager::GetInstance()->GetGameClear() == true)
+	{
+		m_ClearText->SetTexture("data\\TEXTURE\\STAGECLEAR.png");
+	}
+	else
+	{
+		m_ClearText->SetTexture("data\\TEXTURE\\GAMEOVER.png");
+	}
 
-	m_DeathText = CObject2D::Create();
-	m_DeathText->SetPos(D3DXVECTOR3(640.0f, 550.0f, 0.0f));
-	m_DeathText->SetWight(700.0f);
-	m_DeathText->SetHeight(500.0f);
-	m_DeathText->SetTexture("data\\TEXTURE\\DeathCount.png");
+	//m_DeathText = CObject2D::Create();
+	//m_DeathText->SetPos(D3DXVECTOR3(640.0f, 550.0f, 0.0f));
+	//m_DeathText->SetWight(700.0f);
+	//m_DeathText->SetHeight(500.0f);
+	//m_DeathText->SetTexture("data\\TEXTURE\\DeathCount.png");
 
 	CManager::GetInstance()->GetCamera()->SetCameraPos(D3DXVECTOR3(3500.0f, 450.0f, 0.0f));
 

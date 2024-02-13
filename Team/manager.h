@@ -97,11 +97,14 @@ public:
 	bool GetPauseOK(void) { return m_PauseOK; }
 	void SetUseJoyPad(bool Set) { m_bPad = Set; }
 	bool GetUseJoyPad(void) { return m_bPad; }
+	void SetGameClear(bool Set) { m_bGameClear = Set; }
+	bool GetGameClear(void) { return m_bGameClear; }
 
 private:
 	static CManager *pManager;
 
 	int m_EndScore;						//最終的なスコア
+	bool m_bGameClear;					//ゲームクリア状態か
 	bool m_SetTutorial;					//エディットモードかどうか
 	bool m_bEdit;						//エディットモードかどうか
 	bool m_bStop;						//画面停止状態かどうか

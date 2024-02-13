@@ -10,8 +10,8 @@
 #include "time.h"
 
 //マクロ定義
-#define CLASS_NAME "WallKnight"			//ウインドウクラスの名前
-#define WINDOW_NAME "　～Wall Knight～　"	//ウインドウの名前(キャプションに表示)
+#define CLASS_NAME "Square Hero2"			//ウインドウクラスの名前
+#define WINDOW_NAME "　～Square Hero2～　"	//ウインドウの名前(キャプションに表示)
 
 //プロトタイプ宣言
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

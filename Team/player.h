@@ -137,7 +137,8 @@ private:
 	bool m_bRight;				//2D画面の際に最後に入力した方向が右かどうか
 	float m_fLife;				//プレイヤーのライフ
 	float m_fLifeMax;			//プレイヤーのライフの最大値
-	CObjGauge2D *m_pLifeGauge;	//ライフゲージのポインタ
+	CObjGauge2D* m_pLifeGauge;	//ライフゲージのポインタ
+	CObjGauge2D *m_pLifeGaugeBG;//ライフゲージの前面ポリゴン
 	bool CameraDiffMove;		//カメラの上下差分移動が緩やかか否か
 	int CameraDiffTime;			//カメラの上下差分移動が緩やかな時間
 	CNumber* m_pLifeNumber[4];	//ライフ用UI

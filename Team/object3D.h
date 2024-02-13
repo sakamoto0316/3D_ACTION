@@ -21,6 +21,7 @@ public:
 
 	virtual HRESULT Init(void);
 	virtual void Uninit(void);
+	void SetNULL(void);
 	virtual void Update(void);
 	virtual void Draw(void);
 	void BindTexture(LPDIRECT3DTEXTURE9 pTexture);

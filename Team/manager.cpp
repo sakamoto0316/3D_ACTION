@@ -20,7 +20,7 @@
 #include "Pause.h"
 #include "sound.h"
 
-#define SET_MODE (CScene::MODE_GAME)
+#define SET_MODE (CScene::MODE_TITLE)
 
 //Ã“Iƒƒ“ƒo•Ï”éŒ¾
 CManager *CManager::pManager = NULL;
@@ -41,6 +41,7 @@ CManager::CManager()
 	m_PauseOK = false;
 	m_bPad = false;
 	m_EndScore = 157;
+	m_bGameClear = false;
 
 	pManager = NULL;
 	m_pRenderer = NULL;

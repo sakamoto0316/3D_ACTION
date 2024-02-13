@@ -49,6 +49,8 @@ public:
 	static CScore *GetScore(void) { return m_pScore; }
 	static CEdit *GetEdit(void) { return m_pEdit; }
 	static CTime* GetTime(void) { return m_pTime; }
+	static CObjmeshDome* GetDomeUp(void) { return m_pMeshDomeUp; }
+	static CObjmeshDome* GetDomeDown(void) { return m_pMeshDomeDown; }
 	static void SetCubeBlock(CCubeBlock *pBlock) { m_pCubeBlock = pBlock; }
 	static CCubeBlock*GetCubeBlock(void) { return m_pCubeBlock; }
 	static void DeleteTutorial(void);
@@ -57,6 +59,8 @@ public:
 	static bool GetEvent(void) { return m_bEvent; }
 	static bool GetEventEnd(void) { return m_bEventEnd; }
 	static D3DXVECTOR3 GetEventPos(void) { return m_EventPos; }
+	static float GetBGColorA(void) { return m_BGColorA; }
+	static void AddBGColorA(float Add) { m_BGColorA += Add; }
 	static void SetStageBlock(void);
 private:
 	static void EventUpdate();				//イベントの更新
@@ -67,6 +71,7 @@ private:
 	static int m_nEventCount;				//イベント時間
 	static float m_EventHeight;				//イベント用ポリゴンの高さ
 	static float m_NameColorA;				//イベント用の名前表示の不透明度
+	static float m_BGColorA;				//ゲーム背景の不透明度
 	static D3DXVECTOR3 m_EventPos;			//イベント開始座標
 	static D3DXVECTOR3 m_BGRot;				//背景の回転向き
 	static CTutorialUI *m_pTutorialUI;		//チュートリアルUIのポインタ

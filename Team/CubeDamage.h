@@ -61,6 +61,7 @@ public:
 	static int GetExplosionNum(void) { return m_nExplosionNum; }
 	void SetLife(int Life) { m_nLife = Life; }
 	int GetLife(void) { return m_nLife; }
+	void SetSpinSinCos(int Set) { SpinSinCos = Set; }
 protected:
 
 private:
@@ -82,5 +83,6 @@ private:
 	static int m_nExplosionNum;		//爆発キューブの個数
 	int m_nExplosionIdx;			//爆発キューブの番号
 	int m_nLife;					//キューブの寿命
+	int SpinSinCos;					//スピンの種類
 };
 #endif

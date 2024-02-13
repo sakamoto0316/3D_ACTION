@@ -26,8 +26,9 @@
 #include "object3D.h"
 #include "CubeBlock.h"
 #include "enemy.h"
+#include "fade.h"
 
-#define PLAYER_LIFE (2000.0f)		//プレイヤーの初期ライフ
+#define PLAYER_LIFE (1000.0f)		//プレイヤーの初期ライフ
 #define PLAYER_ROT_SPEED (0.2f)		//プレイヤーの回転スピード
 #define PLAYER_SPEED (10.0f)		//プレイヤーの速さ
 #define PLAYER_JAMPPOWER (15.0f)	//プレイヤーのジャンプ力
@@ -77,6 +78,7 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 	m_ReSpownPos = D3DXVECTOR3(0.0f, 350.0f, 0.0f);
 	m_GameEnd = false;
 	m_pLifeGauge = nullptr;
+	m_pLifeGaugeBG = nullptr;
 	m_fLife = PLAYER_LIFE;
 	m_fLifeMax = m_fLife;
 	m_AtkPos = INITVECTOR3;
@@ -135,6 +137,7 @@ HRESULT CPlayer::Init(void)
 		//モーションの生成
 		m_pMotion = new CMotion;
 	}
+
 	//初期化処理
 	m_pMotion->SetModel(&m_apModel[0], m_nNumModel);
 	m_pMotion->LoadData("data\\TXT\\motion_player.txt");
@@ -168,6 +171,17 @@ HRESULT CPlayer::Init(void)
 //====================================================================
 void CPlayer::MyObjCreate(void)
 {
+	//ライフゲージの生成
+	if (m_pLifeGaugeBG == nullptr)
+	{
+		m_pLifeGaugeBG = CObjGauge2D::Create();
+		m_pLifeGaugeBG->SetPos(D3DXVECTOR3(1000.0f, 500.0f, 0.0f));
+		m_pLifeGaugeBG->SetWight(250.0f);
+		m_pLifeGaugeBG->SetHeight(10.0f);
+		m_pLifeGaugeBG->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.5f));
+		m_pLifeGaugeBG->SetGaugeWight(m_fLifeMax, m_fLife);
+	}
+
 	//ライフゲージの生成
 	if (m_pLifeGauge == nullptr)
 	{
@@ -1124,30 +1138,35 @@ void CPlayer::AttackCollision(void)
 				if (type == TYPE_BOSS)
 				{//種類がボスの時
 
-					if (CollisionCircle(m_AtkPos, pObj->GetPos(), 100.0f) == true)
-					{
-						pObj->HitDamage(m_nAttackDamage);
-						m_nAttackHit = true;
+					CBoss* pBoss = (CBoss*)pObj;
 
-						for (int nCnt = 0; nCnt < 3; nCnt++)
+					if (pBoss->GetState() == CBoss::STATE_NORMAL)
+					{
+						if (CollisionCircle(m_AtkPos, pObj->GetPos(), 100.0f) == true)
 						{
-							CNumberFall* pNumber = CNumberFall::Create();
-							pNumber->SetDigit(nCnt);
-							pNumber->SetPos(D3DXVECTOR3(
-								pObj->GetPos().x,
-								pObj->GetPos().y,
-								pObj->GetPos().z));
-							switch (nCnt)
+							pObj->HitDamage(m_nAttackDamage);
+							m_nAttackHit = true;
+
+							for (int nCnt = 0; nCnt < 3; nCnt++)
 							{
-							case 0:
-								pNumber->SetNumber((int)m_nAttackDamage % 1000 / 100);
-								break;
-							case 1:
-								pNumber->SetNumber((int)m_nAttackDamage % 100 / 10);
-								break;
-							case 2:
-								pNumber->SetNumber((int)m_nAttackDamage % 10 / 1);
-								break;
+								CNumberFall* pNumber = CNumberFall::Create();
+								pNumber->SetDigit(nCnt);
+								pNumber->SetPos(D3DXVECTOR3(
+									pObj->GetPos().x,
+									pObj->GetPos().y,
+									pObj->GetPos().z));
+								switch (nCnt)
+								{
+								case 0:
+									pNumber->SetNumber((int)m_nAttackDamage % 1000 / 100);
+									break;
+								case 1:
+									pNumber->SetNumber((int)m_nAttackDamage % 100 / 10);
+									break;
+								case 2:
+									pNumber->SetNumber((int)m_nAttackDamage % 10 / 1);
+									break;
+								}
 							}
 						}
 					}
@@ -1222,6 +1241,10 @@ void CPlayer::HitDamage(float Damage)
 		else
 		{
 			m_fLife = 0.0f;
+
+			CManager::GetInstance()->SetGameClear(false);
+			CFade::SetFade(CScene::MODE_RESULT);
+
 		}
 
 		SetLifeUI();
