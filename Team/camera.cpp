@@ -18,7 +18,7 @@
 #define CAMERA_DISTANCE (550.0f)							//視点と注視点の距離
 #define CAMERA_DISTANCE_EVENT (300.0f)						//イベント時の視点と注視点の距離
 #define MODEL_DISTANCE (10.0f)								//モデルと注視点の距離
-#define CAMERA_SPEED (3.0f)									//カメラの移動スピード
+#define CAMERA_SPEED (9.0f)									//カメラの移動スピード
 #define CAMERA_VR_SPEED (0.015f)							//カメラの視点スピード
 #define CAMERA_PAD_VR_SPEED (0.015f)						//カメラのパッドの視点スピード
 #define CAMERA_HOMING (0.2f)								//カメラの追従スピード
@@ -207,17 +207,17 @@ void CCamera::ControlCamera(void)
 
 
 	//キーボード
-	if (pInputKeyboard->GetPress(DIK_LSHIFT) == true)
-	{
-		m_posV.y += CAMERA_SPEED;
-		m_posR.y += CAMERA_SPEED;
+	//if (pInputKeyboard->GetPress(DIK_LSHIFT) == true)
+	//{
+	//	m_posV.y += CAMERA_SPEED;
+	//	m_posR.y += CAMERA_SPEED;
 
-	}
-	if (pInputKeyboard->GetPress(DIK_LCONTROL) == true)
-	{
-		m_posV.y -= CAMERA_SPEED;
-		m_posR.y -= CAMERA_SPEED;
-	}
+	//}
+	//if (pInputKeyboard->GetPress(DIK_LCONTROL) == true)
+	//{
+	//	m_posV.y -= CAMERA_SPEED;
+	//	m_posR.y -= CAMERA_SPEED;
+	//}
 	if (pInputKeyboard->GetPress(DIK_RSHIFT) == true)
 	{
 		m_posV.y += CAMERA_SPEED;
@@ -380,12 +380,12 @@ void CCamera::FollowCamera(void)
 			if (pPlayer->GetCameraDiff() == true)
 			{
 				m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING * 0.5f;
-				m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 0.5f + (int)(sin(D3DX_PI * m_fBibPowor) * 20.0f);
+				m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING * 0.5f;
 			}
 			else
 			{
 				m_posR.y += (m_posRDest.y - m_posR.y) * CAMERA_HOMING;
-				m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING + (int)(sin(D3DX_PI * m_fBibPowor) * 20.0f);
+				m_posV.y += (m_posVDest.y - m_posV.y) * CAMERA_HOMING;
 			}
 		}
 	}
@@ -555,7 +555,7 @@ void CCamera::SetCamera(void)
 		D3DXToRadian(45.0f),
 		(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
 		10.0f,
-		10000.0f);
+		12000.0f);
 
 	//プロジェクションマトリックスの設定
 	pDevice->SetTransform(D3DTS_PROJECTION, &m_mtxProjection);

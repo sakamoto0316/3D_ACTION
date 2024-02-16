@@ -42,6 +42,8 @@ CEnemy::CEnemy(int nPriority) : CObjectX(nPriority)
 	m_Scaling = 1.0f;
 	m_bRevivalColorSwitch = false;
 	m_AttackPattern = ATTACK_RUSH;
+	m_nParticleCount = 0;
+	m_fColorA = 0.0f;
 }
 
 //====================================================================
@@ -176,82 +178,82 @@ void CEnemy::GameUpdate(void)
 		m_move.z = cosf(m_rot.y + D3DX_PI) * MOVE_SPEED;
 	}
 
-	//重力
-	m_move.y -= 0.98f;
-
-	//落下速度が一定以上になった場合ジャンプを不能にする
-	if (m_move.y < -5.0f)
+	if (m_Action != ACTION_PARTICLE)
 	{
+		//重力
+		m_move.y -= 0.98f;
+
+		//落下速度が一定以上になった場合ジャンプを不能にする
+		if (m_move.y < -5.0f)
+		{
+			if (m_bJump == false)
+			{
+				m_bJump = true;
+			}
+		}
+
+		//減衰係数
 		if (m_bJump == false)
 		{
-			m_bJump = true;
+			m_move.x = m_move.x * 0.5f;
+			if (m_move.x <= 0.0001f && m_move.x >= -0.0001f)
+			{
+				m_move.x = 0.0f;
+			}
+
+			m_move.z = m_move.z * 0.5f;
+			if (m_move.z <= 0.0001f && m_move.z >= -0.0001f)
+			{
+				m_move.z = 0.0f;
+			}
 		}
-	}
 
-	ActionManager();
-
-
-	//減衰係数
-	if (m_bJump == false)
-	{
-		m_move.x = m_move.x * 0.5f;
-		if (m_move.x <= 0.0001f && m_move.x >= -0.0001f)
+		if (m_bJump == true)
 		{
-			m_move.x = 0.0f;
+			m_Objmove.x = m_Objmove.x * 0.25f;
+			if (m_Objmove.x <= 0.0001f && m_Objmove.x >= -0.0001f)
+			{
+				m_Objmove.x = 0.0f;
+			}
+
+			m_Objmove.z = m_Objmove.z * 0.25f;
+			if (m_Objmove.z <= 0.0001f && m_Objmove.z >= -0.0001f)
+			{
+				m_Objmove.z = 0.0f;
+			}
 		}
 
-		m_move.z = m_move.z * 0.5f;
-		if (m_move.z <= 0.0001f && m_move.z >= -0.0001f)
+		if (CManager::GetInstance()->GetCamera()->GetCameraMode() == CCamera::CAMERAMODE_SIDEVIEW)
 		{
-			m_move.z = 0.0f;
+			m_pos.z = 0.0f;
 		}
-	}
 
-	if (m_bJump == true)
-	{
-		m_Objmove.x = m_Objmove.x * 0.25f;
-		if (m_Objmove.x <= 0.0001f && m_Objmove.x >= -0.0001f)
+		//Y軸の位置更新
+		m_pos.y += m_move.y;
+		m_pos.y += m_Objmove.y;
+
+		CollisionBlock(&m_pos, COLLISION::COLLISION_Y);
+
+		//X軸の位置更新
+		m_pos.x += m_move.x;
+		m_pos.x += m_Objmove.x;
+
+		CollisionBlock(&m_pos, COLLISION::COLLISION_X);
+
+		//Z軸の位置更新
+		m_pos.z += m_move.z;
+		m_pos.z += m_Objmove.z;
+
+		CollisionBlock(&m_pos, COLLISION::COLLISION_Z);
+
+		if (m_AttackCoolTime > 0)
 		{
-			m_Objmove.x = 0.0f;
+			m_AttackCoolTime--;
 		}
-
-		m_Objmove.z = m_Objmove.z * 0.25f;
-		if (m_Objmove.z <= 0.0001f && m_Objmove.z >= -0.0001f)
+		else
 		{
-			m_Objmove.z = 0.0f;
+			AttackCollision();
 		}
-	}
-
-	if (CManager::GetInstance()->GetCamera()->GetCameraMode() == CCamera::CAMERAMODE_SIDEVIEW)
-	{
-		m_pos.z = 0.0f;
-	}
-
-	//Y軸の位置更新
-	m_pos.y += m_move.y;
-	m_pos.y += m_Objmove.y;
-
-	CollisionBlock(&m_pos, COLLISION::COLLISION_Y);
-
-	//X軸の位置更新
-	m_pos.x += m_move.x;
-	m_pos.x += m_Objmove.x;
-
-	CollisionBlock(&m_pos, COLLISION::COLLISION_X);
-
-	//Z軸の位置更新
-	m_pos.z += m_move.z;
-	m_pos.z += m_Objmove.z;
-
-	CollisionBlock(&m_pos, COLLISION::COLLISION_Z);
-
-	if (m_AttackCoolTime > 0)
-	{
-		m_AttackCoolTime--;
-	}
-	else
-	{
-		AttackCollision();
 	}
 
 	CObjectX::SetPos(m_pos);
@@ -264,6 +266,9 @@ void CEnemy::GameUpdate(void)
 	}
 
 	SetScaling(D3DXVECTOR3(m_Scaling, m_Scaling, m_Scaling));
+
+	//行動管理
+	ActionManager();
 
 	//状態管理
 	StateManager();
@@ -295,6 +300,31 @@ void CEnemy::ActionManager(void)
 		break;
 
 	case CEnemy::ACTION_EVENT:
+		break;
+
+	case CEnemy::ACTION_PARTICLE:
+		m_nParticleCount++;
+
+		m_fColorA += 0.008f;
+
+		SetMatColor(D3DXCOLOR(m_fColorA, m_fColorA, m_fColorA, m_fColorA));
+
+		if (m_nParticleCount % 5 == 0)
+		{
+			CParticle* Particle = CParticle::Create(
+				m_pos,
+				D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f),
+				30,
+				40.0f,
+				2
+			);
+		}
+
+		if (m_nParticleCount > 120)
+		{
+			SetDefColor();
+			m_Action = ACTION_NORMAL;
+		}
 		break;
 
 	default:

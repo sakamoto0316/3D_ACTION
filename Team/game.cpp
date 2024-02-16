@@ -33,6 +33,8 @@
 #include "numberFall.h"
 #include "enemy.h"
 #include "effect.h"
+#include "Edit.h"
+#include "log.h"
 
 //静的メンバ変数宣言
 CTutorialUI *CGame::m_pTutorialUI = NULL;
@@ -63,6 +65,8 @@ CBoss*CGame::m_pBoss = NULL;
 bool CGame::m_bGameEnd = false;
 bool CGame::m_bEvent = false;
 bool CGame::m_bEventEnd = false;
+int CGame::m_nEnemyNum = 0;
+int CGame::m_nTutorialWave = 0;
 int CGame::m_nEventCount = 0;
 float CGame::m_EventHeight = 0.0f;
 float CGame::m_NameColorA = 0.0f;
@@ -75,12 +79,16 @@ D3DXVECTOR3 CGame::m_BGRot = INITVECTOR3;
 //====================================================================
 CGame::CGame()
 {
+	m_nEnemyNum = 0;
 	m_bGameEnd = false;
 	m_bEvent = false;
 	m_bEventEnd = false;
 	m_EventHeight = 0.0f;
 	m_nEventCount = 0;
 	m_BGColorA = 1.0f;
+	m_nTutorialWave = 0;
+	CManager::GetInstance()->GetCamera()->SetBib(false);
+	CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_FOLLOW);
 }
 
 //====================================================================
@@ -129,7 +137,18 @@ HRESULT CGame::Init(void)
 	m_pMeshDomeDown->SetTexture("data\\TEXTURE\\SkyBG.jpg");
 	m_pMeshDomeDown->SetRot(D3DXVECTOR3(D3DX_PI, 0.0f, 0.0f));
 
-	SetStageBlock();
+	//SetStageBlock();
+	LoadStageBlock();
+
+	CCubeDamage* pCubeD = CCubeDamage::Create();
+	pCubeD->SetPos(D3DXVECTOR3(100.0f, 150.0f, -2800.0f));
+	pCubeD->SetCubeType(CCubeDamage::CUBETYPE_BREAK);
+	pCubeD->SetDamage(10);
+
+	pCubeD = CCubeDamage::Create();
+	pCubeD->SetPos(D3DXVECTOR3(-100.0f, 150.0f, -2800.0f));
+	pCubeD->SetCubeType(CCubeDamage::CUBETYPE_NORMAL);
+	pCubeD->SetDamage(10);
 
 	//m_pCubeBlock = CCubeBlock::Create();
 	//m_pCubeBlock->SetPos(D3DXVECTOR3(150.0f, 250.0f, -150.0f));
@@ -142,7 +161,8 @@ HRESULT CGame::Init(void)
 	//m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	m_pPlayer = CPlayer::Create();
-	m_pPlayer->SetPos(D3DXVECTOR3(0.0f, 150.0f, -400.0f));
+	m_pPlayer->SetPos(D3DXVECTOR3(0.0f, 150.0f, -3820.0f));
+	m_pPlayer->SetReSpownPos(D3DXVECTOR3(0.0f, 300.0f, -3820.0f));
 
 	m_pBoss = CBoss::Create("data\\MODEL\\boss.x");
 	m_pBoss->SetPos(D3DXVECTOR3(0.0f, 5000.0f, 0.0f));
@@ -187,13 +207,23 @@ HRESULT CGame::Init(void)
 	m_p2DUI_Attack->SetHeight(40.0f);
 	m_p2DUI_Attack->SetTexture("data\\TEXTURE\\UI_Attack.png");
 
-	if (m_pPause == NULL)
+	if (m_pPause == nullptr)
 	{
 		m_pPause = CPause::Create();
 	}
 
 	m_bGameEnd = false;
 	CManager::GetInstance()->GetInstance()->SetStop(false);
+
+#if _DEBUG
+	if (m_pEdit == nullptr)
+	{
+		m_pEdit = CEdit::Create();
+	}
+#endif
+
+	//説明ログの表示
+	CLog::Create(CLog::TEXT_09);
 
 	return S_OK;
 }
@@ -211,6 +241,15 @@ void CGame::Uninit(void)
 		delete m_pPause;
 		m_pPause = NULL;
 	}
+
+#if _DEBUG
+	if (m_pEdit != NULL)
+	{
+		m_pEdit->Uninit();
+		delete m_pEdit;
+		m_pEdit = NULL;
+	}
+#endif
 }
 
 //====================================================================
@@ -230,55 +269,75 @@ void CGame::Update(void)
 	CInputJoypad* pInputJoypad = CManager::GetInstance()->GetInputJoyPad();
 
 #if _DEBUG
-	////リセット処理
-	//if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_R) == true)
-	//{
-	//	ReSetGame();
-	//}
-
-	//if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_F1) == true)
-	//{
-	//	CFade::SetFade(CScene::MODE_RESULT);
-	//}
-
-	//if (pInputKeyboard->GetTrigger(DIK_1) == true)
-	//{
-	//	CEnemy* pEnemy = CEnemy::Create("data\\MODEL\\enemy.x");
-	//	pEnemy->SetPos(D3DXVECTOR3(0.0f, 150.0f, 0.0f));
-	//}
-	//if (pInputKeyboard->GetTrigger(DIK_2) == true)
-	//{
-	//	m_pCubeBlock = CCubeBlock::Create();
-	//	m_pCubeBlock->SetPos(D3DXVECTOR3(100.0f, 500.0f, 0.0f));
-	//	m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
-	//	m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, -5.0f, 0.0f));
-	//}
-
-	//if (pInputKeyboard->GetTrigger(DIK_3) == true)
-	//{
-	//	CCubeDamage *pCubeDamage = CCubeDamage::Create();
-	//	pCubeDamage->SetPos(D3DXVECTOR3(-300.0f, 150.0f, 0.0f));
-	//	pCubeDamage->SetSize(D3DXVECTOR3(50.0f, 50.0f, 50.0f));
-	//	pCubeDamage->SetMove(D3DXVECTOR3(20.0f, 0.0f, 0.0f));
-	//	pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_BREAK);
-	//}
-
-	//if (pInputKeyboard->GetTrigger(DIK_4) == true)
-	//{
-	//	CCubeDamage* pCubeDamage = CCubeDamage::Create();
-	//	pCubeDamage->SetPos(D3DXVECTOR3(-300.0f, 150.0f, 0.0f));
-	//	pCubeDamage->SetSize(D3DXVECTOR3(50.0f, 50.0f, 50.0f));
-	//	pCubeDamage->SetMove(D3DXVECTOR3(20.0f, 0.0f, 0.0f));
-	//	pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_EXPLOSION);
-	//	pCubeDamage->SetLife(60);
-	//}
-
-	//if (pInputKeyboard->GetTrigger(DIK_5) == true)
-	//{
-	//	m_bEvent = !m_bEvent;
-	//}
+	if (CManager::GetInstance()->GetEdit() == true)
+	{
+		CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_CONTROL);
+		m_pEdit->Update();
+	}
 
 #endif
+
+	CEnemy* pEnemy = nullptr;
+
+	switch (m_nTutorialWave)
+	{
+	case 0:
+		if (m_pPlayer->GetPos().z > -3720.0f)
+		{
+			CLog::Create(CLog::TEXT_10);
+			m_nTutorialWave++;
+		}
+		break;
+	case 1:
+		if (m_pPlayer->GetPos().z > -3100.0f)
+		{
+			CLog::Create(CLog::TEXT_04);
+			m_nTutorialWave++;
+		}
+		break;
+	case 2:
+		if (m_pPlayer->GetPos().z > -2300.0f)
+		{
+			CLog::Create(CLog::TEXT_11);
+
+			pEnemy = CEnemy::Create("data\\MODEL\\enemy.x");
+			pEnemy->SetPos(D3DXVECTOR3(200.0f, 300.0f, -1800.0f));
+			pEnemy->SetAction(CEnemy::ACTION_PARTICLE);
+
+			pEnemy = CEnemy::Create("data\\MODEL\\enemy.x");
+			pEnemy->SetPos(D3DXVECTOR3(0.0f, 300.0f, -1800.0f));
+			pEnemy->SetAction(CEnemy::ACTION_PARTICLE);
+
+			pEnemy = CEnemy::Create("data\\MODEL\\enemy.x");
+			pEnemy->SetPos(D3DXVECTOR3(-200.0f, 300.0f, -1800.0f));
+			pEnemy->SetAction(CEnemy::ACTION_PARTICLE);
+
+			m_pCubeBlock = CCubeBlock::Create();
+			m_pCubeBlock->SetPos(D3DXVECTOR3(0.0f, 300.0f, -1700.0f));
+			m_pCubeBlock->SetSize(D3DXVECTOR3(500.0f, 200.0f, 10.0f));
+			m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+
+			m_nTutorialWave++;
+		}
+
+		break;
+
+	case 3:
+		if (EnemyCheck() == false)
+		{
+			if (m_pCubeBlock != nullptr)
+			{
+				m_pCubeBlock->Uninit();
+				m_pCubeBlock = nullptr;
+			}
+			m_nTutorialWave++;
+		}
+
+		break;
+
+	default:
+		break;
+	}
 
 	if (m_pBoss != nullptr)
 	{
@@ -539,11 +598,148 @@ void CGame::SetStageBlock(void)
 }
 
 //====================================================================
-//リセット処理
+//読み込みブロック配置
+//====================================================================
+void CGame::LoadStageBlock(void)
+{
+	FILE* pFile; //ファイルポインタを宣言
+
+	//ファイルを開く
+	pFile = fopen("", "r");
+
+	if (GetMode() == MODE_GAME)
+	{
+		//ファイルを開く
+		pFile = fopen(DATA_NAME,"r");
+	}
+
+	if (pFile != NULL)
+	{//ファイルが開けた場合
+
+		char Getoff[32] = {};
+		char boolLife[32] = {};
+		char aString[128] = {};			//ゴミ箱
+		char aStartMessage[32] = {};	//スタートメッセージ
+		char aSetMessage[32] = {};		//セットメッセージ
+		char aEndMessage[32] = {};		//終了メッセージ
+
+		fscanf(pFile, "%s", &aStartMessage[0]);
+		if (strcmp(&aStartMessage[0], "STARTSETSTAGE") == 0)
+		{
+			while (1)
+			{
+				fscanf(pFile, "%s", &aSetMessage[0]);
+				if (strcmp(&aSetMessage[0], "STARTSETBLOCK") == 0)
+				{
+					D3DXVECTOR3 pos;
+					D3DXVECTOR3 Size;
+
+					fscanf(pFile, "%s", &aString[0]);
+					fscanf(pFile, "%f", &pos.x);
+					fscanf(pFile, "%f", &pos.y);
+					fscanf(pFile, "%f", &pos.z);
+
+					fscanf(pFile, "%s", &aString[0]);
+					fscanf(pFile, "%f", &Size.x);
+					fscanf(pFile, "%f", &Size.y);
+					fscanf(pFile, "%f", &Size.z);
+
+					CCubeBlock* pBlock = CCubeBlock::Create();
+					pBlock->SetPos(pos);
+					pBlock->SetSize(Size);
+
+					fscanf(pFile, "%s", &aEndMessage[0]);
+					if (strcmp(&aEndMessage[0], "ENDSETBLOCK") != 0)
+					{
+						break;
+					}
+				}
+				else if (strcmp(&aSetMessage[0], "ENDSETSTAGE") == 0)
+				{
+					break;
+				}
+			}
+		}
+		fclose(pFile);
+	}
+	else
+	{//ファイルが開けなかった場合
+		printf("***ファイルを開けませんでした***\n");
+	}
+}
+
+//====================================================================
+//敵がいるかいないかの判断
+//====================================================================
+bool CGame::EnemyCheck(void)
+{
+	m_nEnemyNum = 0;
+
+	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	{
+		//オブジェクトを取得
+		CObject* pObj = CObject::GetTop(nCntPriority);
+
+		while (pObj != NULL)
+		{
+			CObject* pObjNext = pObj->GetNext();
+
+			CObject::TYPE type = pObj->GetType();			//種類を取得
+
+			if (type == CObject::TYPE_ENEMY3D)
+			{//種類が敵の時
+				m_nEnemyNum++;
+			}
+
+			pObj = pObjNext;
+		}
+	}
+	if (m_nEnemyNum > 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//====================================================================
+//敵がいるかいないかの判断
+//====================================================================
+void CGame::DeleteMap(void)
+{
+	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	{
+		//オブジェクトを取得
+		CObject* pObj = CObject::GetTop(nCntPriority);
+
+		while (pObj != NULL)
+		{
+			CObject* pObjNext = pObj->GetNext();
+
+			CObject::TYPE type = pObj->GetType();			//種類を取得
+
+			if (type == CObject::TYPE_CUBEBLOCK ||
+				type == CObject::TYPE_CUBEDAMEGE)
+			{//種類がマップ関連の時
+				pObj->Uninit();
+			}
+
+			pObj = pObjNext;
+		}
+	}
+}
+
+//====================================================================
+//イベント開始処理
 //====================================================================
 void CGame::EventStart(void)
 {
 	m_bEvent = true;
+	DeleteMap();
+	SetStageBlock();
+	m_pPlayer->SetReSpownPos(D3DXVECTOR3(0.0f, 300.0f, 0.0f));
 	CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_EVENTBOSS);
 }
 

@@ -33,6 +33,7 @@ CObjmeshCube::CObjmeshCube(int nPriority) :CObject(nPriority)
 	m_bLife = false;
 	UninitPos = INITVECTOR3;
 	m_nLife = -1;
+	m_fDel = 0.00000000000f;
 }
 
 //====================================================================
@@ -308,6 +309,20 @@ void CObjmeshCube::Update(void)
 
 	m_pos += m_move;
 
+	if (m_Color.a > 0.0f)
+	{
+		if (m_fDel > 0.001f)
+		{
+			m_Color.a -= m_fDel;
+			SetColor(m_Color);
+		}
+	}
+	else
+	{
+		Uninit();
+		return;
+	}
+
 	if (m_nLife != -1 && m_nLife > 0)
 	{
 		m_nLife--;
@@ -315,6 +330,7 @@ void CObjmeshCube::Update(void)
 	else if(m_nLife == 0)
 	{
 		Uninit();
+		return;
 	}
 
 	if (m_bLife == true)

@@ -27,6 +27,7 @@
 #include "enemy.h"
 #include "effect.h"
 #include "modelEffect.h"
+#include "log.h"
 
 //マクロ定義
 #define BLOCK_WIGHT (300.0f)		//横幅
@@ -88,10 +89,12 @@ CBoss::CBoss(int nPriority) : CObjectX(nPriority)
 	m_nWarpOK = false;
 	m_pRevivalFG = nullptr;
 	m_fRevivalColorA = 1.0f;
+	m_pFGDel = 0.05f;
 	m_pShadow = nullptr;
 	m_bDeathColorSwich = false;
 	m_fDeathColor = 1.0f;
 	m_fDeathExplojsionDis = 0.0f;
+	m_nDebugText = 0;
 
 	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
@@ -165,6 +168,14 @@ HRESULT CBoss::Init(char* pModelName)
 		break;
 
 	case CScene::MODE_GAME:
+
+		if (m_pRevivalFG == nullptr)
+		{
+			m_pRevivalFG = CObject2D::Create(6);
+			m_pRevivalFG->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
+			m_pRevivalFG->SetWight(1280.0f);
+			m_pRevivalFG->SetHeight(720.0f);
+		}
 
 		break;
 
@@ -286,6 +297,53 @@ void CBoss::GameUpdate(void)
 	//影の当たり判定
 	CollisionShadow();
 
+	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_1) == true)
+	{
+		switch (m_nDebugText)
+		{
+		case 0:
+			CLog::Create(CLog::TEXT_00);
+			break;
+		case 1:
+			CLog::Create(CLog::TEXT_01);
+			break;
+		case 2:
+			CLog::Create(CLog::TEXT_02);
+			break;
+		case 3:
+			CLog::Create(CLog::TEXT_03);
+			break;
+		case 4:
+			CLog::Create(CLog::TEXT_04);
+			break;
+		case 5:
+			CLog::Create(CLog::TEXT_05);
+			break;
+		case 6:
+			CLog::Create(CLog::TEXT_06);
+			break;
+		case 7:
+			CLog::Create(CLog::TEXT_07);
+			break;
+		case 8:
+			CLog::Create(CLog::TEXT_08);
+			break;
+		case 9:
+			CLog::Create(CLog::TEXT_09);
+			break;
+		case 10:
+			CLog::Create(CLog::TEXT_10);
+			break;
+		case 11:
+			CLog::Create(CLog::TEXT_11);
+			break;
+		default:
+			m_nDebugText = -1;
+			break;
+		}
+
+		m_nDebugText++;
+	}
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_2) == true)
 	{
 		Warp(ATTACK_BULLET);
@@ -361,6 +419,19 @@ void CBoss::GameUpdate(void)
 		}
 
 		m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fMoveLife);
+	}
+
+	if (m_fRevivalColorA > 0.0f)
+	{
+		//前面ポリゴンを透明にしていく
+		m_fRevivalColorA -= m_pFGDel;
+		if (m_fRevivalColorA < 0.0f)
+		{
+			m_fRevivalColorA = 0.0f;
+		}
+		
+		//前面ポリゴンの管理
+		m_pRevivalFG->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fRevivalColorA));
 	}
 
 	//状態管理
@@ -454,7 +525,6 @@ void CBoss::StateManager(void)
 	case STATE_DEATH:
 		if (m_nStateCount <= 0)
 		{
-			m_State = STATE_NORMAL;
 			m_nStateCount = 0;
 		}
 		break;
@@ -534,108 +604,116 @@ void CBoss::WarpUpdate(D3DXVECTOR3 *pos)
 //====================================================================
 void CBoss::Warp(ATTACK Pattern)
 {
-	m_Action = ACTION_WARP;
-	m_AttackPattern = Pattern;
-	m_AttackCount = 0;
-	m_AttackWave = 0;
-	CPlayer* pPlayer = CGame::GetPlayer();
-	int Rand;
-
-	switch (m_AttackPattern)
+	if (m_AttackPatternOld == Pattern)
 	{
-	case ATTACK_NOT:
+		AttackSelect();
+	}
+	else
+	{
+		m_AttackPattern = Pattern;
+		m_AttackPatternOld = Pattern;
+		m_Action = ACTION_WARP;
+		m_AttackCount = 0;
+		m_AttackWave = 0;
+		CPlayer* pPlayer = CGame::GetPlayer();
+		int Rand;
 
-		m_WarpPos.x = (float)(rand() % 1001) - 500.0f;
-		m_WarpPos.y = (float)(rand() % 101) + 200.0f;
-		m_WarpPos.z = (float)(rand() % 1001) - 500.0f;
-		m_AttackCoolTime = 5;
-		break;
-
-	case ATTACK_BULLET:
-
-		m_rot.y = 0.0f;
-		m_WarpPos.x = sinf(m_rot.y) * 500.0f;
-		m_WarpPos.y = 400.0f;
-		m_WarpPos.z = cosf(m_rot.y) * 500.0f;
-
-		break;
-
-	case ATTACK_RUSH:
-
-		Rand = rand() % 4;
-		m_WarpPos.y = 400.0f;
-		m_move = INITVECTOR3;
-
-		switch (Rand)
+		switch (m_AttackPattern)
 		{
-		case 0:
+		case ATTACK_NOT:
+
+			m_WarpPos.x = (float)(rand() % 1001) - 500.0f;
+			m_WarpPos.y = (float)(rand() % 101) + 200.0f;
+			m_WarpPos.z = (float)(rand() % 1001) - 500.0f;
+			m_AttackCoolTime = 5;
+			break;
+
+		case ATTACK_BULLET:
+
 			m_rot.y = 0.0f;
-			m_WarpPos.x = pPlayer->GetPos().x;
-			m_WarpPos.z = 600.0f;
+			m_WarpPos.x = sinf(m_rot.y) * 500.0f;
+			m_WarpPos.y = 400.0f;
+			m_WarpPos.z = cosf(m_rot.y) * 500.0f;
+
 			break;
-		case 1:
+
+		case ATTACK_RUSH:
+
+			Rand = rand() % 4;
+			m_WarpPos.y = 400.0f;
+			m_move = INITVECTOR3;
+
+			switch (Rand)
+			{
+			case 0:
+				m_rot.y = 0.0f;
+				m_WarpPos.x = pPlayer->GetPos().x;
+				m_WarpPos.z = 600.0f;
+				break;
+			case 1:
+				m_rot.y = D3DX_PI;
+				m_WarpPos.x = pPlayer->GetPos().x;
+				m_WarpPos.z = -600.0f;
+				break;
+			case 2:
+				m_rot.y = D3DX_PI * 0.5f;
+				m_WarpPos.x = 600.0f;
+				m_WarpPos.z = pPlayer->GetPos().z;
+				break;
+			case 3:
+				m_rot.y = D3DX_PI * -0.5f;
+				m_WarpPos.x = -600.0f;
+				m_WarpPos.z = pPlayer->GetPos().z;
+				break;
+			}
+			break;
+
+		case ATTACK_BLOCKRUN:
+
+			m_move = INITVECTOR3;
+
 			m_rot.y = D3DX_PI;
-			m_WarpPos.x = pPlayer->GetPos().x;
-			m_WarpPos.z = -600.0f;
+			m_WarpPos.x = 0.0f;
+			m_WarpPos.y = 550.0f;
+			m_WarpPos.z = -500.0f;
 			break;
-		case 2:
+
+		case ATTACK_SPINPILLAR:
+
+			m_WarpPos.x = (float)(rand() % 1001) - 500.0f;
+			m_WarpPos.y = 250.0f;
+			m_WarpPos.z = (float)(rand() % 1001) - 500.0f;
+
+			break;
+
+		case ATTACK_RAIN:
+
+			m_WarpPos.x = 0.0f;
+			m_WarpPos.y = 500.0f;
+			m_WarpPos.z = 0.0f;
+
+			break;
+
+		case ATTACK_SPAWNENEMY:
+
+			m_rot.y = 0.0f;
+
+			m_WarpPos.x = 0.0f;
+			m_WarpPos.y = 500.0f;
+			m_WarpPos.z = 500.0f;
+
+			break;
+
+		case ATTACK_2D_BLOCKWALL:
+
 			m_rot.y = D3DX_PI * 0.5f;
-			m_WarpPos.x = 600.0f;
-			m_WarpPos.z = pPlayer->GetPos().z;
-			break;
-		case 3:
-			m_rot.y = D3DX_PI * -0.5f;
-			m_WarpPos.x = -600.0f;
-			m_WarpPos.z = pPlayer->GetPos().z;
+
+			m_WarpPos.x = 500.0f;
+			m_WarpPos.y = 400.0f;
+			m_WarpPos.z = 0.0f;
+
 			break;
 		}
-		break;
-
-	case ATTACK_BLOCKRUN:
-
-		m_move = INITVECTOR3;
-
-		m_rot.y = D3DX_PI;
-		m_WarpPos.x = 0.0f;
-		m_WarpPos.y = 550.0f;
-		m_WarpPos.z = -500.0f;
-		break;
-
-	case ATTACK_SPINPILLAR:
-
-		m_WarpPos.x = (float)(rand() % 1001) - 500.0f;
-		m_WarpPos.y = 250.0f;
-		m_WarpPos.z = (float)(rand() % 1001) - 500.0f;
-
-		break;
-
-	case ATTACK_RAIN:
-
-		m_WarpPos.x = 0.0f;
-		m_WarpPos.y = 500.0f;
-		m_WarpPos.z = 0.0f;
-
-		break;
-
-	case ATTACK_SPAWNENEMY:
-
-		m_rot.y = 0.0f;
-
-		m_WarpPos.x = 0.0f;
-		m_WarpPos.y = 500.0f;
-		m_WarpPos.z = 500.0f;
-
-		break;
-
-	case ATTACK_2D_BLOCKWALL:
-
-		m_rot.y = D3DX_PI * 0.5f;
-
-		m_WarpPos.x = 500.0f;
-		m_WarpPos.y = 400.0f;
-		m_WarpPos.z = 0.0f;
-
-		break;
 	}
 }
 
@@ -1084,6 +1162,8 @@ void CBoss::AttackBlockRun(D3DXVECTOR3* pos)
 			pCubeBlock->SetUninitPos(D3DXVECTOR3(pCubeBlock->GetPos().x, pCubeBlock->GetPos().y, 1000.0f));
 			pCubeBlock->SetBoolLife(true);
 			pCubeBlock->SetPlusMove(true);
+			pCubeBlock->SetColorA(1.0f);
+			pCubeBlock->SetDel(0.005f);
 
 			pCubeDamage = CCubeDamage::Create();
 			pCubeDamage->SetPos(D3DXVECTOR3(0.0f, 120.0f, 0.0f));
@@ -1091,6 +1171,8 @@ void CBoss::AttackBlockRun(D3DXVECTOR3* pos)
 			pCubeDamage->SetLife(BLOCKRUN_TIME);
 			pCubeDamage->SetCubeType(CCubeDamage::CUBETYPE_NORMAL);
 			pCubeDamage->SetDamage(BLOCKRUN_DAMAGE);
+
+			CLog::Create(CLog::TEXT_06);
 
 			m_AttackWave++;
 		}
@@ -1132,6 +1214,8 @@ void CBoss::AttackBlockRun(D3DXVECTOR3* pos)
 			pCubeBlock->SetUninitPos(D3DXVECTOR3(pCubeBlock->GetPos().x, pCubeBlock->GetPos().y, 625.0f));
 			pCubeBlock->SetBoolLife(true);
 			pCubeBlock->SetPlusMove(true);
+			pCubeBlock->SetColorA(1.0f);
+			pCubeBlock->SetDel(0.0040f);
 		}
 
 		if (m_AttackCount > BLOCKRUN_TIME)
@@ -1265,6 +1349,8 @@ void CBoss::AttackRain(D3DXVECTOR3* pos)
 		if (pos->y < 200.0f)
 		{
 			m_AttackWave++;
+
+			CLog::Create(CLog::TEXT_08);
 
 			//カメラを振動させる
 			CManager::GetInstance()->GetCamera()->SetBib(true);
@@ -1472,14 +1558,9 @@ void CBoss::AttackBlockWall(D3DXVECTOR3* pos)
 		{
 			m_Scaling = 1.0f;
 			m_AttackWave++;
-
-			if (m_pRevivalFG == nullptr)
-			{
-				m_pRevivalFG = CObject2D::Create();
-				m_pRevivalFG->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
-				m_pRevivalFG->SetWight(1280.0f);
-				m_pRevivalFG->SetHeight(720.0f);
-			}
+			m_fRevivalColorA = 1.0f;
+			m_pFGDel = 0.1f;
+			CLog::Create(CLog::TEXT_06);
 
 			pCubeBlockFoot = CCubeBlock::Create();
 			pCubeBlockFoot->SetPos(D3DXVECTOR3(300.0f, 300.0f, 0.0f));
@@ -1499,26 +1580,6 @@ void CBoss::AttackBlockWall(D3DXVECTOR3* pos)
 		//上下にふわふわする
 		m_MoveCount += 0.04f;
 		m_move.y = sinf(m_MoveCount) * 2.0f;
-
-		//前面ポリゴンを透明にしていく
-		m_fRevivalColorA -= 0.05f;
-
-		//蘇生ポリゴンカラー設定
-		if (m_pRevivalFG != nullptr)
-		{
-			m_pRevivalFG->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fRevivalColorA));
-		}
-
-		//蘇生ポリゴン出現時間の設定
-		if (m_fRevivalColorA <= 0.0f)
-		{
-			if (m_pRevivalFG != nullptr)
-			{
-				m_pRevivalFG->Uninit();
-				m_pRevivalFG = nullptr;
-			}
-			m_fRevivalColorA = 1.0f;
-		}
 
 		if (m_AttackCount % 60 == 0)
 		{
@@ -1571,38 +1632,16 @@ void CBoss::AttackBlockWall(D3DXVECTOR3* pos)
 		{
 			m_Scaling = 1.0f;
 			m_AttackWave++;
-
-			if (m_pRevivalFG == nullptr)
-			{
-				m_pRevivalFG = CObject2D::Create();
-				m_pRevivalFG->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
-				m_pRevivalFG->SetWight(1280.0f);
-				m_pRevivalFG->SetHeight(720.0f);
-			}
+			m_fRevivalColorA = 1.0f;
 
 			CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_FOLLOW);
 		}
 		break;
 
 	case 3:
-
-		m_fRevivalColorA -= 0.05f;
-
-		//蘇生ポリゴンカラー設定
-		if (m_pRevivalFG != nullptr)
-		{
-			m_pRevivalFG->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fRevivalColorA));
-		}
-
 		//蘇生ポリゴン出現時間の設定
 		if (m_fRevivalColorA <= 0.0f)
 		{
-			if (m_pRevivalFG != nullptr)
-			{
-				m_pRevivalFG->Uninit();
-				m_pRevivalFG = nullptr;
-			}
-			m_fRevivalColorA = 1.0f;
 			m_AttackWave++;
 		}
 		break;
@@ -1641,14 +1680,9 @@ void CBoss::AttackMapBreak(D3DXVECTOR3* pos)
 			m_Scaling = 1.0f;
 			*pos = D3DXVECTOR3(0.0f, 10000.0f, 0.0f);
 			m_AttackWave++;
-
-			if (m_pRevivalFG == nullptr)
-			{
-				m_pRevivalFG = CObject2D::Create();
-				m_pRevivalFG->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
-				m_pRevivalFG->SetWight(1280.0f);
-				m_pRevivalFG->SetHeight(720.0f);
-			}
+			m_fRevivalColorA = 1.0f;
+			m_pFGDel = 0.1f;
+			CLog::Create(CLog::TEXT_07);
 
 			CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_DOWNVIEW);
 		}
@@ -1658,25 +1692,6 @@ void CBoss::AttackMapBreak(D3DXVECTOR3* pos)
 		//上下にふわふわする
 		m_MoveCount += 0.04f;
 		m_move.y = sinf(m_MoveCount) * 2.0f;
-
-		//前面ポリゴンを透明にしていく
-		m_fRevivalColorA -= 0.1f;
-
-		if (m_pRevivalFG != nullptr)
-		{
-			m_pRevivalFG->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fRevivalColorA));
-		}
-
-		//前面ポリゴン出現時間の設定
-		if (m_fRevivalColorA <= 0.0f)
-		{
-			if (m_pRevivalFG != nullptr)
-			{
-				m_pRevivalFG->Uninit();
-				m_pRevivalFG = nullptr;
-			}
-			m_fRevivalColorA = 1.0f;
-		}
 
 		if (m_AttackCount == 0)
 		{
@@ -1768,38 +1783,16 @@ void CBoss::AttackMapBreak(D3DXVECTOR3* pos)
 		{
 			m_Scaling = 1.0f;
 			m_AttackWave++;
-
-			if (m_pRevivalFG == nullptr)
-			{
-				m_pRevivalFG = CObject2D::Create();
-				m_pRevivalFG->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
-				m_pRevivalFG->SetWight(1280.0f);
-				m_pRevivalFG->SetHeight(720.0f);
-			}
+			m_fRevivalColorA = 1.0f;
 
 			CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_FOLLOW);
 		}
 		break;
 
 	case 5:
-
-		m_fRevivalColorA -= 0.1f;
-
-		//蘇生ポリゴンカラー設定
-		if (m_pRevivalFG != nullptr)
-		{
-			m_pRevivalFG->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fRevivalColorA));
-		}
-
 		//蘇生ポリゴン出現時間の設定
 		if (m_fRevivalColorA <= 0.0f)
 		{
-			if (m_pRevivalFG != nullptr)
-			{
-				m_pRevivalFG->Uninit();
-				m_pRevivalFG = nullptr;
-			}
-			m_fRevivalColorA = 1.0f;
 			m_AttackWave++;
 		}
 
@@ -1951,6 +1944,8 @@ void CBoss::AttackRevival(D3DXVECTOR3* pos)
 			m_Scaling = 1.0f;
 			m_AttackWave++;
 			m_nForm++;
+			m_fRevivalColorA = 1.0f;
+			m_pFGDel = 0.05f;
 
 			if (m_CubeSpin == nullptr)
 			{
@@ -1959,14 +1954,6 @@ void CBoss::AttackRevival(D3DXVECTOR3* pos)
 				m_CubeSpin->SetSpinDistance(75.0f);
 				m_CubeSpin->SetSpinSpeedY(0.2f);
 				m_CubeSpin->SetDamage(50.0f);
-			}
-
-			if (m_pRevivalFG == nullptr)
-			{
-				m_pRevivalFG = CObject2D::Create();
-				m_pRevivalFG->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
-				m_pRevivalFG->SetWight(1280.0f);
-				m_pRevivalFG->SetHeight(720.0f);
 			}
 
 			m_fLife = BOSS_LIFE;
@@ -1981,24 +1968,6 @@ void CBoss::AttackRevival(D3DXVECTOR3* pos)
 		m_move.y = sinf(m_MoveCount) * 2.0f;
 
 		m_AttackCount++;
-		m_fRevivalColorA -= 0.05f;
-
-		//蘇生ポリゴンカラー設定
-		if (m_pRevivalFG != nullptr)
-		{
-			m_pRevivalFG->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fRevivalColorA));
-		}
-
-		//蘇生ポリゴン出現時間の設定
-		if (m_fRevivalColorA <= 0.0f)
-		{
-			if (m_pRevivalFG != nullptr)
-			{
-				m_pRevivalFG->Uninit();
-				m_pRevivalFG = nullptr;
-			}
-			m_fRevivalColorA = 1.0f;
-		}
 
 		if (m_AttackCount > 100)
 		{
@@ -2022,23 +1991,6 @@ void CBoss::AttackRevival(D3DXVECTOR3* pos)
 //====================================================================
 void CBoss::AttackDeath(D3DXVECTOR3* pos)
 {
-	if (m_pRevivalFG == nullptr)
-	{
-		m_pRevivalFG = CObject2D::Create();
-		m_pRevivalFG->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
-		m_pRevivalFG->SetWight(1280.0f);
-		m_pRevivalFG->SetHeight(720.0f);
-	}
-	else
-	{
-		m_pRevivalFG->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fRevivalColorA));
-	}
-
-	if (m_fRevivalColorA > 0.0f)
-	{
-		m_fRevivalColorA -= 0.05f;
-	}
-
 	switch (m_AttackWave)
 	{
 	case 0:	//
@@ -2073,6 +2025,7 @@ void CBoss::AttackDeath(D3DXVECTOR3* pos)
 		if (m_AttackCount % 60 == 0)
 		{
 			m_fRevivalColorA = 1.0f;
+			m_pFGDel = 0.05f;
 
 			//ゲームのSEを再生する
 			CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_DAMAGE_BOSS);
@@ -2251,9 +2204,12 @@ void CBoss::HitDamage(float Damage)
 			m_fLife = 0.0f;
 			m_AttackCount = 0;
 			m_AttackWave = 0;
+			m_fRevivalColorA = 1.0f;
+			m_pFGDel = 0.05f;
 
 			if (m_nForm == 0)
 			{
+				CLog::Create(CLog::TEXT_02);
 				m_State = STATE_INVINCIBLE;
 				Warp(ATTACK_REVIVAL);
 			}

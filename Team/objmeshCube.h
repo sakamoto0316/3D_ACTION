@@ -51,6 +51,7 @@ public:
 	bool GetBoolLife(void) { return m_bLife; }
 	void SetLife(int Life) { m_nLife = Life; }
 	int GetLife(void) { return m_nLife; }
+	void SetDel(float Del) { m_fDel = Del; }
 
 protected:
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;		//頂点バッファへのポインタ
@@ -69,5 +70,6 @@ private:
 	bool m_bLife;							//消えるキューブか否か
 	D3DXVECTOR3 UninitPos;					//キューブの削除位置
 	int m_nLife;							//キューブの寿命
+	float m_fDel;							//キューブの色の減衰量
 };
 #endif

@@ -47,6 +47,7 @@ public:
 		STATE_DEATH,
 		STATE_WAIT,
 		STATE_DAMAGE,
+		STATE_EVENT,
 		STATE_MAX,
 		
 	};
@@ -73,6 +74,7 @@ public:
 	float GetWight(void) { return m_fWight; }
 	void SetHeight(float Height) { m_fHeight = Height; }
 	float GetHeight(void) { return m_fHeight; }
+	void SetReSpownPos(D3DXVECTOR3 pos) { m_ReSpownPos = pos; }
 	D3DXVECTOR3 GetReSpownPos(void) { return m_ReSpownPos; }
 	STATE GetState(void) { return m_State; }
 	bool GetJump(void) { return m_bJump; }
@@ -143,6 +145,7 @@ private:
 	int CameraDiffTime;			//カメラの上下差分移動が緩やかな時間
 	CNumber* m_pLifeNumber[4];	//ライフ用UI
 	CObject3D* m_pShadow;		//影
+	int m_nBossDamageCount;		//ボス接触時の被弾カウント
 
 	CModel *m_apModel[64];
 	CMotion *m_pMotion;

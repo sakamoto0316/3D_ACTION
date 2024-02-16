@@ -117,6 +117,7 @@ private:
 	int m_nStateCount;				//状態管理用変数
 	bool m_nWarpOK;					//ワープ前かワープ後か
 	float m_ColorA;					//不透明度
+	ATTACK m_AttackPatternOld;		//過去の攻撃パターン
 	ATTACK m_AttackPattern;			//攻撃パターン
 	int m_AttackCount;				//攻撃に使うカウント
 	int m_AttackWave;				//攻撃段階
@@ -138,11 +139,13 @@ private:
 	CCubeSpin* m_CubeSpin;			//回転用のキューブ
 	CCubeSpin* m_CubeSpinTitle;		//回転用のキューブ(タイトル演出用)
 	CObject2D* m_pRevivalFG;		//蘇生時の前面ポリゴン
+	float m_pFGDel;					//前面ポリゴンの色減衰
 	float m_fRevivalColorA;			//前面ポリゴンの不透明度
 	bool m_bBreak[9];				//マップ破壊攻撃の時に破壊されている位置かどうかの判断をする変数
 	CObject3D* m_pShadow;			//影
 	bool m_bDeathColorSwich;		//死亡時の色変更
 	float m_fDeathColor;			//死亡時の色
 	float m_fDeathExplojsionDis;	//死亡時の爆発キューブの距離
+	int m_nDebugText;
 };
 #endif

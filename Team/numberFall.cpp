@@ -11,8 +11,8 @@
 #include "texture.h"
 
 //マクロ定義
-#define NUMBER_WIGHT (30.0f)		//横幅
-#define NUMBER_HEIGHT (30.0f)		//縦幅
+#define NUMBER_WIGHT (20.0f)		//横幅
+#define NUMBER_HEIGHT (20.0f)		//縦幅
 
 //====================================================================
 //コンストラクタ

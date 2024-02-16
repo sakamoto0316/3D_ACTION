@@ -27,6 +27,8 @@
 #include "CubeBlock.h"
 #include "enemy.h"
 #include "fade.h"
+#include "log.h"
+#include "debugproc.h"
 
 #define PLAYER_LIFE (1500.0f)		//プレイヤーの初期ライフ
 #define PLAYER_ROT_SPEED (0.2f)		//プレイヤーの回転スピード
@@ -34,7 +36,7 @@
 #define PLAYER_JAMPPOWER (15.0f)	//プレイヤーのジャンプ力
 #define PLAYER_JAMPWALL (4.0f)		//ジャンプまでの力の振り幅
 #define JAMP_ACTIONNOT (4)			//ジャンプから行動出来るまで
-#define COLLISION_SIZE (D3DXVECTOR3(35.0f,80.0f,35.0f))		//横の当たり判定
+#define COLLISION_SIZE (D3DXVECTOR3(20.0f,80.0f,20.0f))		//横の当たり判定
 #define ATTACK1_DAMAGE (200.0f)		//地上攻撃１の攻撃力
 #define ATTACK2_DAMAGE (150.0f)		//地上攻撃２の攻撃力
 #define ATTACK3_DAMAGE (600.0f)		//地上攻撃３の攻撃力
@@ -86,6 +88,7 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 	CameraDiffMove = false;
 	CameraDiffTime = 0;
 	m_pShadow = nullptr;
+	m_nBossDamageCount = 0;
 
 	for (int nCnt = 0; nCnt < 4; nCnt++)
 	{
@@ -432,6 +435,10 @@ void CPlayer::GameUpdate(void)
 
 	//モーションの更新
 	m_pMotion->Update();
+
+	//デバッグ表示の取得
+	CDebugProc* pDebugProc = CManager::GetInstance()->GetDebugProc();
+	pDebugProc->Print("%f:%f:%f\n", GetPos().x, GetPos().y, GetPos().z);
 }
 
 //====================================================================
@@ -1481,6 +1488,15 @@ void CPlayer::CollisionBoss(void)
 					if (CollisionCircle(m_pos, ObjPos, COLLISION_SIZE.x + ObjWight) == true)
 					{
 						HitDamage(BOSS_DAMAGE);
+						m_nBossDamageCount++;
+
+						if (m_nBossDamageCount >= 3)
+						{//三回以上ボスと接触してダメージをくらった時
+
+							//注意ログを表示する
+							m_nBossDamageCount = 0;
+							CLog::Create(CLog::TEXT_00);
+						}
 					}
 				}
 			}

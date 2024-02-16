@@ -1,7 +1,32 @@
-﻿  object.cpp
+﻿  CubeBlock.cpp
+  CubeDamage.cpp
+  CubeEffect.cpp
+  CubeSpin.cpp
+  Edit.cpp
+  boss.cpp
+  camera.cpp
+  enemy.cpp
+  game.cpp
+  log.cpp
+  main.cpp
+  manager.cpp
+  modelEffect.cpp
+  object3D.cpp
+  objectBillboard.cpp
+  objectXtex.cpp
+  objmeshCube.cpp
+  objmeshCylinder.cpp
+  objmeshDome.cpp
+  objmeshField.cpp
+  コンパイル中...
+  objmeshRing.cpp
+  objmeshWall.cpp
+  player.cpp
+  playerEffect.cpp
+  title.cpp
   コード生成しています。
-  0 of 670 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+  158 of 703 functions (22.5%) were compiled, the rest were copied from previous compilation.
+    5 functions were new in current compilation
+    75 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
   Team.vcxproj -> C:\Users\student\Desktop\3D_ACTIONGAME\3D_ACTION\Team\Team.exe

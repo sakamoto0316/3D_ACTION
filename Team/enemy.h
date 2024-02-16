@@ -37,6 +37,7 @@ public:
 		ACTION_NORMAL = 0,	//通常
 		ACTION_ATTACK,		//攻撃
 		ACTION_EVENT,		//イベント時
+		ACTION_PARTICLE,	//登場演出中
 		ACTION_MAX,
 	};
 
@@ -95,5 +96,7 @@ private:
 	D3DXVECTOR3 m_Objmove;			//オブジェクトから受ける移動量	
 	D3DXVECTOR3 m_rot;				//向き	
 	bool m_bJump;					//ジャンプしたかどうか
+	int m_nParticleCount;			//パーティクルカウント
+	float m_fColorA;				//不透明度
 };
 #endif

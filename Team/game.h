@@ -63,12 +63,17 @@ public:
 	static void AddBGColorA(float Add) { m_BGColorA += Add; }
 	static void SetStageBlock(void);
 private:
+	static void DeleteMap(void);
 	static void EventUpdate();				//イベントの更新
+	static void LoadStageBlock(void);
+	bool EnemyCheck(void);					//敵がいるかどうかの判断
 
+	static int m_nEnemyNum;					//現在の敵の数
 	static bool m_bGameEnd;					//ゲーム終了状態かどうか
 	static bool m_bEvent;					//イベント状態かどうか
 	static bool m_bEventEnd;				//イベントが終わったかどうか
 	static int m_nEventCount;				//イベント時間
+	static int m_nTutorialWave;				//チュートリアルの段階
 	static float m_EventHeight;				//イベント用ポリゴンの高さ
 	static float m_NameColorA;				//イベント用の名前表示の不透明度
 	static float m_BGColorA;				//ゲーム背景の不透明度
