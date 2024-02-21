@@ -12,6 +12,7 @@
 #include "game.h"
 #include "texture.h"
 #include "object3D.h"
+#include "CubeEffect.h"
 
 #define WAIGHT_SIZE (11)		//横の頂点数
 #define HEIGHT_SIZE (11)		//縦の頂点数
@@ -122,6 +123,7 @@ void CCubeDamage::Uninit(void)
 void CCubeDamage::Update(void)
 {
 	m_pos = GetPos();
+	m_posOld = m_pos;
 
 	if (m_bSpin == true)
 	{//回転移動を含める場合
@@ -203,6 +205,24 @@ void CCubeDamage::Update(void)
 		{
 			Uninit();
 		}
+	}
+
+	if (CollisionBlock() == true)
+	{
+		for (int nCntX = -1; nCntX <= 1; nCntX += 2)
+		{
+			for (int nCntZ = -1; nCntZ <= 1; nCntZ += 2)
+			{
+				CCubeEffect* pCEffect = CCubeEffect::Create();
+				pCEffect->SetPos(D3DXVECTOR3(GetPos().x + (10.0f * nCntX), GetPos().y, GetPos().z + (10.0f * nCntZ)));
+				pCEffect->SetMove(D3DXVECTOR3((2.0f * nCntX), 15.0f, (2.0f * nCntZ)));
+				pCEffect->SetSize(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
+				pCEffect->SetFall(true);
+				pCEffect->SetColor(GetColor());
+			}
+		}
+
+		Uninit();
 	}
 }
 
@@ -379,6 +399,50 @@ bool CCubeDamage::CollisionShadow(void)
 	{
 		m_pShadow->SetWight(0.0f);
 		m_pShadow->SetHeight(0.0f);
+	}
+
+	return false;
+}
+
+//====================================================================
+//キューブブロックとの当たり判定処理
+//====================================================================
+bool CCubeDamage::CollisionBlock(void)
+{
+	for (int nCntPriority = 0; nCntPriority < PRIORITY_MAX; nCntPriority++)
+	{
+		//オブジェクトを取得
+		CObject* pObj = CObject::GetTop(nCntPriority);
+
+		while (pObj != NULL)
+		{
+			CObject* pObjNext = pObj->GetNext();
+
+			CObject::TYPE type = pObj->GetType();			//種類を取得
+
+			if (type == TYPE_CUBEBLOCK)
+			{//種類がブロックの時
+
+				D3DXVECTOR3 MyPos = m_pos;
+				D3DXVECTOR3 MyPosOld = m_posOld;
+				D3DXVECTOR3 MySize = GetSize();
+				D3DXVECTOR3 pPos = pObj->GetPos();
+				D3DXVECTOR3 Size = pObj->GetSize();
+
+				if (MyPos.y < pPos.y &&
+					MyPosOld.y >= pPos.y &&
+					MyPos.z + MySize.z > pPos.z - Size.z &&
+					MyPos.z - MySize.z < pPos.z + Size.z &&
+					MyPos.x + MySize.x > pPos.x - Size.x &&
+					MyPos.x - MySize.x < pPos.x + Size.x
+					)
+				{
+					return true;
+				}
+			}
+
+			pObj = pObjNext;
+		}
 	}
 
 	return false;

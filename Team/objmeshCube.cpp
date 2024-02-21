@@ -567,6 +567,53 @@ void CObjmeshCube::SetColor(D3DXCOLOR col)
 //====================================================================
 //頂点カラーの設定
 //====================================================================
+void CObjmeshCube::SetColorType(int Type)
+{
+	VERTEX_3D* pVtx;	//頂点ポインタを所得
+
+	//頂点バッファをロックし、両店情報へのポインタを所得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	switch (Type)
+	{
+	case 0:
+		pVtx[0].col  = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[1].col  = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[2].col  = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[3].col  = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[4].col  = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[5].col  = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[6].col  = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[7].col  = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[8].col  = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[9].col  = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[10].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[11].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[12].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[13].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[14].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[15].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[16].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[17].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[18].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[19].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[20].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[21].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[22].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+		pVtx[23].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+
+		break;
+	default:
+		break;
+	}
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
+}
+
+//====================================================================
+//頂点カラーの設定
+//====================================================================
 void CObjmeshCube::SetTexture(const char* name)
 {
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();

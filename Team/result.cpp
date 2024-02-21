@@ -12,23 +12,33 @@
 #include "texture.h"
 #include "sound.h"
 #include "camera.h"
+#include "ranking.h"
+#include "number.h"
 
 //マクロ定義
 #define START_OK ("STARTSETSTAGE")	//スタートメッセージがあるかどうかの確認
 #define END_SET_OK ("ENDSETSTAGE")	//エンドメッセージがあるかどうかの確認
 #define SCORE_POSX (300.0f)
 #define SCORE_MOVEX (20.1f)
+#define TIME_POS (D3DXVECTOR3(260.0f,73.0f,0.0f))
+#define TIME_DISTANCE (25.0f)
+#define LIFE_POS (D3DXVECTOR3(257.0f,115.0f,0.0f))
+#define LIFE_DISTANCE (25.0f)
 
 //静的メンバ変数宣言
 CObject2D *CResult::m_pResult = NULL;
-CRanking *CResult::m_pRanking = NULL;
+CRanking* CResult::m_pLifeRanking = NULL;
+CRanking *CResult::m_pTimeRanking = NULL;
 CObject2D *CResult::m_ClearText = NULL;
 CObject2D *CResult::m_NormalText = NULL;
 CObject2D *CResult::m_DeathText = NULL;
 CScore *CResult::m_DeathScore = NULL;
+CNumber* CResult::m_apLife[6] = {};
+CNumber* CResult::m_apTime[6] = {};
 bool CResult::m_Appear = false;
 int CResult::m_AddScoreCount = 0;
-int CResult::m_AddTotalScore = 0;
+int CResult::m_LifeData = 0;
+int CResult::m_TimeData = 0;
 CEdit *CResult::m_pEdit = NULL;
 
 //====================================================================
@@ -37,7 +47,8 @@ CEdit *CResult::m_pEdit = NULL;
 CResult::CResult()
 {
 	m_AddScoreCount = 0;
-	m_AddTotalScore = 0;
+	m_LifeData = 0;
+	m_TimeData = 0;
 }
 
 //====================================================================
@@ -56,31 +67,88 @@ HRESULT CResult::Init(void)
 	CTexture *pTexture = CManager::GetInstance()->GetTexture();;
 	CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_BGM_RESULT);
 
-	m_AddTotalScore = CManager::GetInstance()->GetEndScore();
+	m_LifeData = CManager::GetInstance()->GetEndScore();
+	m_TimeData = CManager::GetInstance()->GetEndTime();
 
 	//LoadBlock("data\\TXT\\Result02", D3DXVECTOR3(-440.0f - 700.0f, 400.0f, 200.0f));
 	//LoadBlock("data\\TXT\\Result02", D3DXVECTOR3(-440.0f + 700.0f, 400.0f, 200.0f));
 
-	//m_pRanking = CRanking::Create();
-
-	//m_pResult = CObject2D::Create();
-	//m_pResult->SetPos(D3DXVECTOR3(640.0f, 50.0f, 0.0f));
-	//m_pResult->SetWight(250.0f);
-	//m_pResult->SetHeight(150.0f);
-	//m_pResult->SetTexture("data\\TEXTURE\\RESULT_TEXT.png");
+	m_pResult = CObject2D::Create();
+	m_pResult->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
+	m_pResult->SetWight(1280.0f);
+	m_pResult->SetHeight(720.0f);
+	m_pResult->SetColor(D3DXCOLOR(0.3f, 0.3f, 0.3f, 1.0f));
+	m_pResult->SetTexture("data\\TEXTURE\\shot01.png");
 
 	m_ClearText = CObject2D::Create();
-	m_ClearText->SetPos(D3DXVECTOR3(640.0f, 200.0f, 0.0f));
-	m_ClearText->SetWight(1000.0f);
-	m_ClearText->SetHeight(400.0f);
+	m_ClearText->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
+	m_ClearText->SetWight(1280.0f);
+	m_ClearText->SetHeight(720.0f);
 	if (CManager::GetInstance()->GetGameClear() == true)
 	{
-		m_ClearText->SetTexture("data\\TEXTURE\\STAGECLEAR.png");
+		m_ClearText->SetTexture("data\\TEXTURE\\result.png");
 	}
 	else
 	{
-		m_ClearText->SetTexture("data\\TEXTURE\\GAMEOVER.png");
+		m_ClearText->SetTexture("data\\TEXTURE\\result.png");
 	}
+
+	m_pLifeRanking = CRanking::Create("data\\TXT\\LifeRanking.txt");
+	m_pLifeRanking->SetPos(D3DXVECTOR3(860.0f,447.0f,0.0f));
+	m_pLifeRanking->SetRanking(m_LifeData);
+
+	m_pTimeRanking = CRanking::Create("data\\TXT\\TimeRanking.txt");
+	m_pTimeRanking->SetPos(D3DXVECTOR3(280.0f, 447.0f, 0.0f));
+	m_pTimeRanking->SetRanking(m_TimeData);
+	m_pTimeRanking->SetUseTime(true);
+
+	for (int nCntObject = 0; nCntObject < 6; nCntObject++)
+	{
+		//数字の生成
+		m_apLife[nCntObject] = CNumber::Create();
+		m_apLife[nCntObject]->SetPos(D3DXVECTOR3(LIFE_POS.x + (nCntObject * LIFE_DISTANCE), LIFE_POS.y, LIFE_POS.z));
+		m_apLife[nCntObject]->SetWight(35.0f);
+		m_apLife[nCntObject]->SetHeight(35.0f);
+	}
+
+	for (int nCntObject = 0; nCntObject < 6; nCntObject++)
+	{
+		//数字の生成
+		m_apTime[nCntObject] = CNumber::Create();
+
+		if (nCntObject < 2)
+		{
+			m_apTime[nCntObject]->SetPos(D3DXVECTOR3(TIME_POS.x + (nCntObject * TIME_DISTANCE) - 3.0f, TIME_POS.y, TIME_POS.z));
+			m_apTime[nCntObject]->SetWight(35.0f);
+			m_apTime[nCntObject]->SetHeight(35.0f);
+		}
+		else if (nCntObject < 4)
+		{
+			m_apTime[nCntObject]->SetPos(D3DXVECTOR3(TIME_POS.x + (nCntObject * TIME_DISTANCE), TIME_POS.y, TIME_POS.z));
+			m_apTime[nCntObject]->SetWight(35.0f);
+			m_apTime[nCntObject]->SetHeight(35.0f);
+		}
+		else
+		{
+			m_apTime[nCntObject]->SetPos(D3DXVECTOR3(TIME_POS.x + (nCntObject * (TIME_DISTANCE - 7.0f)) + 27.0f, TIME_POS.y + 5.0f, TIME_POS.z));
+			m_apTime[nCntObject]->SetWight(25.0f);
+			m_apTime[nCntObject]->SetHeight(25.0f);
+		}
+	}
+
+	m_apLife[0]->SetNumber(m_LifeData % 1000000 / 100000);
+	m_apLife[1]->SetNumber(m_LifeData % 100000 / 10000);
+	m_apLife[2]->SetNumber(m_LifeData % 10000 / 1000);
+	m_apLife[3]->SetNumber(m_LifeData % 1000 / 100);
+	m_apLife[4]->SetNumber(m_LifeData % 100 / 10);
+	m_apLife[5]->SetNumber(m_LifeData % 10 / 1);
+
+	m_apTime[0]->SetNumber(m_TimeData % 1000000 / 100000);
+	m_apTime[1]->SetNumber(m_TimeData % 100000 / 10000);
+	m_apTime[2]->SetNumber(m_TimeData % 10000 / 1000);
+	m_apTime[3]->SetNumber(m_TimeData % 1000 / 100);
+	m_apTime[4]->SetNumber(m_TimeData % 100 / 10);
+	m_apTime[5]->SetNumber(m_TimeData % 10 / 1);
 
 	//m_DeathText = CObject2D::Create();
 	//m_DeathText->SetPos(D3DXVECTOR3(640.0f, 550.0f, 0.0f));
@@ -172,6 +240,8 @@ void CResult::Update(void)
 	{
 		CFade::SetFade(CScene::MODE_TITLE);
 		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_ENTER_PUSH);
+		m_pLifeRanking->SaveRanking();
+		m_pTimeRanking->SaveRanking();
 	}
 }
 

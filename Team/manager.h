@@ -23,6 +23,8 @@ class CXModel;
 class CLevelUP;
 class CFade;
 class CSound;
+class CTime;
+class CRanking;
 
 //シーンクラス
 class CScene
@@ -77,6 +79,7 @@ public:
 	CScene *GetScene(void) { return m_pScene; }
 	CFade *GetFade(void) { return m_Fade; }
 	CSound *GetSound(void) { return m_pSound; }
+	CRanking* GetRanking(void) { return m_pRanking; }
 	void SetScene(CScene *Scene) { m_pScene = Scene; }
 	void SetLevelUP(CLevelUP *LevelUP) { m_LevelUP = LevelUP; }
 	void SetEdit(bool bEdit) { m_bEdit = bEdit; }
@@ -87,6 +90,8 @@ public:
 	bool GetPause(void) { return m_Pause; }
 	void SetEndScore(int Set) { m_EndScore = Set; }
 	int GetEndScore(void) { return m_EndScore; }
+	void SetEndTime(int Set) { m_EndTime = Set; }
+	int GetEndTime(void) { return m_EndTime; }
 	void SetTutorialStart(bool Set) { m_SetTutorial = Set; }
 	bool GetTutorialStart(void) { return m_SetTutorial; }
 	void SetScoreResult(bool Set) { m_SetScoreResult = Set; }
@@ -104,6 +109,7 @@ private:
 	static CManager *pManager;
 
 	int m_EndScore;						//最終的なスコア
+	int m_EndTime;						//最終的なタイム
 	bool m_bGameClear;					//ゲームクリア状態か
 	bool m_SetTutorial;					//エディットモードかどうか
 	bool m_bEdit;						//エディットモードかどうか
@@ -126,6 +132,7 @@ private:
 	CLevelUP *m_LevelUP;				//レベルアップのポインタ
 	CFade *m_Fade;						//フェードのポインタ
 	CSound *m_pSound;					//サウンドのポインタ
+	CRanking* m_pRanking;
 };												
 
 #endif

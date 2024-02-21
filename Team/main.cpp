@@ -102,6 +102,12 @@ int	WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hinstancePrev, LPSTR lpCmdLine
 		}
 	}
 
+	CTime* pTime = nullptr;
+	if (CScene::GetMode() == CScene::MODE_GAME)
+	{
+		pTime = CGame::GetTime();
+	}
+
 	//メッセージループ
 	while (1)
 	{//Windowsの処理
@@ -121,6 +127,7 @@ int	WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hinstancePrev, LPSTR lpCmdLine
 		else
 		{//DirectXの処理
 			dwCurrentTime = timeGetTime();		//現在時刻を所得
+			pTime->FloatSetTime(timeGetTime());
 
 			if ((dwCurrentTime - dwFPSLastTime) >= 500)
 			{//0.5秒経過

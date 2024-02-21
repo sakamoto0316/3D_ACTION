@@ -9,6 +9,8 @@
 
 #include "object.h"
 
+#define PLAYER_LIFE (500.0f)		//プレイヤーの初期ライフ
+
 //前方宣言
 class CModel;
 class CMotion;
@@ -48,6 +50,7 @@ public:
 		STATE_WAIT,
 		STATE_DAMAGE,
 		STATE_EVENT,
+		STATE_REVIVAL,
 		STATE_MAX,
 		
 	};
@@ -74,6 +77,10 @@ public:
 	float GetWight(void) { return m_fWight; }
 	void SetHeight(float Height) { m_fHeight = Height; }
 	float GetHeight(void) { return m_fHeight; }
+	void SetLife(float Life) { m_fLife = Life; }
+	int GetLife(void) { return (int)m_fLife; }
+	void SetDamage(float Damage) { m_fDamage = Damage; }
+	int GetDamage(void) { return (int)m_fDamage; }
 	void SetReSpownPos(D3DXVECTOR3 pos) { m_ReSpownPos = pos; }
 	D3DXVECTOR3 GetReSpownPos(void) { return m_ReSpownPos; }
 	STATE GetState(void) { return m_State; }
@@ -81,6 +88,9 @@ public:
 	bool GetCameraDiff(void) { return CameraDiffMove; }
 	int GetDodgeCount(void) { return m_nDodgeCount; }
 	void HitDamage(float Damage);								//攻撃を受けた時の処理
+	void SetLifeUI(void);
+	CObjGauge2D* GetLifeGauge(void) { return m_pLifeGauge; }
+	void DispUI(bool);
 
 private:
 	void MyObjCreate(void);								//自分が保持するオブジェクトの生成
@@ -103,7 +113,6 @@ private:
 	void DeleteMap(void);								//マップの削除
 	void CameraDiff(void);								//カメラの補正設定
 	bool CollisionCircle(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float nRadiusOut);	//円の当たり判定
-	void SetLifeUI(void);
 	bool CollisionShadow(void);	//オブジェクトとの当たり判定
 	
 	ACTION_TYPE m_Action;
@@ -139,6 +148,7 @@ private:
 	bool m_bRight;				//2D画面の際に最後に入力した方向が右かどうか
 	float m_fLife;				//プレイヤーのライフ
 	float m_fLifeMax;			//プレイヤーのライフの最大値
+	float m_fDamage;			//くらったダメージ量
 	CObjGauge2D* m_pLifeGauge;	//ライフゲージのポインタ
 	CObjGauge2D *m_pLifeGaugeBG;//ライフゲージの前面ポリゴン
 	bool CameraDiffMove;		//カメラの上下差分移動が緩やかか否か

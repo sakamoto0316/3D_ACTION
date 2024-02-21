@@ -116,6 +116,7 @@ void CEnemy::Uninit(void)
 				pCEffect->SetPos(D3DXVECTOR3(GetPos().x + (10.0f * nCntX) , GetPos().y + (10.0f * nCntY), GetPos().z + (10.0f * nCntZ)));
 				pCEffect->SetMove(D3DXVECTOR3((1.0f * nCntX), (1.0f * nCntY) + 10.0f, (1.0f * nCntZ)));
 				pCEffect->SetSize(D3DXVECTOR3(10.0f, 10.0f, 10.0f));
+				pCEffect->SetFall(true);
 			}
 		}
 	}

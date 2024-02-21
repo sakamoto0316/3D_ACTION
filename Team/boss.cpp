@@ -28,6 +28,7 @@
 #include "effect.h"
 #include "modelEffect.h"
 #include "log.h"
+#include "time.h"
 
 //ƒ}ƒNƒ’è‹`
 #define BLOCK_WIGHT (300.0f)		//‰¡•
@@ -297,6 +298,8 @@ void CBoss::GameUpdate(void)
 	//‰e‚Ì“–‚½‚è”»’è
 	CollisionShadow();
 
+#ifdef _DEBUG
+
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_1) == true)
 	{
 		switch (m_nDebugText)
@@ -376,6 +379,8 @@ void CBoss::GameUpdate(void)
 	{
 		Warp(ATTACK_DOWN_BREAK);
 	}
+
+#endif // _DEBUG
 
 	if (m_nForm == 1)
 	{
@@ -2155,7 +2160,7 @@ void CBoss::AttackDeath(D3DXVECTOR3* pos)
 		m_move = INITVECTOR3;
 		m_State = STATE_DEATH;
 		CManager::GetInstance()->SetGameClear(true);
-		CFade::SetFade(CScene::MODE_RESULT);
+		CGame::SetGameEnd(true);
 		break;
 	}
 }
@@ -2220,6 +2225,7 @@ void CBoss::HitDamage(float Damage)
 
 				m_State = STATE_DEATH;
 				m_Action = ACTION_DEATH;
+				CGame::GetTime()->SetStopTime(true);
 			}
 		}
 		else
@@ -2368,6 +2374,7 @@ bool CBoss::CollisionBlock(D3DXVECTOR3* pos)
 								pCEffect->SetMove(D3DXVECTOR3((5.0f * nCntX), 20.0f, (5.0f * nCntZ)));
 								pCEffect->SetSize(D3DXVECTOR3(55.5f, 10.0f, 55.5f));
 								pCEffect->SetColor(D3DXCOLOR(0.5f, 0.5f, 0.0f, 0.5f));
+								pCEffect->SetFall(true);
 							}
 						}
 

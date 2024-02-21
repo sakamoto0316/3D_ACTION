@@ -14,7 +14,7 @@
 class CCubeEffect : public CObjmeshCube
 {
 public:
-	CCubeEffect(int nPriority = 3);
+	CCubeEffect(int nPriority = 4);
 	~CCubeEffect();
 
 	static CCubeEffect* Create(void);
@@ -30,12 +30,15 @@ public:
 	D3DXVECTOR3 GetMove(void) { return m_move; }
 	void SetLife(int Life) { m_nLife = Life; }
 	int GetLife(void) { return m_nLife; }
+	void SetFall(int Life) { m_bFall = Life; }
+	int GetFall(void) { return m_bFall; }
 
 private:
 
 	D3DXVECTOR3 m_pos;
 	D3DXVECTOR3 m_move;
 	int m_nLife;
+	bool m_bFall;
 
 };
 #endif

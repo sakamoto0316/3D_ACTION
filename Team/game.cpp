@@ -35,33 +35,34 @@
 #include "effect.h"
 #include "Edit.h"
 #include "log.h"
+#include "objGauge2D.h"
 
 //静的メンバ変数宣言
-CTutorialUI *CGame::m_pTutorialUI = NULL;
-CEdit *CGame::m_pEdit = NULL;
-CPause *CGame::m_pPause = NULL;
-CScore *CGame::m_pScore = NULL;
-CTime *CGame::m_pTime = NULL;
-CObject2D* CGame::m_p2DSample = NULL;
+CTutorialUI *CGame::m_pTutorialUI = nullptr;
+CEdit *CGame::m_pEdit = nullptr;
+CPause *CGame::m_pPause = nullptr;
+CScore *CGame::m_pScore = nullptr;
+CTime *CGame::m_pTime = nullptr;
+CObject2D* CGame::m_p2DSample = nullptr;
 CObject2D* CGame::m_pEventBG[2] = {};
-CObject2D *CGame::m_p2DUI_Attack = NULL;		//攻撃の2DUI
-CObject2D *CGame::m_p2DUI_Jump = NULL;			//ジャンプの2DUI
-CObject2D *CGame::m_p2DUI_Dodge = NULL;			//回避の2DUI
-CObject2D* CGame::m_p2DUI_Attention = NULL;		//注目の2DUI
-CObject2D *CGame::m_p2DUI_AttentionOK = NULL;	//注目の2DUI
-CObject3D* CGame::m_p3DSample = NULL;
-CObject3D* CGame::m_p3DEventBG = NULL;			//イベント時の3D背景
-CObject2D *CGame::m_p2DBossName = NULL;
-CObjectBillboard* CGame::m_pBillboardSample = NULL;
-CObjectX* CGame::m_pXModelSample = NULL;
-CObjmeshField* CGame::m_pMeshFieldSample = NULL;
-CObjmeshWall* CGame::m_pMeshWallSample = NULL;
-CObjmeshCylinder* CGame::m_pMeshCylinderSample = NULL;
-CObjmeshDome* CGame::m_pMeshDomeUp = NULL;
-CObjmeshDome* CGame::m_pMeshDomeDown = NULL;
-CCubeBlock* CGame::m_pCubeBlock = NULL;
-CPlayer* CGame::m_pPlayer = NULL;
-CBoss*CGame::m_pBoss = NULL;
+CObject2D *CGame::m_p2DUI_Attack = nullptr;		//攻撃の2DUI
+CObject2D *CGame::m_p2DUI_Jump = nullptr;			//ジャンプの2DUI
+CObject2D *CGame::m_p2DUI_Dodge = nullptr;			//回避の2DUI
+CObject2D* CGame::m_p2DUI_Attention = nullptr;		//注目の2DUI
+CObject2D *CGame::m_p2DUI_AttentionOK = nullptr;	//注目の2DUI
+CObject3D* CGame::m_p3DSample = nullptr;
+CObject3D* CGame::m_p3DEventBG = nullptr;			//イベント時の3D背景
+CObject2D *CGame::m_p2DBossName = nullptr;
+CObjectBillboard* CGame::m_pBillboardSample = nullptr;
+CObjectX* CGame::m_pXModelSample = nullptr;
+CObjmeshField* CGame::m_pMeshFieldSample = nullptr;
+CObjmeshWall* CGame::m_pMeshWallSample = nullptr;
+CObjmeshCylinder* CGame::m_pMeshCylinderSample = nullptr;
+CObjmeshDome* CGame::m_pMeshDomeUp = nullptr;
+CObjmeshDome* CGame::m_pMeshDomeDown = nullptr;
+CCubeBlock* CGame::m_pCubeBlock = nullptr;
+CPlayer* CGame::m_pPlayer = nullptr;
+CBoss*CGame::m_pBoss = nullptr;
 bool CGame::m_bGameEnd = false;
 bool CGame::m_bEvent = false;
 bool CGame::m_bEventEnd = false;
@@ -207,6 +208,10 @@ HRESULT CGame::Init(void)
 	m_p2DUI_Attack->SetHeight(40.0f);
 	m_p2DUI_Attack->SetTexture("data\\TEXTURE\\UI_Attack.png");
 
+	//タイムの生成
+	m_pTime = CTime::Create();
+
+	//ポーズの生成
 	if (m_pPause == nullptr)
 	{
 		m_pPause = CPause::Create();
@@ -236,18 +241,18 @@ void CGame::Uninit(void)
 	//全てのオブジェクトの破棄
 	CObject::ReleaseAll();
 
-	if (m_pPause != NULL)
+	if (m_pPause != nullptr)
 	{
 		delete m_pPause;
-		m_pPause = NULL;
+		m_pPause = nullptr;
 	}
 
 #if _DEBUG
-	if (m_pEdit != NULL)
+	if (m_pEdit != nullptr)
 	{
 		m_pEdit->Uninit();
 		delete m_pEdit;
-		m_pEdit = NULL;
+		m_pEdit = nullptr;
 	}
 #endif
 }
@@ -414,6 +419,17 @@ void CGame::Update(void)
 			m_pEventBG[nCnt]->SetHeight(m_EventHeight);
 		}
 	}
+
+	if (m_bGameEnd == true)
+	{
+		CFade::SetFade(CScene::MODE_RESULT);
+
+		if (CManager::GetInstance()->GetGameClear() == true)
+		{
+			CManager::GetInstance()->SetEndScore(m_pPlayer->GetDamage());
+			CManager::GetInstance()->SetEndTime(m_pTime->GetTimeNumber());
+		}
+	}
 }
 
 //====================================================================
@@ -558,6 +574,15 @@ void CGame::EventUpdate(void)
 		CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_FOLLOW);
 		m_bEvent = false;
 		m_bEventEnd = true;
+		m_pTime->SetStartTime(timeGetTime());
+
+		if (m_pPlayer != nullptr)
+		{
+			m_pPlayer->SetLife(PLAYER_LIFE);
+			m_pPlayer->SetDamage(0.0f);
+			m_pPlayer->SetLifeUI();
+			m_pPlayer->GetLifeGauge()->SetGaugeWight(PLAYER_LIFE, PLAYER_LIFE);
+		}
 
 		if (m_p3DEventBG != nullptr)
 		{
@@ -613,7 +638,7 @@ void CGame::LoadStageBlock(void)
 		pFile = fopen(DATA_NAME,"r");
 	}
 
-	if (pFile != NULL)
+	if (pFile != nullptr)
 	{//ファイルが開けた場合
 
 		char Getoff[32] = {};
@@ -680,7 +705,7 @@ bool CGame::EnemyCheck(void)
 		//オブジェクトを取得
 		CObject* pObj = CObject::GetTop(nCntPriority);
 
-		while (pObj != NULL)
+		while (pObj != nullptr)
 		{
 			CObject* pObjNext = pObj->GetNext();
 
@@ -714,7 +739,7 @@ void CGame::DeleteMap(void)
 		//オブジェクトを取得
 		CObject* pObj = CObject::GetTop(nCntPriority);
 
-		while (pObj != NULL)
+		while (pObj != nullptr)
 		{
 			CObject* pObjNext = pObj->GetNext();
 

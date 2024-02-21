@@ -62,12 +62,14 @@ public:
 	void SetLife(int Life) { m_nLife = Life; }
 	int GetLife(void) { return m_nLife; }
 	void SetSpinSinCos(int Set) { SpinSinCos = Set; }
+	bool CollisionBlock(void);	//オブジェクトとの当たり判定
 protected:
 
 private:
 	void ExplosionSet(void);
 
 	float m_fDamage;				//ダメージ量
+	D3DXVECTOR3 m_posOld;			//過去の位置
 	D3DXVECTOR3 m_pos;				//位置
 	D3DXVECTOR3 m_Move;				//移動量
 	D3DXVECTOR3 SpinPos;			//回転の中心位置

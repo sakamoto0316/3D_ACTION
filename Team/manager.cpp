@@ -20,11 +20,12 @@
 #include "Pause.h"
 #include "sound.h"
 #include "Edit.h"
+#include "time.h"
 
 #define SET_MODE (CScene::MODE_GAME)
 
 //静的メンバ変数宣言
-CManager *CManager::pManager = NULL;
+CManager *CManager::pManager = nullptr;
 CScene::MODE CScene::m_mode = SET_MODE;
 
 //====================================================================
@@ -44,20 +45,21 @@ CManager::CManager()
 	m_EndScore = 157;
 	m_bGameClear = false;
 
-	pManager = NULL;
-	m_pRenderer = NULL;
-	m_pDebugProc = NULL;
-	m_pInputKeyboard = NULL;
-	m_pInputJoyPad = NULL;
-	m_pInputMouse = NULL;
-	m_pCamera = NULL;
-	m_pLight = NULL;
-	m_pTexture = NULL;
-	m_pXModel = NULL;
-	m_pScene = NULL;
-	m_LevelUP = NULL;
-	m_Fade = NULL;
-	m_pSound = NULL;
+	pManager = nullptr;
+	m_pRenderer = nullptr;
+	m_pDebugProc = nullptr;
+	m_pInputKeyboard = nullptr;
+	m_pInputJoyPad = nullptr;
+	m_pInputMouse = nullptr;
+	m_pCamera = nullptr;
+	m_pLight = nullptr;
+	m_pTexture = nullptr;
+	m_pXModel = nullptr;
+	m_pScene = nullptr;
+	m_LevelUP = nullptr;
+	m_Fade = nullptr;
+	m_pSound = nullptr;
+	m_pRanking = nullptr;
 }
 
 //====================================================================
@@ -73,7 +75,7 @@ CManager::~CManager()
 //====================================================================
 CManager *CManager::GetInstance(void)
 {
-	if (pManager == NULL)
+	if (pManager == nullptr)
 	{
 		pManager = new CManager;
 	}
@@ -85,7 +87,7 @@ CManager *CManager::GetInstance(void)
 //====================================================================
 HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 {
-	if (m_pRenderer == NULL)
+	if (m_pRenderer == nullptr)
 	{
 		//レンダラーの生成
 		m_pRenderer = new CRenderer;
@@ -97,18 +99,18 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	if (m_pDebugProc == NULL)
+	if (m_pDebugProc == nullptr)
 	{
 		//デバッグ表示の生成
 		m_pDebugProc = new CDebugProc;
 
-		if (m_pDebugProc != NULL)
+		if (m_pDebugProc != nullptr)
 		{
 			m_pDebugProc->Init();
 		}
 	}
 
-	if (m_pSound == NULL)
+	if (m_pSound == nullptr)
 	{
 		//サウンドの生成
 		m_pSound = new CSound;
@@ -120,7 +122,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	if (m_pInputKeyboard == NULL)
+	if (m_pInputKeyboard == nullptr)
 	{
 		//キーボードの生成
 		m_pInputKeyboard = new CInputKeyboard;
@@ -131,7 +133,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	if (m_pInputJoyPad == NULL)
+	if (m_pInputJoyPad == nullptr)
 	{
 		//ジョイパッドの生成
 		m_pInputJoyPad = new CInputJoypad;
@@ -142,7 +144,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	if (m_pInputMouse == NULL)
+	if (m_pInputMouse == nullptr)
 	{
 		//マウスの生成
 		m_pInputMouse = new CInputMouse;
@@ -153,7 +155,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	if (m_pCamera == NULL)
+	if (m_pCamera == nullptr)
 	{
 		//カメラの生成
 		m_pCamera = new CCamera;
@@ -165,7 +167,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	if (m_pLight == NULL)
+	if (m_pLight == nullptr)
 	{
 		//ライトの生成
 		m_pLight = new CLight;
@@ -177,7 +179,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	if (m_pTexture == NULL)
+	if (m_pTexture == nullptr)
 	{
 		//テクスチャの生成
 		m_pTexture = new CTexture;
@@ -189,7 +191,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	if (m_pXModel == NULL)
+	if (m_pXModel == nullptr)
 	{
 		//Xモデルの生成
 		m_pXModel = new CXModel;
@@ -201,17 +203,18 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	if (m_pScene == NULL)
+	//シーンの生成
+	if (m_pScene == nullptr)
 	{
 		m_pScene = CScene::Create(SET_MODE);
 	}
 
-	if (m_Fade == NULL)
+	if (m_Fade == nullptr)
 	{
 		//フェードの生成
 		m_Fade = new CFade;
 
-		if (m_Fade != NULL)
+		if (m_Fade != nullptr)
 		{
 			m_Fade->Init(SET_MODE);
 		}
@@ -233,112 +236,112 @@ void CManager::Uninit(void)
 	//全てのオブジェクトの破棄
 	CObject::ReleaseAll();
 
-	if (m_Fade != NULL)
+	if (m_Fade != nullptr)
 	{
 		//フェードの終了処理
 		m_Fade->Uninit();
 
 		delete m_Fade;
-		m_Fade = NULL;
+		m_Fade = nullptr;
 	}
 
-	if (m_pScene != NULL)
+	if (m_pScene != nullptr)
 	{
 		//シーンの終了処理
 		m_pScene->Uninit();
 
 		delete m_pScene;
-		m_pScene = NULL;
+		m_pScene = nullptr;
 	}
 
-	if (m_pTexture != NULL)
+	if (m_pTexture != nullptr)
 	{
 		//テクスチャの終了処理
 		m_pTexture->Unload();
 
 		delete m_pTexture;
-		m_pTexture = NULL;
+		m_pTexture = nullptr;
 	}
 
-	if (m_pXModel != NULL)
+	if (m_pXModel != nullptr)
 	{
 		//Xモデルの終了処理
 		m_pXModel->Unload();
 
 		delete m_pXModel;
-		m_pXModel = NULL;
+		m_pXModel = nullptr;
 	}
 
-	if (m_pLight != NULL)
+	if (m_pLight != nullptr)
 	{
 		//ライトの終了処理
 		m_pLight->Uninit();
 
 		delete m_pLight;
-		m_pLight = NULL;
+		m_pLight = nullptr;
 	}
 
-	if (m_pCamera != NULL)
+	if (m_pCamera != nullptr)
 	{
 		//カメラの終了処理
 		m_pCamera->Uninit();
 
 		delete m_pCamera;
-		m_pCamera = NULL;
+		m_pCamera = nullptr;
 	}
 
-	if (m_pInputMouse != NULL)
+	if (m_pInputMouse != nullptr)
 	{
 		//ジョイパッドの終了処理
 		m_pInputMouse->Uninit();
 
 		delete m_pInputMouse;
-		m_pInputMouse = NULL;
+		m_pInputMouse = nullptr;
 	}
 
-	if (m_pInputJoyPad != NULL)
+	if (m_pInputJoyPad != nullptr)
 	{
 		//ジョイパッドの終了処理
 		m_pInputJoyPad->Uninit();
 
 		delete m_pInputJoyPad;
-		m_pInputJoyPad = NULL;
+		m_pInputJoyPad = nullptr;
 	}
 
-	if (m_pInputKeyboard != NULL)
+	if (m_pInputKeyboard != nullptr)
 	{
 		//キーボードの終了処理
 		m_pInputKeyboard->Uninit();
 
 		delete m_pInputKeyboard;
-		m_pInputKeyboard = NULL;
+		m_pInputKeyboard = nullptr;
 	}
 
-	if (m_pDebugProc != NULL)
+	if (m_pDebugProc != nullptr)
 	{
 		//デバッグ表示の終了処理
 		m_pDebugProc->Uninit();
 
 		delete m_pDebugProc;
-		m_pDebugProc = NULL;
+		m_pDebugProc = nullptr;
 	}
 
-	if (m_pRenderer != NULL)
+	if (m_pRenderer != nullptr)
 	{
 		//レンダラーの終了処理
 		m_pRenderer->Uninit();
 
 		delete m_pRenderer;
-		m_pRenderer = NULL;
+		m_pRenderer = nullptr;
 	}
 
-	if (m_pSound != NULL)
+	if (m_pSound != nullptr)
 	{
 		//サウンドの終了処理
 		m_pSound->UninitSound();
 
 		delete m_pSound;
-		m_pSound = NULL;
+		m_pSound = nullptr;
 	}
 }
 
@@ -426,9 +429,9 @@ void CManager::Draw(void)
 //====================================================================
 CScene *CScene::Create(MODE mode)
 {
-	CScene *pScene = NULL;
+	CScene *pScene = nullptr;
 
-	if (pScene == NULL)
+	if (pScene == nullptr)
 	{
 		//シーンの生成
 		switch (mode)
@@ -459,7 +462,7 @@ CScene *CScene::Create(MODE mode)
 	//オブジェクトの初期化処理
 	if (FAILED(pScene->Init()))
 	{//初期化処理が失敗した場合
-		return NULL;
+		return nullptr;
 	}
 
 	return pScene;
@@ -530,13 +533,13 @@ void CScene::SetMode(MODE mode)
 	CScene *pScene = CManager::GetInstance()->GetScene();
 	CManager::GetInstance()->GetSound()->StopSound();
 
-	if (pScene != NULL)
+	if (pScene != nullptr)
 	{
 		//シーンの終了処理
 		pScene->Uninit();
 
 		delete pScene;
-		pScene = NULL;
+		pScene = nullptr;
 	}
 
 	//モードの生成

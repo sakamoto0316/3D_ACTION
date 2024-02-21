@@ -62,7 +62,6 @@ public:
 		ATTACK_DOWN_BREAK,	//[Œ©‰º‚ë‚µ]ƒ}ƒbƒv”j‰óUŒ‚
 		ATTACK_DEATH,		//€–S
 		ATTACK_MAX,
-
 	};
 
 	static CBoss* Create(char* pModelName);

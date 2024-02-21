@@ -28,9 +28,9 @@
 #include "enemy.h"
 #include "fade.h"
 #include "log.h"
+#include "CubeEffect.h"
 #include "debugproc.h"
 
-#define PLAYER_LIFE (1500.0f)		//プレイヤーの初期ライフ
 #define PLAYER_ROT_SPEED (0.2f)		//プレイヤーの回転スピード
 #define PLAYER_SPEED (10.0f)		//プレイヤーの速さ
 #define PLAYER_JAMPPOWER (15.0f)	//プレイヤーのジャンプ力
@@ -50,6 +50,7 @@
 #define FALL_DAMAGE (100.0f)		//落下した際のダメージ
 #define WAIT_TIME (60)				//無敵時間
 #define DAMAGE_TIME (10)			//ダメージのリアクション時間
+#define REVIVAL_TIME (300)			//復活時間
 
 //====================================================================
 //コンストラクタ
@@ -89,6 +90,7 @@ CPlayer::CPlayer(int nPriority) :CObject(nPriority)
 	CameraDiffTime = 0;
 	m_pShadow = nullptr;
 	m_nBossDamageCount = 0;
+	m_fDamage = 0;
 
 	for (int nCnt = 0; nCnt < 4; nCnt++)
 	{
@@ -277,7 +279,7 @@ void CPlayer::TitleUpdate(void)
 //====================================================================
 void CPlayer::GameUpdate(void)
 {
-	if (m_State != STATE_DEATH)
+	if (m_State != STATE_DEATH && m_State != STATE_REVIVAL)
 	{
 		//キーボードの取得
 		CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
@@ -471,6 +473,71 @@ void CPlayer::StateManager(void)
 		break;
 
 	case STATE_DEATH:
+		m_pos.y += 1.0f;
+
+		if (m_nStateCount <= 0)
+		{
+			m_State = STATE_REVIVAL;
+			m_nStateCount = 60;
+			m_pos = D3DXVECTOR3(m_ReSpownPos.x, 110.0f, m_ReSpownPos.z);
+			m_CameraPos = m_pos;
+
+			m_fLife = PLAYER_LIFE;
+			SetLifeUI();
+
+			if (m_pLifeGauge != nullptr)
+			{
+				m_pLifeGauge->SetGaugeWight(m_fLifeMax, m_fLife);
+			}
+
+			for (int nCnt = 0; nCnt < m_nNumModel; nCnt++)
+			{
+				m_apModel[nCnt]->SetColorChange(true);
+				m_apModel[nCnt]->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f));
+			}
+
+			CCubeEffect* pCEffect = CCubeEffect::Create();
+			pCEffect->SetPos(D3DXVECTOR3(m_ReSpownPos.x, 110.0f + 400.0f, m_ReSpownPos.z));
+			pCEffect->SetSize(D3DXVECTOR3(30.0f, 400.0f, 30.0f));
+			pCEffect->SetColor(D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5));
+			pCEffect->SetLife(60);
+
+			pCEffect = CCubeEffect::Create();
+			pCEffect->SetPos(D3DXVECTOR3(m_ReSpownPos.x, 110.0f + 1200.0f, m_ReSpownPos.z));
+			pCEffect->SetMove(D3DXVECTOR3(0.0f, -1200.0f / 60.0f, 0.0f));
+			pCEffect->SetSize(D3DXVECTOR3(31.0f, 30.0f, 31.0f));
+			pCEffect->SetColor(D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f));
+			pCEffect->SetLife(60);
+		}
+		break;
+
+	case STATE_REVIVAL:
+
+		if (m_nStateCount <= 0)
+		{
+			m_State = STATE_WAIT;
+			m_nStateCount = WAIT_TIME + WAIT_TIME;
+
+			for (int nCnt = 0; nCnt < m_nNumModel; nCnt++)
+			{
+				m_apModel[nCnt]->SetColorChange(true);
+				m_apModel[nCnt]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+
+				int a = 3;
+				for (int nCntX = -a; nCntX <= a; nCntX++)
+				{
+					for (int nCntZ = -a; nCntZ <= a; nCntZ++)
+					{
+						CCubeEffect* pCEffect = CCubeEffect::Create();
+						pCEffect->SetPos(D3DXVECTOR3(GetPos().x + (10.0f * nCntX), 110.0f, GetPos().z + (10.0f * nCntZ)));
+						pCEffect->SetMove(D3DXVECTOR3((1.0f * nCntX), 0.0f, (1.0f * nCntZ)));
+						pCEffect->SetSize(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
+						pCEffect->SetColor(D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f));
+						pCEffect->SetDel(0.08f);
+					}
+				}
+			}
+		}
 		break;
 
 	case STATE_WAIT:
@@ -1223,7 +1290,6 @@ void CPlayer::FallDamage(void)
 	pEffect->SetPos(m_pos);
 	pEffect->SetRadius(500.0f);
 	pEffect->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-	m_pos = D3DXVECTOR3(m_ReSpownPos.x, m_ReSpownPos.y + -100.0f, m_ReSpownPos.z);
 }
 
 //====================================================================
@@ -1239,6 +1305,40 @@ void CPlayer::HitDamage(float Damage)
 		m_nAttackCount = 0;
 		m_pMotion->Set(ACTION_WAIT, 5);
 		m_fLife -= Damage;
+		m_fDamage += Damage;
+
+		int a = 2;
+		for (int nCntX = -a; nCntX <= a; nCntX++)
+		{
+			for (int nCntY = -a; nCntY <= a; nCntY++)
+			{
+				for (int nCntZ = -a; nCntZ <= a; nCntZ++)
+				{
+					CCubeEffect* pCEffect = CCubeEffect::Create();
+					pCEffect->SetPos(D3DXVECTOR3(GetPos().x + (10.0f * nCntX), GetPos().y + (10.0f * nCntY), GetPos().z + (10.0f * nCntZ)));
+					pCEffect->SetMove(D3DXVECTOR3((4.0f * nCntX), (4.0f * nCntY), (4.0f * nCntZ)));
+					pCEffect->SetSize(D3DXVECTOR3(2.5f, 2.5f, 2.5f));
+					pCEffect->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+					pCEffect->SetDel(0.08f);
+				}
+			}
+		}
+
+		//カラー設定
+		for (int nCnt = 0; nCnt < m_nNumModel; nCnt++)
+		{
+			m_apModel[nCnt]->SetColorChange(true);
+			m_apModel[nCnt]->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+		}
+
+		//落下時に死亡していなかったらステージに戻る
+		if (m_pos.y < 0.0f)
+		{
+			if (m_fLife > 0)
+			{
+				m_pos = D3DXVECTOR3(m_ReSpownPos.x, m_ReSpownPos.y + -100.0f, m_ReSpownPos.z);
+			}
+		}
 
 		if (m_fLife > 0)
 		{
@@ -1249,18 +1349,23 @@ void CPlayer::HitDamage(float Damage)
 		{
 			m_fLife = 0.0f;
 
-			CManager::GetInstance()->SetGameClear(false);
-			CFade::SetFade(CScene::MODE_RESULT);
+			m_State = STATE_DEATH;
+			m_nStateCount = REVIVAL_TIME;
+			CCubeEffect *pEffect = CCubeEffect::Create();
+			pEffect->SetPos(D3DXVECTOR3(m_pos.x, m_pos.y + 230.0f, m_pos.z));
+			pEffect->SetSize(D3DXVECTOR3(30.0f, 230.0f, 30.0f));
+			pEffect->SetColorType(0);
+			pEffect->SetLife(REVIVAL_TIME);
 
+			//カラー設定
+			for (int nCnt = 0; nCnt < m_nNumModel; nCnt++)
+			{
+				m_apModel[nCnt]->SetColorChange(true);
+				m_apModel[nCnt]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+			}
 		}
 
 		SetLifeUI();
-
-		for (int nCnt = 0; nCnt < m_nNumModel; nCnt++)
-		{
-			m_apModel[nCnt]->SetColorChange(true);
-			m_apModel[nCnt]->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-		}
 
 		if (m_pLifeGauge != nullptr)
 		{
@@ -1313,6 +1418,14 @@ void CPlayer::ActionState(void)
 			}
 		}
 	}
+}
+
+//====================================================================
+//モーションと状態の管理
+//====================================================================
+void CPlayer::DispUI(void)
+{
+
 }
 
 //====================================================================
@@ -1577,8 +1690,8 @@ bool CPlayer::CollisionShadow(void)
 							MyPos.x,
 							BlockPos.y + BlockSize.y + BlockMove.y,
 							MyPos.z));
-						m_pShadow->SetWight(MySize.x);
-						m_pShadow->SetHeight(MySize.z);
+						m_pShadow->SetWight(MySize.x * 2.0f);
+						m_pShadow->SetHeight(MySize.z * 2.0f);
 
 						BlockPosY = BlockPos.y + BlockSize.y;
 						bShadow = true;
@@ -1604,7 +1717,7 @@ bool CPlayer::CollisionShadow(void)
 //====================================================================
 void CPlayer::Draw(void)
 {
-	if (m_State != STATE_DEATH)
+	if (m_State != STATE_REVIVAL)
 	{
 		//デバイスの取得
 		LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();

@@ -16,6 +16,7 @@ class CRanking;
 class CScore;
 class CBreak_Block3D;
 class CEdit;
+class CNumber;
 
 //シーンクラス
 class CResult : public CScene
@@ -36,14 +37,18 @@ private:
 
 	CBreak_Block3D *m_pBreakBlock3D;
 	static CObject2D *m_pResult;
-	static CRanking *m_pRanking;
+	static CRanking* m_pLifeRanking;
+	static CRanking *m_pTimeRanking;
 	static CScore *m_DeathScore;
 	static CEdit *m_pEdit;					//エディットモードのポインタ
 	static CObject2D *m_ClearText;
 	static CObject2D *m_NormalText;
 	static CObject2D *m_DeathText;
+	static CNumber* m_apLife[6];
+	static CNumber* m_apTime[6];
 	static bool m_Appear;
 	static int m_AddScoreCount;
-	static int m_AddTotalScore;
+	static int m_LifeData;
+	static int m_TimeData;
 };
 #endif

@@ -60,7 +60,7 @@ namespace
 	const float LOGSPEED_DOWN = 3.0f;		// ログの落下速度
 	const float LOGSPEED_OUT = 10.0f;		// ログの退場速度
 	const float LOGPOS_IN = 100.0f;			// ログの登場位置
-	const float LOGPOS_DOWN = 450.0f;		// ログの停止位置
+	const float LOGPOS_DOWN = 350.0f;		// ログの停止位置
 }
 
 //==============================

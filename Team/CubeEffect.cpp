@@ -25,6 +25,7 @@ CCubeEffect::CCubeEffect(int nPriority) :CObjmeshCube(nPriority)
 	m_pos = INITVECTOR3;
 	m_move = INITVECTOR3;
 	m_nLife = -1;
+	m_bFall = false;
 }
 
 
@@ -88,14 +89,17 @@ void CCubeEffect::Uninit(void)
 //====================================================================
 void CCubeEffect::Update(void)
 {
-	m_move.y -= 0.98f;
+	if (m_bFall == true)
+	{
+		m_move.y -= 0.98f;
+	}
 
 	m_pos += m_move;
 
 	CObjmeshCube::SetPos(m_pos);
 	CObjmeshCube::Update();
 
-	if (m_nLife > 0 && m_nLife == -1)
+	if (m_nLife > 0 && m_nLife != -1)
 	{
 		m_nLife--;
 	}
@@ -105,10 +109,13 @@ void CCubeEffect::Update(void)
 		return;
 	}
 
-	if (m_pos.y < 0.0f)
+	if (m_bFall == true)
 	{
-		Uninit();
-		return;
+		if (m_pos.y < 0.0f)
+		{
+			Uninit();
+			return;
+		}
 	}
 }
 
