@@ -2217,6 +2217,9 @@ void CBoss::HitDamage(float Damage)
 				CLog::Create(CLog::TEXT_02);
 				m_State = STATE_INVINCIBLE;
 				Warp(ATTACK_REVIVAL);
+
+				//ƒQ[ƒ€‚ÌSE‚ðÄ¶‚·‚é
+				CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_SE_DEATHEXPLOSION);
 			}
 			else if (m_nForm == 1)
 			{

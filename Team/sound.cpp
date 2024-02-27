@@ -23,6 +23,7 @@ CSound::SOUNDINFO CSound::m_aSoundInfo[SOUND_LABEL_MAX] =
 	{ "data/SE/DeathExplosion.wav", 0 },		// €–S”š”­‰¹
 	{ "data/SE/GOGOGO.wav", 0 },				// ƒSƒSƒSƒSƒSƒSƒS‰¹
 	{ "data/SE/Howl.wav", 0 },					// ™ôšK‰¹
+	{ "data/BGM/Tutorial.wav", -1 },			// ƒ`ƒ…[ƒgƒŠƒAƒ‹BGM
 }; 
 
 //=============================================================================

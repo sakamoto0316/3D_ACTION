@@ -63,6 +63,7 @@ public:
 	static void AddBGColorA(float Add) { m_BGColorA += Add; }
 	static void SetStageBlock(void);
 	static void SetGameEnd(bool Set) { m_bGameEnd = Set; }
+	static void DispUI(bool Set);
 private:
 	static void DeleteMap(void);
 	static void EventUpdate();				//イベントの更新

@@ -37,10 +37,7 @@ private:
 	int m_PauseSelect;
 	bool m_Appear;
 	static CObject2D *m_pPauseUI[MAX_PAUSE];
-	static CObject2D *m_pPauseFG[3];
-	static CObject2D *m_pTutorialMOVE[3];
-	static CObject2D *m_pTutorialJUMP[3];
-	static CObject2D *m_pTutorialATTACK[3];
+	static CObject2D *m_pPauseFG[2];
 	static D3DXVECTOR3 m_MovePos;
 	static D3DXVECTOR3 m_JumpPos;
 	static D3DXVECTOR3 m_AttackPos;

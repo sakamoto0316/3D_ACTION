@@ -43,12 +43,14 @@ private:
 	static CEdit *m_pEdit;					//エディットモードのポインタ
 	static CObject2D *m_ClearText;
 	static CObject2D *m_NormalText;
-	static CObject2D *m_DeathText;
+	static CObject2D* m_DeathText;
+	static CObject2D *m_Rank;
 	static CNumber* m_apLife[6];
 	static CNumber* m_apTime[6];
 	static bool m_Appear;
 	static int m_AddScoreCount;
 	static int m_LifeData;
 	static int m_TimeData;
+	static int m_RankData;
 };
 #endif

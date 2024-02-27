@@ -14,10 +14,7 @@
 
 //Ã“Iƒƒ“ƒo•Ï”éŒ¾
 CObject2D *CPause::m_pPauseUI[MAX_PAUSE] = {};
-CObject2D *CPause::m_pPauseFG[3] = {};
-CObject2D *CPause::m_pTutorialMOVE[3] = {};
-CObject2D *CPause::m_pTutorialJUMP[3] = {};
-CObject2D *CPause::m_pTutorialATTACK[3] = {};
+CObject2D *CPause::m_pPauseFG[2] = {};
 D3DXVECTOR3 CPause::m_MovePos = INITVECTOR3;
 D3DXVECTOR3 CPause::m_JumpPos = INITVECTOR3;
 D3DXVECTOR3 CPause::m_AttackPos = INITVECTOR3;
@@ -70,93 +67,23 @@ CPause *CPause::Create()
 //====================================================================
 HRESULT CPause::Init(void)
 {
-	m_pTutorialMOVE[0] = CObject2D::Create(7);
-	m_pTutorialMOVE[0]->SetType(CObject::TYPE_TUTORIALUI);
-	m_pTutorialMOVE[0]->SetTexture("data\\TEXTURE\\WallMove.png");
-	m_pTutorialMOVE[0]->SetPos(D3DXVECTOR3(m_MovePos.x, m_MovePos.y - 90.0f, m_MovePos.z));
-	m_pTutorialMOVE[0]->SetWight(300.0f);
-	m_pTutorialMOVE[0]->SetHeight(150.0f);
-
-	m_pTutorialMOVE[1] = CObject2D::Create(7);
-	m_pTutorialMOVE[1]->SetType(CObject::TYPE_TUTORIALUI);
-	m_pTutorialMOVE[1]->SetTexture("data\\TEXTURE\\Tutorial_MOVE.png");
-	m_pTutorialMOVE[1]->SetPos(D3DXVECTOR3(m_MovePos.x, m_MovePos.y - 40.0f, m_MovePos.z));
-	m_pTutorialMOVE[1]->SetWight(200.0f);
-	m_pTutorialMOVE[1]->SetHeight(200.0f);
-
-	m_pTutorialMOVE[2] = CObject2D::Create(7);
-	m_pTutorialMOVE[2]->SetType(CObject::TYPE_TUTORIALUI);
-	m_pTutorialMOVE[2]->SetTexture("data\\TEXTURE\\TutorialText_MOVE.png");
-	m_pTutorialMOVE[2]->SetPos(D3DXVECTOR3(m_MovePos.x, m_MovePos.y, m_MovePos.z));
-	m_pTutorialMOVE[2]->SetWight(225.0f);
-	m_pTutorialMOVE[2]->SetHeight(135.0f);
-
-	m_pTutorialJUMP[0] = CObject2D::Create(7);
-	m_pTutorialJUMP[0]->SetType(CObject::TYPE_TUTORIALUI);
-	m_pTutorialJUMP[0]->SetTexture("data\\TEXTURE\\WallJump.png");
-	m_pTutorialJUMP[0]->SetPos(D3DXVECTOR3(m_JumpPos.x, m_JumpPos.y - 60.0f, m_JumpPos.z));
-	m_pTutorialJUMP[0]->SetWight(150.0f);
-	m_pTutorialJUMP[0]->SetHeight(225.0f);
-
-	m_pTutorialJUMP[1] = CObject2D::Create(7);
-	m_pTutorialJUMP[1]->SetType(CObject::TYPE_TUTORIALUI);
-	m_pTutorialJUMP[1]->SetTexture("data\\TEXTURE\\Tutorial_JUMP.png");
-	m_pTutorialJUMP[1]->SetPos(D3DXVECTOR3(m_JumpPos.x, m_JumpPos.y - 40.0f, m_JumpPos.z));
-	m_pTutorialJUMP[1]->SetWight(150.0f);
-	m_pTutorialJUMP[1]->SetHeight(150.0f);
-
-	m_pTutorialJUMP[2] = CObject2D::Create(7);
-	m_pTutorialJUMP[2]->SetType(CObject::TYPE_TUTORIALUI);
-	m_pTutorialJUMP[2]->SetTexture("data\\TEXTURE\\TutorialText_JUMP.png");
-	m_pTutorialJUMP[2]->SetPos(D3DXVECTOR3(m_JumpPos.x, m_JumpPos.y, m_JumpPos.z));
-	m_pTutorialJUMP[2]->SetWight(225.0f);
-	m_pTutorialJUMP[2]->SetHeight(135.0f);
-
-	m_pTutorialATTACK[0] = CObject2D::Create(7);
-	m_pTutorialATTACK[0]->SetType(CObject::TYPE_TUTORIALUI);
-	m_pTutorialATTACK[0]->SetTexture("data\\TEXTURE\\WallAttack.png");
-	m_pTutorialATTACK[0]->SetPos(D3DXVECTOR3(m_AttackPos.x, m_AttackPos.y - 90.0f, m_AttackPos.z));
-	m_pTutorialATTACK[0]->SetWight(225.0f);
-	m_pTutorialATTACK[0]->SetHeight(102.5f);
-
-	m_pTutorialATTACK[1] = CObject2D::Create(7);
-	m_pTutorialATTACK[1]->SetType(CObject::TYPE_TUTORIALUI);
-	m_pTutorialATTACK[1]->SetTexture("data\\TEXTURE\\Tutorial_ATTACK.png");
-	m_pTutorialATTACK[1]->SetPos(D3DXVECTOR3(m_AttackPos.x, m_AttackPos.y - 40.0f, m_AttackPos.z));
-	m_pTutorialATTACK[1]->SetWight(150.0f);
-	m_pTutorialATTACK[1]->SetHeight(150.0f);
-
-	m_pTutorialATTACK[2] = CObject2D::Create(7);
-	m_pTutorialATTACK[2]->SetType(CObject::TYPE_TUTORIALUI);
-	m_pTutorialATTACK[2]->SetTexture("data\\TEXTURE\\TutorialText_ATTACK.png");
-	m_pTutorialATTACK[2]->SetPos(D3DXVECTOR3(m_AttackPos.x, m_AttackPos.y, m_AttackPos.z));
-	m_pTutorialATTACK[2]->SetWight(225.0f);
-	m_pTutorialATTACK[2]->SetHeight(135.0f);
-
-	m_pPauseFG[0] = CObject2D::Create();
+	m_pPauseFG[0] = CObject2D::Create(7);
 	m_pPauseFG[0]->SetType(CObject::TYPE_TUTORIALUI);
 	m_pPauseFG[0]->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
 	m_pPauseFG[0]->SetWight(1280.0f);
 	m_pPauseFG[0]->SetHeight(720.0f);
 	m_pPauseFG[0]->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.5f));
 
-	m_pPauseFG[1] = CObject2D::Create();
+	m_pPauseFG[1] = CObject2D::Create(7);
 	m_pPauseFG[1]->SetType(CObject::TYPE_TUTORIALUI);
-	m_pPauseFG[1]->SetPos(D3DXVECTOR3(640.0f, 300.0f, 0.0f));
+	m_pPauseFG[1]->SetPos(D3DXVECTOR3(640.0f, 400.0f, 0.0f));
 	m_pPauseFG[1]->SetWight(1200.0f);
 	m_pPauseFG[1]->SetHeight(600.0f);
 	m_pPauseFG[1]->SetTexture("data\\TEXTURE\\Pause_FG.png");
 
-	m_pPauseFG[2] = CObject2D::Create();
-	m_pPauseFG[2]->SetType(CObject::TYPE_TUTORIALUI);
-	m_pPauseFG[2]->SetPos(D3DXVECTOR3(640.0f, 620.0f, 0.0f));
-	m_pPauseFG[2]->SetWight(1200.0f);
-	m_pPauseFG[2]->SetHeight(600.0f);
-	m_pPauseFG[2]->SetTexture("data\\TEXTURE\\PauseTutorial.png");
-
 	for (int nCnt = 0; nCnt < MAX_PAUSE; nCnt++)
 	{
-		m_pPauseUI[nCnt] = CObject2D::Create();
+		m_pPauseUI[nCnt] = CObject2D::Create(7);
 		m_pPauseUI[nCnt]->SetType(CObject::TYPE_TUTORIALUI);
 		switch (nCnt)
 		{
@@ -173,7 +100,7 @@ HRESULT CPause::Init(void)
 			m_pPauseUI[nCnt]->SetHeight(300.0f);
 			break;
 		}
-		m_pPauseUI[nCnt]->SetPos(D3DXVECTOR3(290.0f + nCnt * 350.0f, 250.0f, 0.0f));
+		m_pPauseUI[nCnt]->SetPos(D3DXVECTOR3(290.0f + nCnt * 350.0f, 350.0f, 0.0f));
 		m_pPauseUI[nCnt]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.75f));
 	}
 	m_pPauseUI[0]->SetTexture("data\\TEXTURE\\BACK_GAME.png");
@@ -267,34 +194,22 @@ void CPause::Update(void)
 
 	if (m_Appear == true)
 	{
-		for (int nCnt = 0; nCnt < 3; nCnt++)
-		{
-			m_pTutorialMOVE[nCnt]->SetAppear(true);
-			m_pTutorialJUMP[nCnt]->SetAppear(true);
-			m_pTutorialATTACK[nCnt]->SetAppear(true);
-		}
 		for (int nCnt = 0; nCnt < MAX_PAUSE; nCnt++)
 		{
 			m_pPauseUI[nCnt]->SetAppear(true);
 		}
-		for (int nCnt = 0; nCnt < 3; nCnt++)
+		for (int nCnt = 0; nCnt < 2; nCnt++)
 		{
 			m_pPauseFG[nCnt]->SetAppear(true);
 		}
 	}
 	else
 	{
-		for (int nCnt = 0; nCnt < 3; nCnt++)
-		{
-			m_pTutorialMOVE[nCnt]->SetAppear(false);
-			m_pTutorialJUMP[nCnt]->SetAppear(false);
-			m_pTutorialATTACK[nCnt]->SetAppear(false);
-		}
 		for (int nCnt = 0; nCnt < MAX_PAUSE; nCnt++)
 		{
 			m_pPauseUI[nCnt]->SetAppear(false);
 		}
-		for (int nCnt = 0; nCnt < 3; nCnt++)
+		for (int nCnt = 0; nCnt < 2; nCnt++)
 		{
 			m_pPauseFG[nCnt]->SetAppear(false);
 		}

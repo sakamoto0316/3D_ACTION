@@ -31,7 +31,8 @@ CRanking* CResult::m_pLifeRanking = NULL;
 CRanking *CResult::m_pTimeRanking = NULL;
 CObject2D *CResult::m_ClearText = NULL;
 CObject2D *CResult::m_NormalText = NULL;
-CObject2D *CResult::m_DeathText = NULL;
+CObject2D* CResult::m_DeathText = NULL;
+CObject2D *CResult::m_Rank = NULL;
 CScore *CResult::m_DeathScore = NULL;
 CNumber* CResult::m_apLife[6] = {};
 CNumber* CResult::m_apTime[6] = {};
@@ -39,6 +40,7 @@ bool CResult::m_Appear = false;
 int CResult::m_AddScoreCount = 0;
 int CResult::m_LifeData = 0;
 int CResult::m_TimeData = 0;
+int CResult::m_RankData = 0;
 CEdit *CResult::m_pEdit = NULL;
 
 //====================================================================
@@ -49,6 +51,7 @@ CResult::CResult()
 	m_AddScoreCount = 0;
 	m_LifeData = 0;
 	m_TimeData = 0;
+	m_RankData = 0;
 }
 
 //====================================================================
@@ -149,6 +152,94 @@ HRESULT CResult::Init(void)
 	m_apTime[3]->SetNumber(m_TimeData % 1000 / 100);
 	m_apTime[4]->SetNumber(m_TimeData % 100 / 10);
 	m_apTime[5]->SetNumber(m_TimeData % 10 / 1);
+
+	if (m_LifeData > 250)
+	{
+		m_RankData += 1;
+	}
+	if (m_LifeData > 500)
+	{
+		m_RankData += 1;
+	}
+	if (m_LifeData > 2750)
+	{
+		m_RankData += 1;
+	}
+	if (m_LifeData > 1000)
+	{
+		m_RankData += 1;
+	}
+	if (m_LifeData > 1250)
+	{
+		m_RankData += 1;
+	}
+	if (m_LifeData > 1500)
+	{
+		m_RankData += 1;
+	}
+
+	if (m_TimeData > 10000)
+	{
+		m_RankData += 1;
+	}
+	if (m_TimeData > 20000)
+	{
+		m_RankData += 1;
+	}
+	if (m_TimeData > 30000)
+	{
+		m_RankData += 1;
+	}
+	if (m_TimeData > 40000)
+	{
+		m_RankData += 1;
+	}
+	if (m_TimeData > 50000)
+	{
+		m_RankData += 1;
+	}
+	if (m_TimeData > 60000)
+	{
+		m_RankData += 1;
+	}
+
+	m_Rank = CObject2D::Create();
+	m_Rank->SetPos(D3DXVECTOR3(750.0f, 235.0f, 0.0f));
+	m_Rank->SetWight(150.0f);
+	m_Rank->SetHeight(150.0f);
+
+	if (m_RankData == 0)
+	{
+		m_Rank->SetTexture("data\\TEXTURE\\RankS.png");
+	}
+	else if(m_RankData <= 1)
+	{
+		m_Rank->SetTexture("data\\TEXTURE\\RankAP.png");
+	}
+	else if (m_RankData <= 2)
+	{
+		m_Rank->SetTexture("data\\TEXTURE\\RankA.png");
+	}
+	else if (m_RankData <= 4)
+	{
+		m_Rank->SetTexture("data\\TEXTURE\\RankAM.png");
+	}
+	else if (m_RankData <= 6)
+	{
+		m_Rank->SetTexture("data\\TEXTURE\\RankBP.png");
+	}
+	else if (m_RankData <= 8)
+	{
+		m_Rank->SetTexture("data\\TEXTURE\\RankB.png");
+	}
+	else if (m_RankData <= 10)
+	{
+		m_Rank->SetTexture("data\\TEXTURE\\RankBM.png");
+	}
+	else
+	{
+		m_Rank->SetTexture("data\\TEXTURE\\RankC.png");
+	}
 
 	//m_DeathText = CObject2D::Create();
 	//m_DeathText->SetPos(D3DXVECTOR3(640.0f, 550.0f, 0.0f));

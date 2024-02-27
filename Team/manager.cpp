@@ -22,7 +22,7 @@
 #include "Edit.h"
 #include "time.h"
 
-#define SET_MODE (CScene::MODE_GAME)
+#define SET_MODE (CScene::MODE_TITLE)
 
 //静的メンバ変数宣言
 CManager *CManager::pManager = nullptr;
@@ -390,7 +390,8 @@ void CManager::Update(void)
 	if ((CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_P) == true ||
 		CManager::GetInstance()->GetInputJoyPad()->GetTrigger(CInputJoypad::BUTTON_START, 0) == true) &&
 		CScene::GetMode() == CScene::MODE_GAME &&
-		m_PauseOK == true)
+		m_PauseOK == true &&
+		m_Fade->GetFade() == CFade::FADE_NONE)
 	{
 		//条件？ 処理１：処理２;
 		m_Pause = m_Pause ? false : true;

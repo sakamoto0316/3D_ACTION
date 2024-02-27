@@ -62,6 +62,7 @@ public:			// 誰でもアクセスできる
 
 	// 静的メンバ関数
 	static CLog* Create(CLog::TEXT Type);		// 生成処理
+	static void InitCreateMax(void) { m_CreateMax = -1; }		// 生成処理
 
 private:		// 自分だけアクセスできる
 	void StateManager(void);

@@ -90,7 +90,7 @@ public:
 	void HitDamage(float Damage);								//攻撃を受けた時の処理
 	void SetLifeUI(void);
 	CObjGauge2D* GetLifeGauge(void) { return m_pLifeGauge; }
-	void DispUI(bool);
+	void DispUI(bool Set);
 
 private:
 	void MyObjCreate(void);								//自分が保持するオブジェクトの生成

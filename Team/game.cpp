@@ -105,6 +105,8 @@ CGame::~CGame()
 //====================================================================
 HRESULT CGame::Init(void)
 {
+	CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_BGM_TUTORIAL);
+
 	//m_p2DSample = CObject2D::Create();
 	//m_p2DSample->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
 	//m_p2DSample->SetWight(100.0f);
@@ -226,6 +228,8 @@ HRESULT CGame::Init(void)
 		m_pEdit = CEdit::Create();
 	}
 #endif
+
+	CLog::InitCreateMax();
 
 	//説明ログの表示
 	CLog::Create(CLog::TEXT_09);
@@ -445,6 +449,11 @@ void CGame::EventUpdate(void)
 	//各種オブジェクトの生成と初期化
 	if (m_nEventCount == 0)
 	{
+		CManager::GetInstance()->GetSound()->StopSound(CSound::SOUND_LABEL_BGM_TUTORIAL);
+
+		DispUI(false);
+		m_pPlayer->DispUI(false);
+
 		CCubeBlock* pBlock;
 
 		//ゲームのSEを再生する
@@ -608,6 +617,39 @@ void CGame::EventUpdate(void)
 		CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_BGM_BOSS);
 
 		m_pBoss->LifeGaugeCreate();
+		DispUI(true);
+		m_pPlayer->DispUI(true);
+	}
+}
+
+//====================================================================
+//UIの表示状態設定
+//====================================================================
+void CGame::DispUI(bool Set)
+{
+	if (m_p2DBossName != nullptr)
+	{
+		m_p2DBossName->SetAppear(Set);
+	}
+	if (m_p2DUI_Attention != nullptr)
+	{
+		m_p2DUI_Attention->SetAppear(Set);
+	}
+	if (m_p2DUI_Attack != nullptr)
+	{
+		m_p2DUI_Attack->SetAppear(Set);
+	}
+	if (m_p2DUI_AttentionOK != nullptr)
+	{
+		m_p2DUI_AttentionOK->SetAppear(Set);
+	}
+	if (m_p2DUI_Dodge != nullptr)
+	{
+		m_p2DUI_Dodge->SetAppear(Set);
+	}
+	if (m_p2DUI_Jump != nullptr)
+	{
+		m_p2DUI_Jump->SetAppear(Set);
 	}
 }
 
