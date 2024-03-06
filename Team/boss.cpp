@@ -2206,6 +2206,7 @@ void CBoss::HitDamage(float Damage)
 			CManager::GetInstance()->GetCamera()->SetCameraMode(CCamera::CAMERAMODE_FOLLOW);
 
 			CManager::GetInstance()->GetCamera()->SetAttention(false);
+			CManager::GetInstance()->GetCamera()->SetBib(false);
 			m_fLife = 0.0f;
 			m_AttackCount = 0;
 			m_AttackWave = 0;

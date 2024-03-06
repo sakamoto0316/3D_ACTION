@@ -93,7 +93,10 @@ private:
 	static CObject2D* m_p2DUI_Jump;			//ジャンプの2DUI
 	static CObject2D* m_p2DUI_Dodge;		//回避の2DUI
 	static CObject2D* m_p2DUI_Attention;	//注目の2DUI
-	static CObject2D *m_p2DUI_AttentionOK;	//注目の2DUI
+	static CObject2D* m_p2DUI_AttentionOK;	//注目の2DUI
+	static CObject2D* m_p2DUITime;			//タイムの2DUI
+	static CObject2D* m_pPlayerName;		//プレイヤーの名前の2DUI
+	static CObject2D *m_pBossName;			//ボスの名前の2DUI
 	static CObject3D* m_p3DSample;			//3Dポリゴンのサンプル
 	static CObject3D* m_p3DEventBG;			//イベント時の背景
 	static CObject2D *m_p2DBossName;		//ボスの名前表示

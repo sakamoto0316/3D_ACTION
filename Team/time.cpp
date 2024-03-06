@@ -9,7 +9,7 @@
 
 //マクロ定義
 #define SPACE_TIME (15.0f)		//タイム同士の隙間
-#define TIME_POS (D3DXVECTOR3(1168.0f, 430.0f, 0.0f))		//タイムの位置
+#define TIME_POS (D3DXVECTOR3(1168.0f, 480.0f, 0.0f))		//タイムの位置
 
 //静的メンバ変数宣言
 CNumber* CTime::m_apObject[NUM_TIME] = {};

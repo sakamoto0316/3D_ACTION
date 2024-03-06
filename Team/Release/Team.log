@@ -1,8 +1,7 @@
-﻿  boss.cpp
-  result.cpp
+﻿  game.cpp
   コード生成しています。
-  2 of 753 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+  3 of 753 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    28 functions had inline decision re-evaluated but remain unchanged
+    11 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
   Team.vcxproj -> C:\Users\student\Desktop\3D_ACTIONGAME\3D_ACTION\Team\Team.exe

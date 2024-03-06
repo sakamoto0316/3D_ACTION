@@ -49,10 +49,13 @@ CObject2D *CGame::m_p2DUI_Attack = nullptr;		//攻撃の2DUI
 CObject2D *CGame::m_p2DUI_Jump = nullptr;			//ジャンプの2DUI
 CObject2D *CGame::m_p2DUI_Dodge = nullptr;			//回避の2DUI
 CObject2D* CGame::m_p2DUI_Attention = nullptr;		//注目の2DUI
-CObject2D *CGame::m_p2DUI_AttentionOK = nullptr;	//注目の2DUI
+CObject2D* CGame::m_p2DUI_AttentionOK = nullptr;	//注目の2DUI
+CObject2D *CGame::m_p2DUITime = nullptr;	//注目の2DUI
 CObject3D* CGame::m_p3DSample = nullptr;
 CObject3D* CGame::m_p3DEventBG = nullptr;			//イベント時の3D背景
-CObject2D *CGame::m_p2DBossName = nullptr;
+CObject2D* CGame::m_p2DBossName = nullptr;
+CObject2D* CGame::m_pPlayerName = nullptr;
+CObject2D *CGame::m_pBossName = nullptr;
 CObjectBillboard* CGame::m_pBillboardSample = nullptr;
 CObjectX* CGame::m_pXModelSample = nullptr;
 CObjmeshField* CGame::m_pMeshFieldSample = nullptr;
@@ -106,32 +109,7 @@ CGame::~CGame()
 HRESULT CGame::Init(void)
 {
 	CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_BGM_TUTORIAL);
-
-	//m_p2DSample = CObject2D::Create();
-	//m_p2DSample->SetPos(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
-	//m_p2DSample->SetWight(100.0f);
-	//m_p2DSample->SetHeight(100.0f);
-	//m_p2DSample->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-
-	//m_p3DSample = CObject3D::Create();
-	//m_p3DSample->SetPos(D3DXVECTOR3(200.0f, 0.0f, 0.0f));
-	//m_p3DSample->SetRot(D3DXVECTOR3(1.57f, 0.0f, 0.0f));
-	//m_p3DSample->SetWight(100.0f);
-	//m_p3DSample->SetHeight(100.0f);
-
-	//m_pBillboardSample = CObjectBillboard::Create();
-	//m_pBillboardSample->SetPos(INITVECTOR3);
-
-	//m_pXModelSample = CObjectX::Create("data\\MODEL\\player00.x");
-	//m_pXModelSample->SetPos(D3DXVECTOR3(-200.0f, 0.0f, 0.0f));
-
-	//m_pMeshFieldSample = CObjmeshField::Create();
-	//m_pMeshFieldSample->SetPos(D3DXVECTOR3(0.0f, 0.0f, 200.0f));
-
-	//m_pMeshWallSample = CObjmeshWall::Create();
-	//m_pMeshWallSample->SetPos(D3DXVECTOR3(0.0f, 0.0f, 300.0f));
-
-	//m_pMeshCylinderSample = CObjmeshCylinder::Create();
+	CGame::GetTime()->SetStopTime(false);
 
 	m_pMeshDomeUp = CObjmeshDome::Create();
 	m_pMeshDomeUp->SetTexture("data\\TEXTURE\\SkyBG.jpg");
@@ -152,16 +130,6 @@ HRESULT CGame::Init(void)
 	pCubeD->SetPos(D3DXVECTOR3(-100.0f, 150.0f, -2800.0f));
 	pCubeD->SetCubeType(CCubeDamage::CUBETYPE_NORMAL);
 	pCubeD->SetDamage(10);
-
-	//m_pCubeBlock = CCubeBlock::Create();
-	//m_pCubeBlock->SetPos(D3DXVECTOR3(150.0f, 250.0f, -150.0f));
-	//m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
-	//m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-
-	//m_pCubeBlock = CCubeBlock::Create();
-	//m_pCubeBlock->SetPos(D3DXVECTOR3(-150.0f, 250.0f, 150.0f));
-	//m_pCubeBlock->SetSize(D3DXVECTOR3(100.0f, 10.0f, 100.0f));
-	//m_pCubeBlock->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	m_pPlayer = CPlayer::Create();
 	m_pPlayer->SetPos(D3DXVECTOR3(0.0f, 150.0f, -3820.0f));
@@ -209,6 +177,26 @@ HRESULT CGame::Init(void)
 	m_p2DUI_Attack->SetWight(150.0f);
 	m_p2DUI_Attack->SetHeight(40.0f);
 	m_p2DUI_Attack->SetTexture("data\\TEXTURE\\UI_Attack.png");
+
+	m_p2DUITime = CObject2D::Create();
+	m_p2DUITime->SetPos(D3DXVECTOR3(1140.0f, 490.0f, 0.0f));
+	m_p2DUITime->SetWight(300.0f);
+	m_p2DUITime->SetHeight(300.0f);
+	m_p2DUITime->SetTexture("data\\TEXTURE\\TimeText.png");
+	m_p2DUITime->SetAppear(false);
+
+	m_pPlayerName = CObject2D::Create();
+	m_pPlayerName->SetPos(D3DXVECTOR3(1045.0f, 530.0f, 0.0f));
+	m_pPlayerName->SetWight(280.0f);
+	m_pPlayerName->SetHeight(280.0f);
+	m_pPlayerName->SetTexture("data\\TEXTURE\\PlayerName.png");
+
+	m_pBossName = CObject2D::Create();
+	m_pBossName->SetPos(D3DXVECTOR3(290.0f, 50.0f, 0.0f));
+	m_pBossName->SetWight(280.0f);
+	m_pBossName->SetHeight(280.0f);
+	m_pBossName->SetTexture("data\\TEXTURE\\BossNameText.png");
+	m_pBossName->SetAppear(false);
 
 	//タイムの生成
 	m_pTime = CTime::Create();
@@ -584,6 +572,7 @@ void CGame::EventUpdate(void)
 		m_bEvent = false;
 		m_bEventEnd = true;
 		m_pTime->SetStartTime(timeGetTime());
+		m_p2DUITime->SetAppear(true);
 
 		if (m_pPlayer != nullptr)
 		{
@@ -650,6 +639,14 @@ void CGame::DispUI(bool Set)
 	if (m_p2DUI_Jump != nullptr)
 	{
 		m_p2DUI_Jump->SetAppear(Set);
+	}
+	if (m_pPlayerName != nullptr)
+	{
+		m_pPlayerName->SetAppear(Set);
+	}
+	if (m_pBossName != nullptr)
+	{
+		m_pBossName->SetAppear(Set);
 	}
 }
 
