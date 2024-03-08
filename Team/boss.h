@@ -22,7 +22,7 @@ class CBoss : public CObjectX
 {
 public:
 
-	CBoss(int nPriority = 3);
+	CBoss(int nPriority = 5);
 	~CBoss();
 
 	//É{ÉXÇÃèÛë‘

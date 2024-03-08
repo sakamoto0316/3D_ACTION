@@ -29,6 +29,7 @@ CEnemy::CEnemy(int nPriority) : CObjectX(nPriority)
 {
 	SetWight(COLLISION_SIZE.x);
 	SetHeight(COLLISION_SIZE.y);
+	SetPos(INITVECTOR3);
 	m_nIdxXModel = NULL;			//É}ÉeÉäÉAÉãÇÃêî
 	m_CollisionPos = INITVECTOR3;
 	m_bCollision = false;

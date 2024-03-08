@@ -15,7 +15,7 @@ class CNumber : public CObject2D
 {
 public:
 
-	CNumber(int nPriority = 5);
+	CNumber(int nPriority = 6);
 	~CNumber();
 
 	static CNumber *Create(void);

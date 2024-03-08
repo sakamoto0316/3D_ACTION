@@ -34,7 +34,7 @@
 #define BLOCK_WIGHT (300.0f)		//横幅
 #define BLOCK_HEIGHT (300.0f)		//縦幅
 #define WALL_UPEND (20.0f)			//上昇位置
-#define BOSS_LIFE (4000.0f)			//ボスの体力
+#define BOSS_LIFE (2000.0f)			//ボスの体力
 #define BOSS_LIFESPEED_PLUS (128.0f)//体力増の移動量
 #define BOSS_LIFESPEED_DEL (64.0f)	//体力減の移動量
 #define BULLET_INTERVAL_FORM1 (20)	//弾の発射感覚(進化前)

@@ -23,7 +23,7 @@ class CObject3D;
 class CPlayer : public CObject
 {
 public:
-	CPlayer(int nPriority = 3);
+	CPlayer(int nPriority = 2);
 	~CPlayer();
 
 	//プレイヤーのモーション

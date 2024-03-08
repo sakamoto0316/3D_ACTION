@@ -16,7 +16,7 @@ class CObject3D;
 class CCubeDamage : public CObjmeshCube
 {
 public:
-	CCubeDamage(int nPriority = 4);
+	CCubeDamage(int nPriority = 5);
 	~CCubeDamage();
 
 	//キューブの種類
@@ -63,6 +63,7 @@ public:
 	int GetLife(void) { return m_nLife; }
 	void SetSpinSinCos(int Set) { SpinSinCos = Set; }
 	bool CollisionBlock(void);	//オブジェクトとの当たり判定
+	static void StaticReset(void);
 protected:
 
 private:

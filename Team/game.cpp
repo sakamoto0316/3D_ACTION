@@ -110,6 +110,7 @@ HRESULT CGame::Init(void)
 {
 	CManager::GetInstance()->GetSound()->PlaySoundA(CSound::SOUND_LABEL_BGM_TUTORIAL);
 	CGame::GetTime()->SetStopTime(false);
+	CCubeDamage::StaticReset();
 
 	m_pMeshDomeUp = CObjmeshDome::Create();
 	m_pMeshDomeUp->SetTexture("data\\TEXTURE\\SkyBG.jpg");

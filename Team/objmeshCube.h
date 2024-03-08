@@ -14,7 +14,7 @@
 class CObjmeshCube : public CObject
 {
 public:
-	CObjmeshCube(int nPriority = 4);
+	CObjmeshCube(int nPriority = 3);
 	~CObjmeshCube();
 
 	static CObjmeshCube* Create(void);
